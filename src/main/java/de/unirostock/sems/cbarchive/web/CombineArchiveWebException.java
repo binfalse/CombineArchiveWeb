@@ -23,4 +23,17 @@ public class CombineArchiveWebException
 	{
 		super (msg);
 	}
+
+	public CombineArchiveWebException() {
+		super();
+	}
+
+	public CombineArchiveWebException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public CombineArchiveWebException(Throwable cause) {
+		super(cause);
+	}
+	
 }

@@ -124,7 +124,7 @@ extends HttpServlet
 		if (req.length >= 3 && req[2].equals ("createnew"))
 		{
 				LOGGER.info ("request for new archive");
-			if (false && !user.hasInformation ())
+			if (!user.hasInformation ())
 			{
 				errors.add ("you first need to fill out the form.");
 			}

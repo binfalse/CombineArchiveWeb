@@ -13,6 +13,8 @@ import java.util.UUID;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
@@ -33,42 +35,68 @@ import de.unirostock.sems.cbarchive.meta.MetaDataObject;
  */
 public class Tools
 {
-	
+
 	/** The Constant COOKIE_PATH. */
 	public static final String COOKIE_PATH = "combinearchiveweba";
-	
+
 	/** The Constant COOKIE_GIVEN_NAME. */
 	public static final String COOKIE_GIVEN_NAME = "combinearchivewebb";
-	
+
 	/** The Constant COOKIE_FAMILY_NAME. */
 	public static final String COOKIE_FAMILY_NAME = "combinearchivewebc";
-	
+
 	/** The Constant COOKIE_MAIL. */
 	public static final String COOKIE_MAIL = "combinearchivewebd";
-	
+
 	/** The Constant COOKIE_ORG. */
 	public static final String COOKIE_ORG = "combinearchivewebe";
-	
+
 	// TODO: move this to the context.xml 
 	/** The Constant STORAGE. */
 	public static final File STORAGE = new File ("/tmp/CombineArchiveWebStorage");
-	
+
 	/** The Constant COOKIE_AGE. */
 	public static final int COOKIE_AGE = 60*60*24*365;
-	
+
 	/** The Constant MAX_ARCHIVES. */
 	public static final int MAX_ARCHIVES = 10;
-	
+
 	/** The Constant MAX_FILES_PER_ARCHIVE. */
 	public static final int MAX_FILES_PER_ARCHIVE = 20;
-	
+
 	/** The Constant MAX_FILE_SIZE. */
 	public static final int MAX_FILE_SIZE = 1024*1024;
-	
+
 	/** The Constant DATE_FORMATTER. */
 	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss.SSS");
-	
-	
+
+
+	public static User doLogin( HttpServletRequest request, HttpServletResponse response ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
+		// find Cookies
+		HttpSession session = request.getSession (true);
+		CookieManager cookieManagement = new CookieManager (request, response);
+
+		// gets the user class
+		User user = getUser(cookieManagement);
+		
+		// user exits
+		if (user != null)
+			// set WorkingDirectory
+			try {
+				user.setWd( getWorkingDirectory(cookieManagement) );
+			}
+			catch (IOException e) {
+				throw new CombineArchiveWebException("Could not find and obtain working directory", e);
+			}
+		else
+		{
+			throw new CombineArchiveWebCriticalException("Can not get/create user");
+		} 
+
+
+		return user;
+	}
+
 	/**
 	 * Creates the user.
 	 *
@@ -79,7 +107,7 @@ public class Tools
 	{
 		createWorkingDirectory (cookies);
 	}
-	
+
 	/**
 	 * Gets the user.
 	 *
@@ -94,13 +122,13 @@ public class Tools
 
 		c.setMaxAge (COOKIE_AGE);
 		cookies.setCookie (c);
-		
-		
+
+
 		Cookie givenName = cookies.getCookie (COOKIE_PATH);
 		Cookie familyName = cookies.getCookie (COOKIE_PATH);
 		Cookie mail = cookies.getCookie (COOKIE_PATH);
 		Cookie organization = cookies.getCookie (COOKIE_PATH);
-		
+
 		if (givenName != null)
 		{
 			givenName.setMaxAge (COOKIE_AGE);
@@ -121,16 +149,16 @@ public class Tools
 			organization.setMaxAge (COOKIE_AGE);
 			cookies.setCookie (organization);
 		}
-		
+
 		return new User (c.getValue (),
-			givenName == null ? null : givenName.getValue (),
-				familyName == null ? null : familyName.getValue (),
-					mail == null ? null : mail.getValue (),
-						organization == null ? null : organization.getValue ()
-			);
-		
+				givenName == null ? null : givenName.getValue (),
+						familyName == null ? null : familyName.getValue (),
+								mail == null ? null : mail.getValue (),
+										organization == null ? null : organization.getValue ()
+				);
+
 	}
-	
+
 	/**
 	 * Creates the working directory.
 	 *
@@ -145,13 +173,13 @@ public class Tools
 			LOGGER.error ("cannot create storage : " + STORAGE);
 			throw new IOException ("cannot create storage : " + STORAGE);
 		}
-		
+
 		String tmp = UUID.randomUUID ().toString ();
 		while (new File (STORAGE + "/" + tmp).exists ())
 			tmp = UUID.randomUUID ().toString ();
 
 		File wd = new File (STORAGE + "/" + tmp);
-		
+
 		if (!wd.mkdirs ())
 		{
 			LOGGER.error ("cannot create working directory: " + wd);
@@ -161,11 +189,11 @@ public class Tools
 		c.setMaxAge (COOKIE_AGE);
 		c.setPath ("/");
 		cookies.setCookie (c);
-		
-		
+
+
 		return wd;
 	}
-	
+
 	/**
 	 * Gets the working directory.
 	 *
@@ -178,11 +206,11 @@ public class Tools
 		Cookie c = cookies.getCookie (COOKIE_PATH);
 		if (c == null)
 			throw new IOException ("no cookie");
-		
+
 		String tmp = c.getValue ();
 		if (!tmp.matches ("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))
 			throw new IOException ("invalid file name");
-		
+
 		File wd = new File (STORAGE + "/" + tmp);
 		if (!wd.exists () || !wd.isDirectory ())
 		{
@@ -190,12 +218,12 @@ public class Tools
 			if (!wd.mkdirs ())
 				throw new IOException ("path not found");
 		}
-		
+
 		return wd;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Archive to json.
 	 *
@@ -206,17 +234,17 @@ public class Tools
 	{
 		JSONObject descr = new JSONObject ();
 		ArchiveEntry master = ca.getMainEntry ();
-		
+
 		for (ArchiveEntry e : ca.getEntries ())
 		{
 			JSONObject entryDescr = new JSONObject ();
 			entryDescr.put ("path", e.getFilePath ());
 			entryDescr.put ("fileName", e.getFileName ());
 			entryDescr.put ("format", e.getFormat ());
-			
+
 			if (e == master)
 				entryDescr.put ("master", "true");
-			
+
 			JSONArray meta = new JSONArray ();
 			for (MetaDataObject m : e.getDescriptions ())
 				meta.add (m.getXmlDescription ());
@@ -224,11 +252,11 @@ public class Tools
 			entryDescr.put ("meta", meta);
 			descr.put (e.getFilePath (), entryDescr);
 		}
-		
+
 		return descr;
 	}
-	
-	
+
+
 	/**
 	 * Extract file name.
 	 *

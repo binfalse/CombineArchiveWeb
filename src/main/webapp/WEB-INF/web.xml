@@ -11,10 +11,20 @@
         <servlet-name>API</servlet-name>
         <servlet-class>de.unirostock.sems.cbarchive.web.Api</servlet-class>
     </servlet>
+    
+    <servlet>
+    	<servlet-name>Download</servlet-name>
+    	<servlet-class>de.unirostock.sems.cbarchive.web.DownloadServlet</servlet-class>
+    </servlet>
 		
     <servlet-mapping>
         <servlet-name>API</servlet-name>
         <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+    	<servlet-name>Download</servlet-name>
+    	<url-pattern>/download/*</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>

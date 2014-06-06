@@ -256,6 +256,12 @@ public class User
 		}
 		return archs;
 	}
+	
+	public File getArchiveFile( String archiveId ) {
+		// TODO
+		
+		return null;
+	}
 
 	/**
 	 * Adds a file to an archive.

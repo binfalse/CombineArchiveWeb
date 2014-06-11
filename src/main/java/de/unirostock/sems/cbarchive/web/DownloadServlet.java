@@ -49,7 +49,6 @@ public class DownloadServlet extends HttpServlet {
 		
 		// splitting request URL
 		String[] requestUrl =  request.getRequestURI().substring(request.getContextPath().length()).split ("/");
-		LOGGER.debug(requestUrl);
 		
 		// check entry points
 		if( requestUrl.length >= 4 && requestUrl[2].equals("archive") ) {
@@ -60,7 +59,7 @@ public class DownloadServlet extends HttpServlet {
 		
 	}
 	
-	private void downloadArchive(HttpServletRequest request, HttpServletResponse response, User user, String archive) {
+	private void downloadArchive(HttpServletRequest request, HttpServletResponse response, User user, String archive) throws IOException {
 		
 		// filters for omex extension
 		//		( is just there for the browser to name the downloaded file correctly)
@@ -74,8 +73,9 @@ public class DownloadServlet extends HttpServlet {
 			archiveFile = user.getArchiveFile(archive);
 			archiveName = user.getArchiveName(archive);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.warn(e, MessageFormat.format("FileNotFound Exception, while handling donwload request for Archive {1} in Workspace {0}", user.getWd(), archive) );
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage() );
+			return;
 		}
 		
 		// set MIME-Type to something downloadable
@@ -100,8 +100,8 @@ public class DownloadServlet extends HttpServlet {
 			
 			response.flushBuffer();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e,  MessageFormat.format("IOException, while copying streams by handling donwload request for Archive {1} in Workspace {0}", user.getWd(), archive));
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "IOException while sending the file.");
 		}
 	}
 

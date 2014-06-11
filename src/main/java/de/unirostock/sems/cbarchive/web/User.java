@@ -257,6 +257,13 @@ public class User
 		return archs;
 	}
 	
+	/**
+	 * Returns a File class pointing to the current state CombineArchive
+	 * 
+	 * @param archiveId
+	 * @return File
+	 * @throws FileNotFoundException
+	 */
 	public File getArchiveFile( String archiveId ) throws FileNotFoundException {
 		
 		// gets the properties Key for this archive
@@ -266,23 +273,26 @@ public class User
 			// if not, throw an exception!
 			throw new FileNotFoundException("There is no archive in this working space with the ID " + archiveId);
 		else {
-			
-			// gets the dir name from key string
-			String dir = archiveKey.substring (ARCHIVE_KEY_PRE.length ());
-			if( dir.equals(archiveId) ) {
-				// is the archive we are looking for
-				
-				// get the file
-				File archive = new File (this.wd.getAbsolutePath () + File.separatorChar + dir);
-				if( archive.isFile() && archive.exists() && archive.canRead() )
-					return archive;
-				else
-					throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
-			}
+			// get the file
+			File archive = new File (this.wd.getAbsolutePath () + File.separatorChar + archiveId);
+			if( archive.isFile() && archive.exists() && archive.canRead() )
+				return archive;
+			else
+				throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
+		}
+	}
+	
+	public String getArchiveName( String archiveId ) {
+		
+		String archiveName = props.getProperty( ARCHIVE_KEY_PRE + archiveId );
+		// check if exists
+		if( archiveName == null || archiveName.isEmpty() )
+			// if not, return null
+			return null;
+		else {
+			return archiveName;
 		}
 		
-		// Should never happen, just here to make eclipse shut up 
-		return null;
 	}
 
 	/**

@@ -257,10 +257,33 @@ public class User
 		return archs;
 	}
 	
-	public File getArchiveFile( String archiveId ) {
-		// TODO
+	public File getArchiveFile( String archiveId ) throws FileNotFoundException {
 		
-		return null;
+		for( Object p : props.keySet() ) {
+			String key = (String) p;
+			
+			if( key.startsWith( ARCHIVE_KEY_PRE ) ) {
+				// is an archive entry
+				
+				// gets the dir name from key string
+				String dir = key.substring (ARCHIVE_KEY_PRE.length ());
+				if( dir.equals(archiveId) ) {
+					// is the archive we are looking for
+					
+					// ge
+					File archive = new File (this.wd.getAbsolutePath () + File.separatorChar + dir);
+					if( archive.isFile() && archive.exists() && archive.canRead() )
+						return archive;
+					else
+						throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
+				}
+			}
+			
+		}
+		
+		// if we made it until here, there is no archive with the id, we were suposed to looking for
+		// so throw an exception!
+		throw new FileNotFoundException("There is no archive in this working space with the ID " + archiveId);
 	}
 
 	/**

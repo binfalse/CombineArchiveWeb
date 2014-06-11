@@ -49,12 +49,13 @@ public class DownloadServlet extends HttpServlet {
 		
 		// splitting request URL
 		String[] requestUrl =  request.getRequestURI().substring(request.getContextPath().length()).split ("/");
+		LOGGER.debug(requestUrl);
 		
 		// check entry points
 		if( requestUrl.length >= 4 && requestUrl[2].equals("archive") ) {
 			// request to download an archive from the workspace
-			if( requestUrl[4] != null && !requestUrl[4].isEmpty() )
-				downloadArchive(request, response, user, requestUrl[4] );
+			if( requestUrl[3] != null && !requestUrl[3].isEmpty() )
+				downloadArchive(request, response, user, requestUrl[3] );
 		}
 		
 	}

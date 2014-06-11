@@ -85,7 +85,7 @@
 			<div id="addFile"></div>
 			<div><small id="uploadedFileList"></small></div>
 			<div id="export">
-				<button>export as CombineArchive</button>
+				<button id="exportButton">export as CombineArchive</button>
 			</div>
 		</div>
 

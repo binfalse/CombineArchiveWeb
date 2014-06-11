@@ -281,6 +281,17 @@ function initNewCreation ()
 	
 }
 
+function initExportButton() {
+	
+	$("#exportButton").click(function () {
+		// simulate link clicking
+		window.location.href = "download/archive/" + currentArchive + ".omex";
+		console.log("download Archive: " + currentArchive);
+		//return false;
+	});
+	
+}
+
 function init ()
 {
 	$("#noJs").remove ();
@@ -306,6 +317,7 @@ function init ()
 	
 	reloadArchives ();
 	initNewCreation ();
+	initExportButton();
 }
 
 document.addEventListener("DOMContentLoaded", init, false);

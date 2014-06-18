@@ -47,6 +47,14 @@ public class RestApi extends Application {
 	}
 	
 	@GET
+	@Path("/heartbeat")
+	@Produces( MediaType.TEXT_PLAIN )
+	public String heartbeat() {
+		
+		return "ok";
+	}
+	
+	@GET
 	@Path( "/archives" )
 	@Produces( MediaType.APPLICATION_JSON )
 	public List<Archive> getAllArchives() {

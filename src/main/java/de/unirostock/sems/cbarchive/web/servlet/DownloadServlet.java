@@ -1,4 +1,4 @@
-package de.unirostock.sems.cbarchive.web;
+package de.unirostock.sems.cbarchive.web.servlet;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.web.CombineArchiveWebCriticalException;
+import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
+import de.unirostock.sems.cbarchive.web.Tools;
+import de.unirostock.sems.cbarchive.web.User;
 
 public class DownloadServlet extends HttpServlet {
 

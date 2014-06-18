@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.unirostock.sems.cbarchive.web;
+package de.unirostock.sems.cbarchive.web.servlet;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +19,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.web.CookieManager;
+import de.unirostock.sems.cbarchive.web.Tools;
+import de.unirostock.sems.cbarchive.web.User;
 
 
 /**

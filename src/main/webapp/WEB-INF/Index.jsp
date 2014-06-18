@@ -4,10 +4,18 @@
 <head>
 	<title>CombineArchiveWebWeb</title>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="res/js/3rd/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
+<!-- 	<script type="text/javascript" src="res/js/3rd/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script> -->
 	<script type="text/javascript" src="res/js/3rd/jquery-field-selection.js"></script>
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
 	<script type="text/javascript" src="res/js/3rd/jquery.colorbox-min.js"></script>
+	
+	<!-- Load jsTree and friends -->
+	<script type="text/javascript" src="res/js/3rd/jstree.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree.types.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree.wholerow.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree.search.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree.dnd.js"></script>
+	
 	<script type="text/javascript" src="res/js/js.js"></script>
 	<link rel='stylesheet' href='res/css/css.css' type='text/css' media='all' />
 </head>

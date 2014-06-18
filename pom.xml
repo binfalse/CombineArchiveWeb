@@ -35,14 +35,28 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
-		
+		<!-- Jersey for RESTful Api -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core" -->
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>2.9.1</version>
+		</dependency>
+		<!-- Jackson for JSON Marshalling -->
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.9.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -65,6 +79,14 @@
 		</dependency>
 
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>java-public-repo</id>
+			<name>Java Maven public</name>
+			<url>https://maven.java.net/content/groups/public/</url>
+		</repository>
+	</repositories>
 
 	<distributionManagement>
 		<downloadUrl>http://mvn.sems.uni-rostock.de</downloadUrl>

@@ -15,25 +15,12 @@ public class UserData {
 	protected String mail;
 	protected String organization;
 	
-	@JsonIgnore
-	protected String path;
-	
 	public UserData() {
 		super();
 		this.givenName = null;
 		this.familyName = null;
 		this.mail = null;
 		this.organization = null;
-		this.path = null;
-	}
-	
-	public UserData(String givenName, String familyName, String mail, String organization, String path) {
-		super();
-		this.givenName = givenName;
-		this.familyName = familyName;
-		this.mail = mail;
-		this.organization = organization;
-		this.path = path;
 	}
 	
 	public UserData(String givenName, String familyName, String mail, String organization) {
@@ -42,9 +29,8 @@ public class UserData {
 		this.familyName = familyName;
 		this.mail = mail;
 		this.organization = organization;
-		this.path = null;
 	}
-
+	
 	public String getGivenName() {
 		return givenName;
 	}
@@ -69,13 +55,12 @@ public class UserData {
 	public void setOrganization(String organization) {
 		this.organization = organization;
 	}
+	
 	@JsonIgnore
-	public String getPath() {
-		return path;
-	}
-	@JsonIgnore
-	public void setPath(String path) {
-		this.path = path;
+	public boolean hasInformation ()
+	{
+		return givenName != null && familyName != null && mail != null 
+			&& givenName.isEmpty() == false && familyName.isEmpty() == false && mail.isEmpty() == false && mail.length () > 5;
 	}
 	
 	@JsonIgnore

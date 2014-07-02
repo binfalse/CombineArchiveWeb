@@ -9,13 +9,17 @@
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
 	<script type="text/javascript" src="res/js/3rd/jquery.colorbox-min.js"></script>
 	
-	<!-- Load jsTree and friends -->
-	<script type="text/javascript" src="res/js/3rd/jstree.js"></script>
-	<script type="text/javascript" src="res/js/3rd/jstree.types.js"></script>
-	<script type="text/javascript" src="res/js/3rd/jstree.wholerow.js"></script>
-	<script type="text/javascript" src="res/js/3rd/jstree.search.js"></script>
-	<script type="text/javascript" src="res/js/3rd/jstree.dnd.js"></script>
+	<script type="text/javascript" src="res/js/3rd/underscore.js"></script>
+	<script type="text/javascript" src="res/js/3rd/backbone-min.js"></script>
 	
+	<!-- Load jsTree and friends -->
+	<script type="text/javascript" src="res/js/3rd/jstree/jstree.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree/jstree.types.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree/jstree.wholerow.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree/jstree.search.js"></script>
+	<script type="text/javascript" src="res/js/3rd/jstree/jstree.dnd.js"></script>
+	
+	<script type="text/javascript" src="res/js/models.js"></script>
 	<script type="text/javascript" src="res/js/js.js"></script>
 	<link rel='stylesheet' href='res/css/css.css' type='text/css' media='all' />
 </head>
@@ -27,13 +31,30 @@
 		Internet Explorer. Since we're fighting for open systems and
 		reproducibility we're unwilling to buy and install proprietary
 		software that is not more than a big bug.</div>
-	<div id="page" style="display: none;">
-		<nav>
+
+	<div id="templates" style="display: none;">
+		<div id="template-navigation">
 			<ul id="nav">
-				<li><a class="mainLinks highlight" id="startLink">start</a></li>
-				<li><a class="mainLinks" id="createLink">create</a></li>
+				<li><a class="mainLinks highlight" data-linktype="page" data-page="startPage" id="startLink">start</a></li>
+				<li><a class="mainLinks" data-linktype="page" data-page="createPage" id="createLink">create</a></li> 
+				{{#	_.each(entries, function(entry) { }}
+				<li><a class="mainLinks archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}">{{# print(entry.name); }}</a></li>
+				{{# }); }}
 			</ul>
-		</nav>
+		</div>
+		<div id="template-archive">
+			name: {{# print(archive.id) }} <br />
+			id: {{# print(archive.name) }} <br />
+			{{# _.each(entries, function(entry) { }}
+				<p>{{# print(entry.filePath) }} [{{# print(entry.format) }}]</p>
+			{{# }); }}
+		</div>
+	</div>
+
+
+	<div id="page" style="display: none;">
+		<nav id="navigation"></nav>
+		
 		<div id="startPage" class="subPage">
 			This is a web based
 			interface to read, created, and modify CombineArchives. We are not
@@ -96,6 +117,8 @@
 				<button id="exportButton">export as CombineArchive</button>
 			</div>
 		</div>
+		
+		<div id="archivePage" class="subPage" style="display: none;"></div>
 
 	</div>
 	<footer>

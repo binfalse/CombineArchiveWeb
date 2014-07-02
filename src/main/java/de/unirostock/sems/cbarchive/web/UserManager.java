@@ -33,7 +33,12 @@ public class UserManager {
 	}
 
 	public UserManager( String path ) throws IOException {
-		this.path = path;
+		if( path != null && !path.isEmpty() ) {
+			this.path = path;
+		}
+		else {
+			createUUID();
+		}
 		prepareWorkingDir();
 
 	}
@@ -46,10 +51,15 @@ public class UserManager {
 		}
 
 		String uuid = null;
+		File workingDir = null;
 		while( uuid == null || workingDir.exists() ) {
 			uuid = UUID.randomUUID ().toString ();
 			workingDir = new File( Fields.STORAGE, uuid );
 		}
+
+		// sets it!
+		this.path = uuid;
+		this.workingDir = workingDir;
 
 		return uuid;
 	}
@@ -78,7 +88,7 @@ public class UserManager {
 			userProps.load( stream );
 			stream.close();
 		}
-		
+
 		// update latest seen and stores them
 		userProps.setProperty( Fields.PROP_LAST_SEEN, Tools.DATE_FORMATTER.format( new Date() ) );
 		storeProperties();
@@ -119,7 +129,24 @@ public class UserManager {
 		}
 	}
 
+	/**
+	 * Lists all available archives for the user, with content <br />
+	 * Similar to getArchives(true);
+	 * 
+	 * @return
+	 */
 	public List<Archive> getArchives() {
+		return getArchives(true);
+	}
+
+	/**
+	 * Lists all available archives for the user
+	 * if {@code deepScan} is set to true, the content of the archives will be analysed 
+	 * 
+	 * @param deepScan
+	 * @return
+	 */
+	public List<Archive> getArchives( boolean deepScan ) {
 		List<Archive> result = new LinkedList<Archive>();
 
 		for (Object p : userProps.keySet ())
@@ -134,17 +161,25 @@ public class UserManager {
 				File archiveFile = new File( workingDir, dir );
 
 				// checks if archive exists
-				if( archiveFile.exists() )
+				if( archiveFile.exists() ) {
 					try {
-						Archive dataholder = new Archive( dir, name, archiveFile);
+						Archive dataholder = new Archive( dir, name );
+						
+						// if deepScan enabled, analyse content
+						if( deepScan == true ) {
+							dataholder.setArchiveFile(archiveFile);
+							// closes it
+							dataholder.getArchive().close();
+						}
+
 						// adds this archive to the dataholder
 						result.add(dataholder);
-						// closes it
-						dataholder.getArchive().close();
+						
 					}
-				catch (Exception e)
-				{
-					LOGGER.error (e, "couldn't read combine archive: ", archiveFile);
+					catch (Exception e)
+					{
+						LOGGER.error (e, "couldn't read combine archive: ", archiveFile);
+					}
 				}
 				else
 					LOGGER.warn (dir, " is supposed to be an direcetory but it doesn't exist...");
@@ -155,7 +190,7 @@ public class UserManager {
 	}
 
 	public Archive getArchive( String archiveId ) throws CombineArchiveWebException, FileNotFoundException {
-
+		
 		// gets the properties Key for this archive
 		String archiveKey = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
 		// check if exists

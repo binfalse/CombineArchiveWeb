@@ -1,5 +1,10 @@
 var currentArchive = "";
 
+//the main collection with all archives in this workspace
+var workspaceArchives = null;
+var navigationView = null;
+var archiveView = null;
+
 function displayError (err)
 {
 	console.log ("this is an error: " + err);
@@ -310,12 +315,19 @@ function init ()
 		$("#page").show();
 	});
 	
+	// fetch archives
+	workspaceArchives = new ArchiveCollection();
+	navigationView = new NavigationView({ collection: workspaceArchives });
+	archiveView = new ArchiveView();
+	
+	navigationView.fetch();
+	
 	// links
 	// page nav
-	naviSelect ($("#startLink"), "mainLinks", $("#startPage"), $(".subPage"));
-	naviSelect ($("#createLink"), "mainLinks", $("#createPage"), $(".subPage"));
+//	naviSelect ($("#startLink"), "mainLinks", $("#startPage"), $(".subPage"));
+//	naviSelect ($("#createLink"), "mainLinks", $("#createPage"), $(".subPage"));
 	
-	reloadArchives ();
+	//reloadArchives ();
 	initNewCreation ();
 	initExportButton();
 }

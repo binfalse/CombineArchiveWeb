@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,6 +14,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import org.jdom2.JDOMException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -32,6 +35,7 @@ public class Archive {
 	protected String id;
 	protected String name;
 	
+	@JsonInclude(Include.NON_NULL) 
 	protected Map<String, ArchiveEntryDataholder> entries;
 
 	@JsonIgnore
@@ -71,6 +75,10 @@ public class Archive {
 		this.name = name;
 	}
 	
+	public Map<String, ArchiveEntryDataholder> getEntries() {
+		return entries;
+	}
+
 	@JsonIgnore
 	public void setArchiveFile(File file) throws CombineArchiveWebException {
 		
@@ -87,6 +95,9 @@ public class Archive {
 			LOGGER.error(e, MessageFormat.format("The archive is not parsable: {0}", file.getAbsolutePath()) );
 			throw new CombineArchiveWebException("The archive is not parsable", e);
 		}
+		
+		// new entry list
+		this.entries = new HashMap<String, ArchiveEntryDataholder>();
 		
 		// gather information
 		Collection<ArchiveEntry> archiveEntries = archive.getEntries();

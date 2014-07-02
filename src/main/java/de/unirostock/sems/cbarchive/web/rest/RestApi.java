@@ -28,6 +28,7 @@ import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
 @Path("v1")
@@ -61,10 +62,39 @@ public class RestApi extends Application {
 	@GET
 	@Path("/heartbeat")
 	@Produces( MediaType.TEXT_PLAIN )
-	public String heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
 
-		return "ok";
+		String result = "ok " + user.getPath();
+		return buildResponse(200, user).entity(result).build();
 	}
+
+	@GET
+	@Path("/heartbeat/{user_path}")
+	@Produces( MediaType.TEXT_PLAIN )
+	public Response heartbeatSetPath( @PathParam("user_path") String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+
+		String result = "setted " + user.getPath();
+		return buildResponse(200, user).entity(result).build();
+	}
+
+	// --------------------------------------------------------------------------------
+	// archives
 
 	@GET
 	@Path( "/archives" )
@@ -80,7 +110,7 @@ public class RestApi extends Application {
 		}
 
 		// gets the list
-		List<Archive> response = user.getArchives();
+		List<Archive> response = user.getArchives(false);
 		// build response
 		return buildResponse(200, user).entity(response).build();
 	}
@@ -127,6 +157,91 @@ public class RestApi extends Application {
 		return Response.status(500).build();
 	}
 
+	// --------------------------------------------------------------------------------
+	// archive entries
+
+	@GET
+	@Path( "/archives/{archive_id}/entries" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getAllArchiveEntries( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+
+		try {
+			Archive archive = user.getArchive(archiveId);
+			archive.getArchive().close();
+			return buildResponse(200, user).entity(archive.getEntries().values()).build();
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
+
+	}
+
+	@GET
+	@Path( "/archives/{archive_id}/entries/{entry_id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getArchiveEntry( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+
+		try {
+			Archive archive = user.getArchive(archiveId);
+			archive.getArchive().close();
+			ArchiveEntryDataholder entry = archive.getEntries().get(entryId);
+			
+			// check if entry exists
+			if( entry != null )
+				return buildResponse(200, user).entity(entry).build();
+			else
+				return buildErrorResponse(404, user, "No such entry found");
+			
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
+	}
+
+	@PUT
+	@Path( "/archives/{archive_id}/entries/{entry_id}" )
+	//@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response updateArchiveEntry( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+
+		return Response.status(500).build();
+	}
+
+	@POST
+	@Path( "/archives/{archive_id}/entries" )
+	//@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+
+		return Response.status(500).build();
+	}
+
+	// --------------------------------------------------------------------------------
+	// helper functions
+
+	/**
+	 * Generates ResponseBuilder an sets cookies, if possible
+	 * 
+	 * @param status
+	 * @param user
+	 * @return ResponseBuilder
+	 */
 	private ResponseBuilder buildResponse( int status, UserManager user ) {
 
 		ResponseBuilder builder = Response.status(status);
@@ -150,6 +265,14 @@ public class RestApi extends Application {
 		return builder;
 	}
 
+	/**
+	 * Generates an error response
+	 * 
+	 * @param status
+	 * @param user
+	 * @param errors
+	 * @return Response
+	 */
 	private Response buildErrorResponse( int status, UserManager user, String... errors ) {
 
 		// ResponseBuilder builder = Response.status(status);

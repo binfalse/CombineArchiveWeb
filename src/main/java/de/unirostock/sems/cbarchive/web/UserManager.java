@@ -8,14 +8,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.xml.transform.TransformerException;
+
+import org.jdom2.JDOMException;
+
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.ArchiveEntry;
+import de.unirostock.sems.cbarchive.CombineArchive;
+import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
+import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
 public class UserManager {
@@ -164,7 +174,7 @@ public class UserManager {
 				if( archiveFile.exists() ) {
 					try {
 						Archive dataholder = new Archive( dir, name );
-						
+
 						// if deepScan enabled, analyse content
 						if( deepScan == true ) {
 							dataholder.setArchiveFile(archiveFile);
@@ -174,7 +184,7 @@ public class UserManager {
 
 						// adds this archive to the dataholder
 						result.add(dataholder);
-						
+
 					}
 					catch (Exception e)
 					{
@@ -190,7 +200,7 @@ public class UserManager {
 	}
 
 	public Archive getArchive( String archiveId ) throws CombineArchiveWebException, FileNotFoundException {
-		
+
 		// gets the properties Key for this archive
 		String archiveKey = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
 		// check if exists
@@ -223,6 +233,93 @@ public class UserManager {
 			else
 				throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
 		}
+	}
+
+	public void renameArchive( String archiveId, String newName ) throws IllegalArgumentException, FileNotFoundException, IOException {
+
+		if( newName == null || newName.isEmpty() ) {
+			throw new IllegalArgumentException("The new name can not be empty!");
+		}
+
+		// gets the properties Key for this archive
+		String archiveKey = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
+		// check if exists
+		if( archiveKey == null || archiveKey.isEmpty() )
+			// if not, throw an exception!
+			throw new FileNotFoundException("There is no archive in this working space with the ID " + archiveId);
+		else {
+			userProps.setProperty( Fields.PROP_ARCHIVE_PRE + archiveId, newName );
+			storeProperties();
+		}
+
+	}
+
+	public String createArchive( String name ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
+
+		// generates new unique UID
+		String uuid = UUID.randomUUID ().toString ();
+		File archiveFile = new File (workingDir, uuid);
+		while (archiveFile.exists ())
+		{
+			uuid = UUID.randomUUID ().toString ();
+			archiveFile = new File (workingDir, uuid);
+		}
+
+		// creates and packs the new empty archive
+		CombineArchive archive = new CombineArchive (archiveFile);
+		archive.pack ();
+		archive.close ();
+
+		LOGGER.info( MessageFormat.format("Created new archive with id {0} in workspace {1}", uuid, workingDir) );
+
+		return uuid;
+	}
+
+	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException, IOException, TransformerException {
+
+		CombineArchive combineArchive = getArchive(archiveId).getArchive();
+		ArchiveEntry archiveEntry = combineArchive.getEntry( newEntryDataholder.getFilePath() );
+		ArchiveEntryDataholder oldEntryDataholder = new ArchiveEntryDataholder(archiveEntry);
+
+		for( MetaObjectDataholder newMetaObject : newEntryDataholder.getMeta() ) {
+
+			// no changes? skip this one.
+			if( newMetaObject.isChanged() == false )
+				continue;
+
+			if( newMetaObject.getId() != null && !newMetaObject.getId().isEmpty() ) {
+				// check if id is existing -> update of exisiting meta entry
+				
+				// looking for old version
+				MetaObjectDataholder oldMetaObject = null;
+				for( MetaObjectDataholder iteratedMetaObject : oldEntryDataholder.getMeta() ) {
+
+					if( iteratedMetaObject.getId().equals( newMetaObject.getId() ) ) {
+						oldMetaObject = iteratedMetaObject;
+						break;
+					}
+				}
+
+				if( oldMetaObject == null ) {
+					LOGGER.warn( MessageFormat.format("Can not find old representation of a MetaObject about file {0} in {1} with id {2}", newEntryDataholder.getFilePath(), archiveId, newMetaObject.getId()) );
+					continue;
+				}
+
+				// updates the old dataholder with the new one
+				oldMetaObject.update(newMetaObject);
+			}
+			else {
+				// new meta entry
+				
+			}
+
+		}
+
+		// applies changes in the filename/filepath
+		// TODO
+
+		combineArchive.pack();
+		combineArchive.close();
 	}
 
 

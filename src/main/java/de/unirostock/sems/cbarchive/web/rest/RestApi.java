@@ -3,6 +3,7 @@ package de.unirostock.sems.cbarchive.web.rest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,8 +23,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.xml.transform.TransformerException;
+
+import org.jdom2.JDOMException;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
@@ -131,9 +136,10 @@ public class RestApi extends Application {
 		// gets the archive
 		try {
 			Archive response = user.getArchive(id);
+			response.getArchive().close();
 			// build response
 			return buildResponse(200, user).entity(response).build();
-		} catch (FileNotFoundException | CombineArchiveWebException e) {
+		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} in WorkingDir {1}", id, user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, "Can not read archive!", e.getMessage() );
 		}
@@ -141,20 +147,63 @@ public class RestApi extends Application {
 
 	@PUT
 	@Path( "/archives/{archive_id}" )
-	//@Produces( MediaType.APPLICATION_JSON )
+	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.APPLICATION_JSON )
-	public Response updateArchive( @PathParam("archive_id") String id, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
-
-		return Response.status(500).build();
+	public Response updateArchive( @PathParam("archive_id") String id, @CookieParam(Fields.COOKIE_PATH) String userPath, Archive archive ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if( archive == null ) {
+			LOGGER.error("update archive not possible if archive == null");
+			return buildErrorResponse(400, null, "no archive was transmitted" );
+		}
+		
+		try {
+			user.renameArchive(id, archive.getName() );
+			// gets archive with all entries
+			archive = user.getArchive(id);
+			archive.getArchive().close();
+			return buildResponse(200, user).entity(archive).build();
+		} catch (IllegalArgumentException | IOException | CombineArchiveWebException e) {
+			LOGGER.error(e, MessageFormat.format("Can not rename archive {0} to {3} in WorkingDir {1}", id, user.getWorkingDir(), archive.getName()) );
+			return buildErrorResponse( 500, user, "Can not rename archive!", e.getMessage() );
+		}
 	}
 
 	@POST
 	@Path( "/archives" )
-	//@Produces( MediaType.APPLICATION_JSON )
+	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.APPLICATION_JSON )
-	public Response createArchive( @CookieParam(Fields.COOKIE_PATH) String userPath ) {
-
-		return Response.status(500).build();
+	public Response createArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, Archive archive ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if( archive == null ) {
+			LOGGER.error("create archive not possible if archive == null");
+			return buildErrorResponse(400, null, "no archive was transmitted" );
+		}
+		
+		try {
+			String id = user.createArchive( archive.getName() );
+			archive.setId(id);
+			return buildResponse(200, user).entity(archive).build();
+		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {
+			LOGGER.error(e, MessageFormat.format("Can not create archive in WorkingDir {0}", user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
+		}
+			
 	}
 
 	// --------------------------------------------------------------------------------

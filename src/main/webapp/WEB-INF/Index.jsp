@@ -43,8 +43,8 @@
 			</ul>
 		</div>
 		<div id="template-archive">
-			name: {{# print(archive.id) }} <br />
-			id: {{# print(archive.name) }} <br />
+			name: {{# print(archive.name) }} <br />
+			id: {{# print(archive.id) }} <br />
 			{{# _.each(entries, function(entry) { }}
 				<p>{{# print(entry.filePath) }} [{{# print(entry.format) }}]</p>
 			{{# }); }}

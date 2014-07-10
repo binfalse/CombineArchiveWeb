@@ -316,7 +316,7 @@ public class UserManager {
 		}
 
 		// applies changes in the filename/filepath
-		// TODO
+		// TODO delete and re-insert, if filepath has changed
 
 		combineArchive.pack();
 		combineArchive.close();

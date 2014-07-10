@@ -1,6 +1,5 @@
 package de.unirostock.sems.cbarchive.web.rest;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -267,9 +266,33 @@ public class RestApi extends Application {
 	@Path( "/archives/{archive_id}/entries/{entry_id}" )
 	//@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.APPLICATION_JSON )
-	public Response updateArchiveEntry( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+	public Response updateArchiveEntry( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, ArchiveEntryDataholder newEntry, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
 
-		return Response.status(500).build();
+		try {
+			user.updateArchiveEntry(archiveId, newEntry);
+			
+			Archive archive = user.getArchive(archiveId);
+			archive.getArchive().close();
+			ArchiveEntryDataholder entry = archive.getEntries().get( newEntry.getFilePath() );
+			
+			// check if entry exists
+			if( entry != null )
+				return buildResponse(200, user).entity(entry).build();
+			else
+				return buildErrorResponse(404, user, "No such entry found");
+			
+		} catch (CombineArchiveWebException | IOException | TransformerException e) {
+			LOGGER.error(e, MessageFormat.format("Can not update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, MessageFormat.format("Can not update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()), e.getMessage() );
+		}
 	}
 
 	@POST

@@ -43,11 +43,38 @@
 			</ul>
 		</div>
 		<div id="template-archive">
-			name: {{# print(archive.name) }} <br />
-			id: {{# print(archive.id) }} <br />
-			{{# _.each(entries, function(entry) { }}
-				<p>{{# print(entry.filePath) }} [{{# print(entry.format) }}]</p>
-			{{# }); }}
+			
+			<div class="archive-headarea">	
+				<div class="archive-info">
+					id: {{# print(archive.id) }} <br />
+					name: {{# print(archive.name) }}
+				</div>
+				
+				<div class="archive-upload">
+					Wir bereiten nun den Versand Ihrer Sendung vor. Sie erhalten eine E-Mail von uns, wenn sie versandt wurde. Sie können jetzt noch eine Stornierung anfordern, falls Sie das möchten.
+				</div>
+				<div style="clear: left;"></div>
+			</div>
+			
+			<h2>Archive Content</h2>
+			
+			<div class="archive-contentarea">
+				<div class="archive-filetree">
+					<div>
+						{{# _.each(entries, function(entry) { }}
+							<p>{{# print(entry.filePath) }} [{{# print(entry.format) }}]</p>
+						{{# }); }}
+					</div>
+				</div>
+				
+				<div class="archive-fileinfo">
+					<div>
+						Wir bereiten nun den Versand Ihrer Sendung vor. Sie erhalten eine E-Mail von uns, wenn sie versandt wurde. Sie können jetzt noch eine Stornierung anfordern, falls Sie das möchten.
+					</div>
+				</div>
+				<div style="clear: left;"></div>
+			</div>
+			
 		</div>
 	</div>
 

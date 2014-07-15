@@ -21,7 +21,9 @@
 	
 	<script type="text/javascript" src="res/js/models.js"></script>
 	<script type="text/javascript" src="res/js/js.js"></script>
-	<link rel='stylesheet' href='res/css/css.css' type='text/css' media='all' />
+	
+	<link rel="stylesheet" href="res/css/css.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="res/css/jstree/style.css" type="text/css" />
 </head>
 <body>
 	<header> CombineArchiveWeb </header>
@@ -61,9 +63,7 @@
 			<div class="archive-contentarea">
 				<div class="archive-filetree">
 					<div>
-						{{# _.each(entries, function(entry) { }}
-							<p>{{# print(entry.filePath) }} [{{# print(entry.format) }}]</p>
-						{{# }); }}
+						<div class="archive-jstree"></div>
 					</div>
 				</div>
 				

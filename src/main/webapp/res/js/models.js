@@ -136,8 +136,21 @@ var ArchiveView = Backbone.View.extend({
 				'entries': this.collection.toJSON()
 			};
 		
-		$(this.el).html( this.template(json) );
-		$(this.el).show();
+		this.$el.html( this.template(json) );
+		
+		// generate json for filetree
+		
+		// init file tree
+		this.$treeEl = this.$el.find('.archive-jstree');
+		this.$treeEl.jstree({
+			'core': {
+				'data': {'text': "/", 'children': this.generateJsTreeJson() }
+			},
+			'plugins': ["dnd", "search"]
+		});
+		
+		
+		this.$el.show();
 	},
 	
 	setArchive: function( archiveModel ) {
@@ -174,6 +187,105 @@ var ArchiveView = Backbone.View.extend({
 			}
 		});
 		
+	},
+	
+	generateJsTreeJson: function() {
+		
+		var jstreeJson = [];
+		
+		this.collection.each( function(entry) {
+			
+			var path = entry.get('filePath').substring( 0, entry.get('filePath').length - entry.get('fileName').length );
+			if( path == '/' || path == '' ) {
+				// root element, just push it into the array
+				jstreeJson.push({
+					'text': entry.get('fileName'),
+					'data': entry,
+					'type': 'file',
+//					'icon': 'icon-file',
+					'state': {
+						'opened': false,
+						'disabled': false,
+						'selected': false
+					}
+				});
+			}
+			else {
+				// elment is non root, lets search for the branch it belongs to
+				// split path and filter the empty parts out
+				var pathSegment = _.filter( path.split('/'), function(seg) { return seg != "" && seg != " "; } );
+				jstreeJson = deepInject(entry, jstreeJson, pathSegment, 0);
+			}
+			
+			function deepInject(entry, currentBranch, pathSegment, pathIndex) {
+				var found = false;
+				var newBranch = false;
+				
+				if( !_.isArray(currentBranch) ) {
+					console.log("type error!");
+					return [];
+				}
+				
+				if( pathIndex == pathSegment.length) {
+					// is it the last piece? -> yes -> push file and leave
+					currentBranch.push({
+						'text': entry.get('fileName'),
+						'data': entry,
+						'type': 'file',
+//						'icon': 'icon-file',
+						'state': {
+							'opened': false,
+							'disabled': false,
+							'selected': false
+						}
+					});
+					found = true;
+					return currentBranch;
+				}
+				
+				
+				if( found == false ) {
+					// it is not the last piece of the path
+					for( var index = 0; index < currentBranch.length; index++ ) {
+						currentBranchEntry = currentBranch[index];
+						
+						if( currentBranchEntry.type == 'dir' && currentBranchEntry.text == pathSegment[pathIndex] ) {
+							// found another piece of the path
+							pathIndex++;
+							newBranch = currentBranchEntry;
+							found = true;
+							break;
+						} 
+					}
+				}
+				
+				if( found == false ) {
+					// branch does not exist -> create it
+					newBranch = {
+							'text': pathSegment[pathIndex],
+							'type': 'dir',
+//							'icon': 'icon-dir',
+							'state': {
+								'opened': true,
+								'disabled': false,
+								'selected': false
+							},
+							children: []
+						};
+					console.log("new branch");
+					currentBranch.push(newBranch);
+					pathIndex++;
+				}
+				
+				// another step in recursion
+				newBranch.children = deepInject(entry, newBranch.children, pathSegment, pathIndex);
+				console.log(newBranch.children);
+				return currentBranch;
+			}
+		});
+		
+		// return it
+		return jstreeJson;
 	}
 	
 });

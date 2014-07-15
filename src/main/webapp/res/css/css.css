@@ -140,7 +140,7 @@ display: none;
 
 .archive-contentarea {
 	width: 100%;
-	max-height: 75%;
+/* 	max-height: 75%; */
 	padding: 0;
 	margin: 0;
 	margin-bottom: 15px;
@@ -148,7 +148,7 @@ display: none;
 }
 .archive-filetree {
 	width: 33%;
-	height: 75%;
+/* 	height: 75%; */
 	float: left;
 	overflow: auto;
 	padding: 0;
@@ -160,7 +160,7 @@ display: none;
 }
 .archive-fileinfo {
 	width: 66%;
-	height: 75%;
+/* 	height: 75%; */
 	float: left;
 	padding: 0;
 	overflow: auto;

@@ -45,6 +45,24 @@
 			</ul>
 		</div>
 		<!-- **** -->
+		<div id="template-create">
+			<h2>MetaData</h2>
+			In order to maintain provenance you need to tell me who you are. This
+			information will be included in the meta data of CombineArchives
+			produced by you.
+			<p>
+				<label for="userGivenName">Given Name:</label><br />
+				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" value="{{# print(vcard.givenName); }}"/> <span id="userGivenNameAction"></span><br />
+				<label for="userFamilyName">Family Name:</label><br />
+				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" value="{{# print(vcard.familyName); }}" /> <span id="userFamilyNameAction"></span><br />
+				<label for="userMail">E-Mail:</label><br />
+				<input type="mail" id="userMail" name="userMail" placeholder="mail address" value="{{# print(vcard.mail); }}" /> <span id="userMailAction"></span><br />
+				<label for="userOrganization">Organization:</label><br />
+				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" /> <span id="userOrganizationAction"></span><br />
+				<input type="button" class="save-vcard" name="saveVCard" value="Save" />
+			</p>
+		</div>
+		<!-- **** -->
 		<div id="template-archive">
 			
 			<div class="archive-headarea">	
@@ -101,46 +119,7 @@
 			responsible for any loss of data.
 		</div>
 		
-		<div id="createPage" class="subPage" style="display: none;">
-			<h2>MetaData</h2>
-			In order to maintain provenance you need to tell me who you are. This
-			information will be included in the meta data of CombineArchives
-			produced by you.
-				<label for="userGivenName">Given Name:</label><br />
-				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" /> <span id="userGivenNameAction"></span><br />
-				<label for="userFamilyName">Family Name:</label><br />
-				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" /> <span id="userFamilyNameAction"></span><br />
-				<label for="userMail">E-Mail:</label><br />
-				<input type="mail" id="userMail" name="userMail" placeholder="mail address" /> <span id="userMailAction"></span><br />
-				<label for="userOrganization">Organization:</label><br />
-				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" /> <span id="userOrganizationAction"></span><br />
-			These information will be associated with a cookie in your browser.
-			Thus, you do not need to remember any Password. As soon as you come
-			back we'll remember you :)<br />
-			If you're using a public PC you
-			should make sure to clear cookies when you've finished working:
-			logout.
-			<h2>CreateArchive</h2>
-			<div id="createArchive">
-				<nav>
-					<ul>
-						<li><a class="createLinks highlight" id="createNew">Create new</a></li>
-						<li><a class="createLinks" id="createUpload">Upload existing</a></li>
-						<li><a class="createLinks" id="createCellml">Create from CellML Repository</a></li>
-					</ul>
-				</nav>
-				Name of the archive to be created: <input type="text" id="createNewName" placeholder="name of the new workspace" /> 
-				<div id="createArchiveTab" class="createTab">
-					<button id="createNewButton">create new archive</button> <span id="createNewAction"></span>
-				</div>
-				<div id="uploadArchiveTab" class="createTab" style="display: none;">
-					Upload archive: 
-				</div>
-				<div id="cellmlArchiveTab" class="createTab" style="display: none;">
-					Link to the repo in the CellML model repository: <input type="text" id="cellmlrepo" placeholder="URL to the CellML repository"/> <button id="createCellMLButton">read repository</button>
-				</div>
-			</div>
-		</div>
+		<div id="createPage" class="subPage" style="display: none;"></div>
 		
 		<div id="detailsPage" class="subPage" style="display: none;">
 			<h2 id="archiveName"></h2>

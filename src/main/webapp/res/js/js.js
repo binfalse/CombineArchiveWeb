@@ -4,6 +4,7 @@ var currentArchive = "";
 var workspaceArchives = null;
 var navigationView = null;
 var archiveView = null;
+var createView = null;
 
 function displayError (err)
 {
@@ -319,6 +320,7 @@ function init ()
 	workspaceArchives = new ArchiveCollection();
 	navigationView = new NavigationView({ collection: workspaceArchives });
 	archiveView = new ArchiveView();
+	createView = new CreateView();
 	
 	navigationView.fetch();
 	
@@ -328,8 +330,8 @@ function init ()
 //	naviSelect ($("#createLink"), "mainLinks", $("#createPage"), $(".subPage"));
 	
 	//reloadArchives ();
-	initNewCreation ();
-	initExportButton();
+//	initNewCreation ();
+//	initExportButton();
 }
 
 document.addEventListener("DOMContentLoaded", init, false);

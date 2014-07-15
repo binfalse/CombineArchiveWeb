@@ -1,6 +1,7 @@
 package de.unirostock.sems.cbarchive.web.rest;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -96,7 +97,49 @@ public class RestApi extends Application {
 		String result = "setted " + user.getPath();
 		return buildResponse(200, user).entity(result).build();
 	}
-
+	
+	// --------------------------------------------------------------------------------
+	// own VCard
+	
+	@GET
+	@Path("/vcard")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getOwnVcard( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_FAMILY_NAME) String familyName, @CookieParam(Fields.COOKIE_GIVEN_NAME) String givenName, @CookieParam(Fields.COOKIE_MAIL) String mail, @CookieParam(Fields.COOKIE_ORG) String organization ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+			user.setData( new UserData(givenName, familyName, mail, organization) );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		return buildResponse(200, user).entity(user.getData()).build();
+	}
+	
+	@POST
+	@Path("/vcard")
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response updateOwnVcard( @CookieParam(Fields.COOKIE_PATH) String userPath, UserData data ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if( data.hasInformation() ) {
+			user.setData(data);
+			return buildResponse(200, user).entity(user.getData()).build();
+		}
+		else
+			return buildErrorResponse(400, user, "insufficient user information");
+	}
+	
 	// --------------------------------------------------------------------------------
 	// archives
 

@@ -29,6 +29,16 @@ var ArchiveModel = Backbone.Model.extend({
 	
 });
 
+var VCardModel = Backbone.Model.extend({
+	urlRoot: RestRoot + 'vcard',
+	defaults: {
+		'givenName': '',
+		'familyName': '',
+		'mail': '',
+		'organization': ''
+	}
+});
+
 var ArchiveCollection = Backbone.Collection.extend({
 	model: ArchiveModel,
 	url: RestRoot + 'archives'
@@ -160,10 +170,8 @@ var ArchiveEntryView = Backbone.View.extend({
 	},
 	
 	events: {
-		
+		//TODO
 	}
-	
-	
 	
 });
 
@@ -375,7 +383,60 @@ var CreateView = Backbone.View.extend({
 	
 	model: null,
 	
-	el: '#createPage'
+	el: '#createPage',
+	
+	initialize: function() {
+		var text = $('#template-create').html();
+		this.template = _.template( text );
+		
+		if( this.model == null ) {
+			this.model = new VCardModel();
+			var self = this;
+			this.model.fetch({
+				success: function( model, reponse, options ) {
+					self.render();
+				}
+			});
+		}
+	},
+	render: function() {
+		
+		if( this.model == null )
+			return;
+		
+		var json = {
+				'vcard': this.model.toJSON()
+		};
+		this.$el.html( this.template(json) );
+		
+	},
+	
+	events: {
+		'click .save-vcard': 'saveVCard'
+	},
+	saveVCard: function(event) {
+		this.model.set('givenName', this.$el.find("input[name='userGivenName']").val() );
+		this.model.set('familyName', this.$el.find("input[name='userFamilyName']").val() );
+		this.model.set('mail', this.$el.find("input[name='userMail']").val() );
+		this.model.set('organization', this.$el.find("input[name='userOrganization']").val() );
+		
+		// TODO
+		if( this.model.isValid() ) {
+			alert( this.model.validationError );
+		}
+		
+		this.model.save( {
+			success: function(model, response, options) {
+				// everything ok
+				console.log(response);
+			},
+			error: function(model, response, options) {
+				console.log(response);
+			}
+		});
+		
+		return false;
+	}
 	
 	
 });

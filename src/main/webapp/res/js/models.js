@@ -422,10 +422,10 @@ var CreateView = Backbone.View.extend({
 		
 		// TODO
 		if( this.model.isValid() ) {
-			alert( this.model.validationError );
+			//alert( this.model.validationError );
 		}
 		
-		this.model.save( {
+		this.model.save({}, {
 			success: function(model, response, options) {
 				// everything ok
 				console.log(response);

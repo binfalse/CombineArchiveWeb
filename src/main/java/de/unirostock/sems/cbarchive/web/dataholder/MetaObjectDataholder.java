@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
+import de.unirostock.sems.cbarchive.web.Tools;
 
 abstract public class MetaObjectDataholder {
 	
@@ -23,7 +24,6 @@ abstract public class MetaObjectDataholder {
 	public final static String TYPE_OMEX = "omex";
 	public final static String TYPE_XML = "xmltree";
 	
-	public final static String HASH_ALGO = "SHA-256";
 	
 	public static MetaObjectDataholder construct( MetaDataObject metaObject ) {
 		MetaObjectDataholder dataholder = null;
@@ -70,14 +70,7 @@ abstract public class MetaObjectDataholder {
 		Element xmlElement = metaObject.getXmlDescription();
 		String xmlString = new XMLOutputter().outputString(xmlElement);
 		
-		try {
-			byte[] hash = MessageDigest.getInstance(HASH_ALGO).digest( xmlString.getBytes() );
-			id = DatatypeConverter.printHexBinary(hash);
-		} catch (NoSuchAlgorithmException e) {
-			// As fallback send the complete xmlString
-			id = xmlString;
-		}
-		
+		id = Tools.generateHashId(xmlString);
 	}
 
 	public String getId() {

@@ -6,6 +6,8 @@ package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+import javax.xml.bind.DatatypeConverter;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -69,6 +72,9 @@ public class Tools
 
 	/** The Constant DATE_FORMATTER. */
 	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss.SSS");
+	
+	/** Hash Algo for generating temp ids */
+	private static final String HASH_ALGO = "SHA-256";
 
 
 	public static User doLogin( HttpServletRequest request, HttpServletResponse response ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
@@ -283,5 +289,15 @@ public class Tools
 		else
 			LOGGER.debug ("file part seems to be null -> cannot extract file name.");
 		return "UploadedFile-" + DATE_FORMATTER.format (new Date ());
+	}
+	
+	public static String generateHashId( String input ) {
+		try {
+			byte[] hash = MessageDigest.getInstance(HASH_ALGO).digest( input.getBytes() );
+			return DatatypeConverter.printHexBinary(hash);
+		} catch (NoSuchAlgorithmException e) {
+			// As fallback send the complete String
+			return input;
+		}
 	}
 }

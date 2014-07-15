@@ -44,12 +44,13 @@
 				{{# }); }}
 			</ul>
 		</div>
+		<!-- **** -->
 		<div id="template-archive">
 			
 			<div class="archive-headarea">	
 				<div class="archive-info">
-					id: {{# print(archive.id) }} <br />
-					name: {{# print(archive.name) }}
+					id: {{# print(archive.id); }} <br />
+					name: {{# print(archive.name); }}
 				</div>
 				
 				<div class="archive-upload">
@@ -74,7 +75,19 @@
 				</div>
 				<div style="clear: left;"></div>
 			</div>
+		</div>
+		<!-- **** -->
+		<div id="template-archive-entry">
+			<h3>{{# print(fileName); }}</h3>
+			filePath: {{# print(filePath); }}<br />
+			format: {{# print(format); }}<br />
+			master: {{# print(master == true ? 'yes' : 'no'); }}<br /><br />
 			
+			{{# _.each(meta, function(metaEntry) { }}
+				<p>
+					{{# print( JSON.stringify(metaEntry) ); }}
+				</p>
+			{{# }); }}
 		</div>
 	</div>
 

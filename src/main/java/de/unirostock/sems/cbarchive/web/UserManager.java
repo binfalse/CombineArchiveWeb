@@ -198,8 +198,12 @@ public class UserManager {
 
 		return result;
 	}
-
-	public Archive getArchive( String archiveId ) throws CombineArchiveWebException, FileNotFoundException {
+	
+	public Archive getArchive( String archiveId ) throws FileNotFoundException, CombineArchiveWebException {
+		return getArchive( archiveId, true );
+	}
+	
+	public Archive getArchive( String archiveId, boolean deepScan ) throws CombineArchiveWebException, FileNotFoundException {
 
 		// gets the properties Key for this archive
 		String archiveKey = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
@@ -210,8 +214,9 @@ public class UserManager {
 		else {
 			// get the file
 			File archive = new File( workingDir.getAbsolutePath(), archiveId );
-			if( archive.isFile() && archive.exists() && archive.canRead() )
-				return new Archive(archiveId, archiveKey, archive);
+			if( archive.isFile() && archive.exists() && archive.canRead() ) {
+				return new Archive(archiveId, archiveKey, deepScan == true ? archive : null);
+			}
 			else
 				throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
 		}

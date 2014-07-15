@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
+import de.unirostock.sems.cbarchive.web.Tools;
 
 public class ArchiveEntryDataholder {
 	
 	private ArchiveEntry archiveEntry;
 	private boolean master = false;
 	
+	protected String id;
 	protected String filePath;
 	protected String fileName;
 	protected String format;
@@ -25,6 +27,8 @@ public class ArchiveEntryDataholder {
 		filePath	= archiveEntry.getFilePath();
 		fileName	= archiveEntry.getFileName();
 		format		= archiveEntry.getFormat();
+		id			= Tools.generateHashId(filePath);
+		
 		for (MetaDataObject metaObject : archiveEntry.getDescriptions ()) {
 			meta.add( MetaObjectDataholder.construct(metaObject) );
 		}
@@ -67,6 +71,10 @@ public class ArchiveEntryDataholder {
 		this.master = master;
 	}
 	
+	public String getId() {
+		return id;
+	}
+
 	public String getFilePath() {
 		return filePath;
 	}

@@ -113,17 +113,75 @@ var NavigationView = Backbone.View.extend({
 	}
 });
 
+var ArchiveEntryView = Backbone.View.extend({
+	model: null,
+	el: null,
+	
+	entryId: null,
+	archiveId: null,
+	
+	initialize: function () {
+		this.template = _.template( $('#template-archive-entry').html() );
+	},
+	render: function () {
+		
+		if( this.model == null )
+			return;
+		
+		var json = this.model.toJSON();
+		var text = this.template(json);
+		this.$el.html( text );
+	},
+	fetch: function(archiveId, entryId) {
+		var self = this;
+		
+		if( archiveId == undefined )
+			archiveId = this.archiveId;
+		if( entryId == undefined )
+			entryId = this.entryId;
+		
+		if( archiveId == null || entryId == null )
+			return;
+		
+		this.archiveId = archiveId;
+		this.entryId = entryId;
+		
+		this.model = new ArchiveEntryModel({id: entryId});
+		this.model.setArchiveId(archiveId);
+		this.model.fetch({
+			reset: true,
+			success: function(model, response, options) {
+				self.render();
+			}
+		});
+	},
+	leave: function() {
+		this.undelegateEvents();
+	},
+	
+	events: {
+		
+	}
+	
+	
+	
+});
+
 var ArchiveView = Backbone.View.extend({
 	
 	model: null,
 	collection: null,
+	entryView: null,
 	
 	el: '#archivePage',
 	
 	initialize: function () {
-		var templateText = $('#template-archive').html();
-		console.log(templateText);
-		this.template = _.template(templateText);
+		this.template = _.template( $('#template-archive').html() );
+	},
+	
+	events: {
+//		'changed.jstree .archive-jstree': 'jstreeClick',
+//		'changed .archive-jstree': 'jstreeClick'
 	},
 	
 	render: function() {
@@ -144,10 +202,13 @@ var ArchiveView = Backbone.View.extend({
 		this.$treeEl = this.$el.find('.archive-jstree');
 		this.$treeEl.jstree({
 			'core': {
-				'data': {'text': "/", 'children': this.generateJsTreeJson() }
+				'data': {'text': "/", 'state': {opened: true}, 'children': this.generateJsTreeJson() }
 			},
 			'plugins': ["dnd", "search"]
 		});
+		// work-around for these strange jstree event names
+		var self = this;
+		this.$treeEl.on('changed.jstree', function(event, data) { self.jstreeClick.call(self, event, data); } );
 		
 		
 		this.$el.show();
@@ -186,6 +247,26 @@ var ArchiveView = Backbone.View.extend({
 					self.render();
 			}
 		});
+		
+	},
+	
+	jstreeClick: function(event, data) {
+		
+		console.log(data);
+		
+		// directories are not yet handled
+		if( data.node.original.type != 'file' )
+			return;
+		
+		if( this.entryView != null )
+			this.entryView.leave();
+		
+		// creates new view, the rest is magic ;)
+		this.entryView = new ArchiveEntryView({
+			$el: this.$el.find('.archive-fileinfo'),
+			el: '.archive-fileinfo'
+		});
+		this.entryView.fetch( this.model.get('id'), data.node.data.id );
 		
 	},
 	
@@ -270,7 +351,7 @@ var ArchiveView = Backbone.View.extend({
 								'disabled': false,
 								'selected': false
 							},
-							children: []
+							'children': []
 						};
 					console.log("new branch");
 					currentBranch.push(newBranch);

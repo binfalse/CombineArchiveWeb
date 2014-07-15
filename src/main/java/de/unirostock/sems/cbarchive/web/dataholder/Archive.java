@@ -47,7 +47,8 @@ public class Archive {
 		this.id = id;
 		this.name = name;
 		this.archiveFile = file;
-		setArchiveFile(file);
+		if( file != null )
+			setArchiveFile(file);
 
 		//archive.getMainEntry().getDescriptions().get(0).getAbout();
 	}

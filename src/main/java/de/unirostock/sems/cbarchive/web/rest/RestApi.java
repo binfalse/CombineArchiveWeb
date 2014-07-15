@@ -134,8 +134,7 @@ public class RestApi extends Application {
 
 		// gets the archive
 		try {
-			Archive response = user.getArchive(id);
-			response.getArchive().close();
+			Archive response = user.getArchive(id, false);
 			// build response
 			return buildResponse(200, user).entity(response).build();
 		} catch (CombineArchiveWebException | IOException e) {
@@ -166,7 +165,7 @@ public class RestApi extends Application {
 		try {
 			user.renameArchive(id, archive.getName() );
 			// gets archive with all entries
-			archive = user.getArchive(id);
+			archive = user.getArchive(id, false);
 			archive.getArchive().close();
 			return buildResponse(200, user).entity(archive).build();
 		} catch (IllegalArgumentException | IOException | CombineArchiveWebException e) {
@@ -248,7 +247,13 @@ public class RestApi extends Application {
 		try {
 			Archive archive = user.getArchive(archiveId);
 			archive.getArchive().close();
-			ArchiveEntryDataholder entry = archive.getEntries().get(entryId);
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
 			
 			// check if entry exists
 			if( entry != null )

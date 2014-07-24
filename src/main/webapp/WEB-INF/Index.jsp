@@ -108,7 +108,7 @@
 							<a href="#">Upload files</a>
 							<div class="icon"> </div>
 						</div>
-						<input type="file" name="fileUpload" />
+						<input type="file" name="fileUpload" multiple="multiple" />
 					</div>
 				</div>
 				<div style="clear: left;"></div>

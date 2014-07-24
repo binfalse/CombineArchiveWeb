@@ -284,8 +284,8 @@ var ArchiveView = Backbone.View.extend({
 		'click .archive-info-cancel': 'cancelEdit',
 		'dragover .dropbox': 'dropboxOver',
 		'drop .dropbox': 'dropboxDrop',
-		'click .dropbox a': 'dropboxClick'//,
-		//'change .dropbox input': 'dropboxManual'
+		'click .dropbox a': 'dropboxClick',
+		'change .dropbox input': 'dropboxManual'
 	},
 	startArchiveEdit: function(event) {
 		
@@ -359,7 +359,17 @@ var ArchiveView = Backbone.View.extend({
 		$button.trigger("click");
 	},
 	dropboxManual: function(event) {
+		// disables default drag'n'drop behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
+		if( this.collection == null )
+			this.collection = new ArchiveEntryCollection();
+		
+		// get files transmitted with drop
 		console.log(event);
+		var files = event.target.files;
+		this.uploadFiles(files);
 	},
 	uploadFiles: function(files) {
 		

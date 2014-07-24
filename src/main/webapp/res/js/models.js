@@ -63,8 +63,20 @@ var NavigationView = Backbone.View.extend({
 	},
 	render: function() {
 		var json = { 'entries': this.collection.toJSON() };
-//		console.log(json);
+		
+		// in case of re-render, store the selected main-button
+		var $highlighted = this.$el.find(".highlight");
+		var hid = null;
+		if( $highlighted.length > 0 )
+			hid = $highlighted.attr("id");
+		
 		$(this.el).html( this.template(json) );
+		
+		// restore selection
+		if( hid != null ) {
+			this.$el.find(".mainLinks").removeClass("highlight");
+			this.$el.find("#" + hid).addClass("highlight");
+		}
 	},
 	fetch: function() {
 		if( this.collection == null )
@@ -185,11 +197,6 @@ var ArchiveView = Backbone.View.extend({
 		this.template = _.template( $('#template-archive').html() );
 	},
 	
-	events: {
-//		'changed.jstree .archive-jstree': 'jstreeClick',
-//		'changed .archive-jstree': 'jstreeClick'
-	},
-	
 	render: function() {
 		
 		if( this.model == null || this.collection == null )
@@ -254,6 +261,59 @@ var ArchiveView = Backbone.View.extend({
 			}
 		});
 		
+	},
+	
+	events: {
+		// also see workaround for jsTree in render function
+		'click .archive-info-edit': 'startArchiveEdit',
+		'click .archive-info-save': 'saveArchive',
+		'click .archive-info-cancel': 'cancelEdit'
+	},
+	startArchiveEdit: function(event) {
+		
+		if( this.model == null )
+			return false;
+		
+		// set edit field to correct value
+		this.$el.find("input[name='archiveName']").val( this.model.get("name") );
+		
+		// show all edit-fields
+		this.$el.find('.archive-info').addClass('edit');
+		
+		return false;
+	},
+	saveArchive: function(event) {
+		if( this.model == null )
+			return false;
+		
+		var newName = this.$el.find("input[name='archiveName']").val();
+		if( newName === undefined || newName == null || newName == "" )
+			return false;
+		
+		this.model.set({"name": newName});
+		var self = this;
+		
+		this.model.save( {}, {
+			success: function(model, response, options) {
+				// everything ok
+				console.log("updated model successfully");
+				self.$el.find(".archive-info").removeClass("edit");
+				self.model = model;
+				// no complete self-re-render necessary 
+				self.$el.find(".text-archive-name").html( model.get("name") );
+				navigationView.render();
+			},
+			error: function(model, response, options) {
+				console.log("error while update");
+				console.log(response.responseText);
+			}
+		});
+		
+		return false;
+	},
+	cancelEdit: function(event) {
+		this.$el.find('.archive-info').removeClass('edit');
+		return false;
 	},
 	
 	jstreeClick: function(event, data) {

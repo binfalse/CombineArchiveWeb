@@ -209,7 +209,6 @@ public class RestApi extends Application {
 			user.renameArchive(id, archive.getName() );
 			// gets archive with all entries
 			archive = user.getArchive(id, false);
-			archive.getArchive().close();
 			return buildResponse(200, user).entity(archive).build();
 		} catch (IllegalArgumentException | IOException | CombineArchiveWebException e) {
 			LOGGER.error(e, MessageFormat.format("Can not rename archive {0} to {3} in WorkingDir {1}", id, user.getWorkingDir(), archive.getName()) );

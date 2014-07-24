@@ -118,6 +118,36 @@ display: none;
 	clear: both;
 }
 
+div.edit-link {
+	display: block;
+	text-align: right;
+	padding: 0 1em;
+}
+div.edit-link > a, div.edit-link > a:visited, div.edit-link > a:active {
+	text-decoration: none;
+	text-align: right;
+	font-size: 0.8em;
+	cursor:pointer;
+	color: #c00;
+}
+div.edit-link > a:hover {
+	font-style: italic;
+}
+
+/* -------- Inline Editing -------- */
+.on-edit {
+	display: none;
+}
+.on-not-edit {
+	display: inline;
+}
+
+.edit .on-edit {
+	display: inline;
+}
+.edit .on-not-edit {
+	display: none;
+}
 
 /* -------- Archive View -------- */
 

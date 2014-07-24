@@ -40,7 +40,7 @@
 				<li><a class="mainLinks highlight" data-linktype="page" data-page="startPage" id="startLink">start</a></li>
 				<li><a class="mainLinks" data-linktype="page" data-page="createPage" id="createLink">create</a></li> 
 				{{#	_.each(entries, function(entry) { }}
-				<li><a class="mainLinks archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}">{{# print(entry.name); }}</a></li>
+				<li><a class="mainLinks archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="archiveLink-{{# print(entry.id); }}" >{{# print(entry.name); }}</a></li>
 				{{# }); }}
 			</ul>
 		</div>
@@ -89,8 +89,17 @@
 			
 			<div class="archive-headarea">	
 				<div class="archive-info">
-					id: {{# print(archive.id); }} <br />
-					name: {{# print(archive.name); }}
+					<strong>id:</strong>
+						<span class="text-archive-id">{{# print(archive.id); }}</span><br />
+					<strong>name:</strong>
+						<span class="on-not-edit text-archive-name">{{# print(archive.name); }}</span>
+						<input type="text" class="on-edit" name="archiveName" value="{{# print(archive.name); }}" placeholder="archive name" /><br />
+						
+					<div class="edit-link">
+						<a class="archive-info-edit on-not-edit" href="#">[Edit]</a>
+						<a class="archive-info-save on-edit" href="#">[Save]</a>
+						<a class="archive-info-cancel on-edit" href="#">[Cancel]</a>
+					</div> 
 				</div>
 				
 				<div class="archive-upload">

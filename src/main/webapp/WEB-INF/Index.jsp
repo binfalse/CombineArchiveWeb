@@ -37,10 +37,10 @@
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
 			<ul id="nav">
-				<li><a class="mainLinks highlight" data-linktype="page" data-page="startPage" id="startLink">start</a></li>
-				<li><a class="mainLinks" data-linktype="page" data-page="createPage" id="createLink">create</a></li> 
+				<li><a class="mainLinks highlight" data-linktype="page" data-page="startPage" id="nav-startlink">start</a></li>
+				<li><a class="mainLinks" data-linktype="page" data-page="createPage" id="nav-createlink">create</a></li> 
 				{{#	_.each(entries, function(entry) { }}
-				<li><a class="mainLinks archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="archiveLink-{{# print(entry.id); }}" >{{# print(entry.name); }}</a></li>
+				<li><a class="mainLinks archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" >{{# print(entry.name); }}</a></li>
 				{{# }); }}
 			</ul>
 		</div>

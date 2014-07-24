@@ -96,6 +96,15 @@ var NavigationView = Backbone.View.extend({
 		});
 		
 	},
+	selectArchive: function(archiveId) {
+		var $navElem = this.$el.find( "#nav-archivelink-" + archiveId );
+		
+		if( $navElem.length <= 0 )
+			return false;
+		
+		this.doNavigation( {"currentTarget": $navElem} );
+		return true;
+	},
 	
 	events: {
 		'click .mainLinks': 'doNavigation' 
@@ -114,7 +123,7 @@ var NavigationView = Backbone.View.extend({
 		var linkType = $target.data("linktype");
 		if( linkType == "archive" ) {
 			
-			var archiveId = $(event.currentTarget).data("archiveid");
+			var archiveId = $target.data("archiveid");
 			var archiveModel = this.collection.get(archiveId);
 			
 			console.log( archiveId );
@@ -130,6 +139,8 @@ var NavigationView = Backbone.View.extend({
 			$("#startPage").show();
 			alert("no valid link!");
 		}
+		
+		return false;
 	}
 });
 
@@ -539,6 +550,7 @@ var CreateView = Backbone.View.extend({
 				// add model to navigation collection and re-renders the view
 				navigationView.collection.add([model]);
 				navigationView.render();
+				navigationView.selectArchive( model.get("id") );
 			},
 			error: function(model, response, options) {
 				console.log("error while creating new archive");

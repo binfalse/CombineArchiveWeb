@@ -47,9 +47,11 @@
 		<!-- **** -->
 		<div id="template-create">
 			<h2>MetaData</h2>
-			In order to maintain provenance you need to tell me who you are. This
-			information will be included in the meta data of CombineArchives
-			produced by you.
+			<p>
+				In order to maintain provenance you need to tell me who you are. This
+				information will be included in the meta data of CombineArchives
+				produced by you.
+			</p>
 			<p>
 				<label for="userGivenName">Given Name:</label><br />
 				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" value="{{# print(vcard.givenName); }}"/> <span id="userGivenNameAction"></span><br />
@@ -59,7 +61,27 @@
 				<input type="mail" id="userMail" name="userMail" placeholder="mail address" value="{{# print(vcard.mail); }}" /> <span id="userMailAction"></span><br />
 				<label for="userOrganization">Organization:</label><br />
 				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" /> <span id="userOrganizationAction"></span><br />
-				<input type="button" class="save-vcard" name="saveVCard" value="Save" />
+				<input type="button" class="save-vcard" value="Save" />
+			</p>
+			
+			<h2>CreateArchive</h2>
+			<p>
+				<label for="newArchiveName">Name of the Archive:</label><br />
+				<input type="text" id="newArchiveName" name="newArchiveName" placeholder="archive name" />
+			</p>
+			
+			<p>
+				<input type="radio" id="newArchiveTemplate-Empty" name="newArchiveTemplate" value="empty" checked="checked" />
+				<label for="newArchiveTemplate-Empty">Create an empty archive</label><br />
+				
+				<input type="radio" id="newArchiveTemplate-File" name="newArchiveTemplate" value="file" />
+				<label for="newArchiveTemplate-File">Upload an existing archive</label><br />
+				
+				<input type="radio" id="newArchiveTemplate-CellMl" name="newArchiveTemplate" value="cellml" />
+				<label for="newArchiveTemplate-CellMl">Create an archive from CellMl model repository</label>
+			</p>
+			<p>
+				<input type="button" class="create-archive" value="Create Archive" />
 			</p>
 		</div>
 		<!-- **** -->

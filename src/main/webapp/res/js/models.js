@@ -22,9 +22,7 @@ var ArchiveEntryModel = Backbone.Model.extend({
 var ArchiveModel = Backbone.Model.extend({
 	urlRoot: RestRoot + 'archives',
 	defaults: {
-		'id': '000',
-		'name': 'n/a'//,
-//		'entries': new ArchiveEntryModel()
+		'name': 'n/a'
 	}
 	
 });
@@ -412,7 +410,8 @@ var CreateView = Backbone.View.extend({
 	},
 	
 	events: {
-		'click .save-vcard': 'saveVCard'
+		'click .save-vcard': 'saveVCard',
+		'click .create-archive': 'createArchive'
 	},
 	saveVCard: function(event) {
 		this.model.set('givenName', this.$el.find("input[name='userGivenName']").val() );
@@ -421,7 +420,7 @@ var CreateView = Backbone.View.extend({
 		this.model.set('organization', this.$el.find("input[name='userOrganization']").val() );
 		
 		// TODO
-		if( this.model.isValid() ) {
+		if( !this.model.isValid() ) {
 			//alert( this.model.validationError );
 		}
 		
@@ -436,6 +435,56 @@ var CreateView = Backbone.View.extend({
 		});
 		
 		return false;
+	},
+	createArchive: function(event) {
+		var archiveName = this.$el.find("input[name='newArchiveName']").val();
+		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
+		
+		var archiveModel = new ArchiveModel({'name': archiveName}, {'collection': workspaceArchives});
+		
+		if( archiveTemplate == undefined ) {
+			// TODO
+			alert("undefined type");
+			return false;
+		}
+		else if( archiveTemplate == "empty" ) {
+			// create new empty archive
+			// nothing else do to...
+		}
+		else if( archiveTemplate == "file" ) {
+			// create new archive based on a file
+			// TODO make file upload and stuff...
+		}
+		else if( archiveTemplate == "cellml" ) {
+			// create new archive based on a CellMl repository
+			// TODO get url and stuff
+		}
+		else {
+			// no known type of archive
+			alert("unknown type");
+			return false;
+		}
+		
+		if( !archiveModel.isValid() ) {
+			// model is not valid
+			alert( "error: " + archiveModel.validationError );
+			return false;
+		}
+		
+		// push it
+		archiveModel.save({}, {
+			success: function(model, response, options) {
+				// everything ok
+				console.log("created new archive successfully.");
+				// add model to navigation collection and re-renders the view
+				navigationView.collection.add([model]);
+				navigationView.render();
+			},
+			error: function(model, response, options) {
+				console.log("error while creating new archive");
+				console.log(response.responseText);
+			}
+		});
 	}
 	
 	

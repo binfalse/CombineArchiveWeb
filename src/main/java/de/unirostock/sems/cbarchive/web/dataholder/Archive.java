@@ -52,7 +52,21 @@ public class Archive {
 
 		//archive.getMainEntry().getDescriptions().get(0).getAbout();
 	}
-
+	
+	public Archive() {
+		this.id = null;
+		this.name = null;
+		this.archive = null;
+		this.archiveFile = null;
+	}
+	
+	public Archive(String name) {
+		this.id = null;
+		this.name = name;
+		this.archive = null;
+		this.archiveFile = null;
+	}
+	
 	public Archive(String id, String name) {
 		this.id = id;
 		this.name = name;

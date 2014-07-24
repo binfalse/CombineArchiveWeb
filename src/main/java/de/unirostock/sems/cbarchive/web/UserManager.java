@@ -274,6 +274,10 @@ public class UserManager {
 		CombineArchive archive = new CombineArchive (archiveFile);
 		archive.pack ();
 		archive.close ();
+		
+		// update the Properties
+		userProps.setProperty( Fields.PROP_ARCHIVE_PRE + uuid, name );
+		storeProperties();
 
 		LOGGER.info( MessageFormat.format("Created new archive with id {0} in workspace {1}", uuid, workingDir) );
 

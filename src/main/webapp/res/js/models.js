@@ -691,7 +691,7 @@ var CreateView = Backbone.View.extend({
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
 		
 		// first of all, save the VCard
-		saveVCard();
+		this.saveVCard();
 		
 		// check if there are errors in this model
 		if( !this.model.isValid() ) {

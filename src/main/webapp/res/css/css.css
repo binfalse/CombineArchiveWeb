@@ -213,5 +213,6 @@ div.edit-link > a:hover {
 	margin: 3px;
 	padding: 5px;
 	border: 2px dashed #bbb;
+	border-radius: 3px;
 	background-color: #eee;
 }

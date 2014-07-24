@@ -6,22 +6,18 @@ public class CombineArchiveWebCriticalException extends Exception {
 
 	public CombineArchiveWebCriticalException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public CombineArchiveWebCriticalException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CombineArchiveWebCriticalException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CombineArchiveWebCriticalException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

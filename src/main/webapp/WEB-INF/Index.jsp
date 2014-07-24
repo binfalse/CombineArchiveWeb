@@ -98,6 +98,7 @@
 						<input type="text" class="on-edit" name="archiveName" value="{{# print(archive.name); }}" placeholder="archive name" /><br />
 						
 					<div class="edit-link">
+						<a class="archive-info-download on-not-edit" href="#">[Download]</a>
 						<a class="archive-info-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-info-save on-edit" href="#">[Save]</a>
 						<a class="archive-info-cancel on-edit" href="#">[Cancel]</a>
@@ -136,15 +137,43 @@
 		<!-- **** -->
 		<div id="template-archive-entry">
 			<h3>{{# print(fileName); }}</h3>
-			filePath: {{# print(filePath); }}<br />
-			format: {{# print(format); }}<br />
-			master: {{# print(master == true ? 'yes' : 'no'); }}<br /><br />
-			
-			{{# _.each(meta, function(metaEntry) { }}
-				<p>
-					{{# print( JSON.stringify(metaEntry) ); }}
-				</p>
-			{{# }); }}
+			<div style="padding-left: 10px;">
+				filePath: {{# print(filePath); }}<br />
+				format: {{# print(format); }}<br />
+				master: {{# print(master == true ? 'yes' : 'no'); }}<br /><br />
+				
+				<div class="edit-link">
+					<a class="archive-file-download on-not-edit" href="#">[Download]</a>
+					<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
+					<a class="archive-file-save on-edit" href="#">[Save]</a>
+					<a class="archive-file-cancel on-edit" href="#">[Cancel]</a>
+				</div> 
+				
+				<div class="archive-meta-area"></div>
+			</div>
+		</div>
+		<!-- **** -->
+		<div id="template-omex-meta-entry">
+			<h4>OMEX entry</h4>
+			<strong>created:</strong> {{# print( new XDate(created).toLocaleString() ); }}<br />
+			<strong>modified:</strong>
+				{{# _.each(modified, function(modDate) { }}
+					{{# print( new XDate(modDate).toLocaleString() + "; &nbsp;&nbsp;" ); }}
+				{{# }); }}<br />
+			<strong>creators:</strong>
+				{{# _.each(creators, function(vcard) { }}
+					<p style="padding-left: 10px;">
+						<strong>given name:</strong> {{# print(vcard.givenName); }}<br />
+						<strong>family name:</strong> {{# print(vcard.familyName); }}<br />
+						<strong>E-Mail:</strong> {{# print(vcard.email); }}<br />
+						<strong>organization:</strong> {{# print(vcard.organization); }}<br />
+					</p> 
+				{{# }); }}
+			<div class="edit-link">
+				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a>
+				<a class="archive-meta-save on-edit" href="#">[Save]</a>
+				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a>
+			</div> 
 		</div>
 	</div>
 

@@ -422,7 +422,7 @@ public class RestApi extends Application {
 					result.add( new ArchiveEntryDataholder(entry) );
 				}
 				catch (IOException e) {
-					// TODO
+					// TODO ???
 					LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
 				}
 				
@@ -441,7 +441,9 @@ public class RestApi extends Application {
 		}
 		
 	}
-
+	
+	// TODO Endpoints for meta entries!
+	
 	// --------------------------------------------------------------------------------
 	// helper functions
 

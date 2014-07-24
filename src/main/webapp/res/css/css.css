@@ -197,3 +197,12 @@ div.edit-link > a:hover {
 	word-wrap: break-word;
 	overflow: overlay;
 }
+.archive-meta-area {
+	margin-top: 5px;	
+}
+.archive-meta-entry {
+	margin: 3px;
+	padding: 5px;
+	border: 2px dashed #bbb;
+	background-color: #eee;
+}

@@ -37,6 +37,17 @@ var VCardModel = Backbone.Model.extend({
 	}
 });
 
+var OmexMetaModel = Backbone.Model.extend({
+	urlRoot: RestRoot + 'archives/0/entries/0/meta',
+	defaults: {
+		"type": "unknown",
+		"changed": false
+	},
+	setUrl: function( archiveId, entryId )  {
+		this.urlRoot = RestRoot + "archives/" + archiveId + "/entries/" + entryId + "/meta";
+	}
+});
+
 var ArchiveCollection = Backbone.Collection.extend({
 	model: ArchiveModel,
 	url: RestRoot + 'archives'
@@ -144,12 +155,68 @@ var NavigationView = Backbone.View.extend({
 	}
 });
 
+/**
+ * "Abstract" Parent View for all kinds of Meta information
+ */
+var MetaEntryView = Backbone.View.extend({
+	model: null,
+	el: null,
+	$el: null,
+	
+	template: null,
+	
+	initialize: function () {
+		// 
+	},
+	render: function () {
+		
+		if( this.model == null || this.template == null )
+			return;
+		
+		var json = this.model.toJSON();
+		var text = this.template(json);
+		this.$el.html( text );
+	},
+	leave: function () {
+		this.undelegateEvents();
+	},
+	saveModel: function () {
+		
+		if( this.model == null )
+			return false;
+		
+		var self = this;
+		this.model.save({}, {
+			success: function(model, response, options) {
+				// everything ok
+				console.log("saved meta entry " + self.model.get("id") + " >> " + model.get("id") + " successfully.");
+				self.render();
+			},
+			error: function(model, response, options) {
+				console.log("error while saving meta entry");
+				console.log(response.responseText);
+			}
+		});
+	}
+});
+
+/**
+ * The Omex implementation
+ */
+var OmexMetaEntryView = MetaEntryView.extend({
+	
+	initialize: function () {
+		this.template = _.template( $("#template-omex-meta-entry").html() ); 
+	}
+});
+
 var ArchiveEntryView = Backbone.View.extend({
 	model: null,
 	el: null,
 	
 	entryId: null,
 	archiveId: null,
+	metaViews: {},
 	
 	initialize: function () {
 		this.template = _.template( $('#template-archive-entry').html() );
@@ -162,6 +229,38 @@ var ArchiveEntryView = Backbone.View.extend({
 		var json = this.model.toJSON();
 		var text = this.template(json);
 		this.$el.html( text );
+		
+		// detaches all meta entry views, if available
+		_.each(this.metaViews, function(view) {
+			view.leave();
+		});
+		
+		var $metaArea = this.$el.find(".archive-meta-area");
+		this.metaViews = {};
+		_.each(this.model.get("meta"), function(metaEntry) {
+			var view = createMetaViews(metaEntry);
+			view.$el = $("<div class='archive-meta-entry' />");
+			view.render();
+			
+			$metaArea.append(view.$el);
+		});
+		
+		function createMetaViews(entry) {
+			var model = null;
+			var view = null;
+			
+			switch( entry.type ) {
+				case "omex":
+					model = new OmexMetaModel( entry );
+					model.setUrl( this.archiveId, this.entryId );
+					view = new OmexMetaEntryView({ "model": model });
+					break;
+				default:
+					break;
+			}
+			
+			return view;
+		}
 	},
 	fetch: function(archiveId, entryId) {
 		var self = this;
@@ -282,6 +381,7 @@ var ArchiveView = Backbone.View.extend({
 		'click .archive-info-edit': 'startArchiveEdit',
 		'click .archive-info-save': 'saveArchive',
 		'click .archive-info-cancel': 'cancelEdit',
+		'click .archive-info-download': 'downloadArchive',
 		'dragover .dropbox': 'dropboxOver',
 		'drop .dropbox': 'dropboxDrop',
 		'click .dropbox a': 'dropboxClick',
@@ -405,6 +505,12 @@ var ArchiveView = Backbone.View.extend({
 				console.log(data);
 			}
 		});
+	},
+	downloadArchive: function(event) {
+		window.location.href = "download/archive/" + this.model.get("id") + ".omex";
+		console.log("download Archive: " + this.model.get("id"));
+		
+		return false;
 	},
 	
 	jstreeClick: function(event, data) {

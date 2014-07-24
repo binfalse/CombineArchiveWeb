@@ -157,7 +157,6 @@ public class Archive {
 		int i = 1;
 		while( archive.getEntry(altFileName) != null ) {
 			i++;
-			// TODO place number between file name and extension
 			int extensionPoint = fileName.lastIndexOf( '.' );
 			String extension = fileName.substring( extensionPoint );
 			String pureName = fileName.substring( 0, extensionPoint );

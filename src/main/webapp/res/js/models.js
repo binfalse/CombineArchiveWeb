@@ -236,6 +236,8 @@ var ArchiveView = Backbone.View.extend({
 		this.$treeEl.on('changed.jstree', function(event, data) { self.jstreeClick.call(self, event, data); } );
 		
 		
+		
+		
 		this.$el.show();
 	},
 	
@@ -279,7 +281,11 @@ var ArchiveView = Backbone.View.extend({
 		// also see workaround for jsTree in render function
 		'click .archive-info-edit': 'startArchiveEdit',
 		'click .archive-info-save': 'saveArchive',
-		'click .archive-info-cancel': 'cancelEdit'
+		'click .archive-info-cancel': 'cancelEdit',
+		'dragover .dropbox': 'dropboxOver',
+		'drop .dropbox': 'dropboxDrop',
+		'click .dropbox': 'dropboxClick',
+		'change .dropbox input': 'dropboxManual'
 	},
 	startArchiveEdit: function(event) {
 		
@@ -326,6 +332,68 @@ var ArchiveView = Backbone.View.extend({
 	cancelEdit: function(event) {
 		this.$el.find('.archive-info').removeClass('edit');
 		return false;
+	},
+	dropboxOver: function(event) {
+		// disables default drag'n'drop behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
+		// shows nice copy icon
+		event.originalEvent.dataTransfer.dropEffect = 'copy';
+	},
+	dropboxDrop: function(event) {
+		// disables default drag'n'drop behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
+		if( this.collection == null )
+			this.collection = new ArchiveEntryCollection();
+		
+		// get files transmitted with drop
+		var files = event.originalEvent.dataTransfer.files;
+		this.uploadFiles(files);
+		
+	},
+	dropboxClick: function(event) {
+		this.$el.find(".dropbox input[name='fileUpload']").click();
+	},
+	dropboxManual: function(event) {
+		console.log(event);
+	},
+	uploadFiles: function(files) {
+		
+		// form data object to push to server
+		var formData = new FormData();
+		var self = this;
+		
+		// adds all files to the data object
+		_.each(files, function(file, index, list) {
+			console.log(file);
+			formData.append("files[]", file);
+		});
+		
+		// show waiting stuff
+		this.$el.find(".dropbox .icon").show();
+		this.$el.find(".dropbox a").hide();
+		
+		// upload it
+		$.ajax({
+			"url": this.collection.url,
+			"type": "POST",
+			processData: false,
+			contentType: false,
+			data: formData,
+			success: function(data) {
+				console.log(data);
+				self.fetchCollection(true);
+				// not necessary to display, because complete view gets re-rendered
+//				this.$el.find(".dropbox .icon").hide();
+//				this.$el.find(".dropbox a").show();
+			},
+			error: function(data) {
+				console.log(data);
+			}
+		});
 	},
 	
 	jstreeClick: function(event, data) {

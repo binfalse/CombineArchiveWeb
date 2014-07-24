@@ -44,4 +44,6 @@ public class Fields {
 	
 	public static final String PROP_ARCHIVE_PRE = "archive-";
 	
+	public static final String TEMP_FILE_PREFIX = "caweb";
+	
 }

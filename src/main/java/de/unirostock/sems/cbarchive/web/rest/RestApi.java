@@ -1,7 +1,11 @@
 package de.unirostock.sems.cbarchive.web.rest;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -25,9 +29,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
@@ -311,7 +319,7 @@ public class RestApi extends Application {
 
 	@PUT
 	@Path( "/archives/{archive_id}/entries/{entry_id}" )
-	//@Produces( MediaType.APPLICATION_JSON )
+	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.APPLICATION_JSON )
 	public Response updateArchiveEntry( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, ArchiveEntryDataholder newEntry, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
 		// user stuff
@@ -344,11 +352,67 @@ public class RestApi extends Application {
 
 	@POST
 	@Path( "/archives/{archive_id}/entries" )
-	//@Produces( MediaType.APPLICATION_JSON )
-	@Consumes( MediaType.APPLICATION_JSON )
-	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
-
-		return Response.status(500).build();
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.MULTIPART_FORM_DATA )
+	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		try {
+			Archive archive = user.getArchive(archiveId);
+			List<ArchiveEntryDataholder> result = new LinkedList<ArchiveEntryDataholder>();
+			
+			for( FormDataBodyPart file : files ) {
+				try {
+					String fileName = file.getFormDataContentDisposition().getFileName();
+//					if( !fileName.startsWith("/") )
+//						fileName = "/" + fileName;
+						
+					// copy the stream to a temp file
+					java.nio.file.Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, file.getFormDataContentDisposition().getFileName() );
+					// write file to disk
+					OutputStream output = new FileOutputStream( temp.toFile() );
+					InputStream input = file.getEntityAs(InputStream.class);
+					IOUtils.copy( input, output);
+					
+					output.flush();
+					output.close();
+					input.close();
+					
+					// add the file
+					ArchiveEntry entry = archive.addArchiveEntry(fileName, temp);
+					LOGGER.info(MessageFormat.format("Successfully added file {0} to archive {1}", fileName, archiveId));
+					
+					// clean up
+					temp.toFile().delete();
+					// add to result list
+					result.add( new ArchiveEntryDataholder(entry) );
+				}
+				catch (IOException e) {
+					// TODO
+					LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
+				}
+				
+			}
+			
+			// pack and close the archive
+			archive.getArchive().pack();
+			archive.getArchive().close();
+			
+			// return all successfully uploaded files
+			return buildResponse(200, user).entity(result).build();
+			
+		} catch (CombineArchiveWebException | IOException | TransformerException e) {
+			LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
+			return buildErrorResponse(500, user, "Error while uploading file: " + e.getMessage() );
+		}
+		
 	}
 
 	// --------------------------------------------------------------------------------

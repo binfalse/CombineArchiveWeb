@@ -2,6 +2,8 @@ package de.unirostock.sems.cbarchive.web.dataholder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Collection;
@@ -140,6 +142,32 @@ public class Archive {
 	@JsonIgnore
 	public CombineArchive getArchive() {
 		return archive;
+	}
+	
+	@JsonIgnore
+	public ArchiveEntry addArchiveEntry(String fileName, Path file) throws CombineArchiveWebException, IOException {
+		
+		if( archive == null ) {
+			LOGGER.error( "The archive was not opened" );
+			throw new CombineArchiveWebException("The archive was not opened");
+		}
+		
+		// make sure file name is not taken yet
+		String altFileName = fileName;
+		int i = 1;
+		while( archive.getEntry(altFileName) != null ) {
+			i++;
+			// TODO place number between file name and extension
+			int extensionPoint = fileName.lastIndexOf( '.' );
+			String extension = fileName.substring( extensionPoint );
+			String pureName = fileName.substring( 0, extensionPoint );
+			
+			altFileName = pureName + "-" + String.valueOf(i) + extension;
+		}
+		fileName = altFileName;
+		
+		// add the entry
+		return archive.addEntry(file.toFile(), fileName, Files.probeContentType(file));
 	}
 
 

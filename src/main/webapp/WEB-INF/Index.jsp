@@ -104,7 +104,10 @@
 				
 				<div class="archive-upload">
 					<div class="dropbox">
-						<a href="#">Upload files</a>
+						<div>
+							<a href="#">Upload files</a>
+							<div class="icon"> </div>
+						</div>
 						<input type="file" name="fileUpload" />
 					</div>
 				</div>

@@ -27,6 +27,11 @@
 			<param-name>jersey.config.server.provider.packages</param-name>
 			<param-value>de.unirostock.sems.cbarchive.web.rest</param-value>
 		</init-param>
+		<!-- enable multipart support for file upload -->
+		<init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>de.unirostock.sems.cbarchive.web.rest.RestMultipartApplication</param-value>
+        </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

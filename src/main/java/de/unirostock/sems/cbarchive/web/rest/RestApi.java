@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -273,7 +276,17 @@ public class RestApi extends Application {
 		try {
 			Archive archive = user.getArchive(archiveId);
 			archive.getArchive().close();
-			return buildResponse(200, user).entity(archive.getEntries().values()).build();
+
+			// gets result and sorts it
+			List<ArchiveEntryDataholder> result = new ArrayList<ArchiveEntryDataholder>( archive.getEntries().values() );
+			Collections.sort(result, new Comparator<ArchiveEntryDataholder>() {
+				@Override
+				public int compare(ArchiveEntryDataholder o1, ArchiveEntryDataholder o2) {
+					return o2.getFileName().compareTo(o1.getFileName());
+				}
+			});
+			
+			return buildResponse(200, user).entity(result).build();
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );

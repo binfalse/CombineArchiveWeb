@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserData {
 	
@@ -68,6 +70,11 @@ public class UserData {
 	}
 	
 	@JsonIgnore
+	public VCard getVCard() {
+		return new VCard(familyName, givenName, mail, organization);
+	}
+	
+	@JsonIgnore
 	public String toJson() throws JsonProcessingException {
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -80,4 +87,5 @@ public class UserData {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(json, UserData.class);
 	}
+	
 }

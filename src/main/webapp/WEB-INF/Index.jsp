@@ -60,7 +60,9 @@
 				<label for="userMail">E-Mail:</label><br />
 				<input type="mail" id="userMail" name="userMail" placeholder="mail address" value="{{# print(vcard.mail); }}" /> <span id="userMailAction"></span><br />
 				<label for="userOrganization">Organization:</label><br />
-				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" /> <span id="userOrganizationAction"></span><br />
+				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" /> <span id="userOrganizationAction"></span>
+			</p>
+			<p>
 				<input type="button" class="save-vcard" value="Save" />
 			</p>
 			

@@ -591,6 +591,15 @@ var CreateView = Backbone.View.extend({
 		var archiveName = this.$el.find("input[name='newArchiveName']").val();
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
 		
+		// first of all, save the VCard
+		saveVCard();
+		
+		// check if there are errors in this model
+		if( !this.model.isValid() ) {
+			// TODO
+			return false;
+		}
+		
 		var archiveModel = new ArchiveModel({'name': archiveName}, {'collection': workspaceArchives});
 		
 		if( archiveTemplate == undefined ) {

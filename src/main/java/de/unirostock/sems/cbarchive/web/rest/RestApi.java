@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,10 @@ import org.jdom2.JDOMException;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
+import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
+import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
@@ -367,11 +372,13 @@ public class RestApi extends Application {
 	@Path( "/archives/{archive_id}/entries" )
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
-	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files ) {
+	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files,
+			@CookieParam(Fields.COOKIE_FAMILY_NAME) String familyName, @CookieParam(Fields.COOKIE_GIVEN_NAME) String givenName, @CookieParam(Fields.COOKIE_MAIL) String mail, @CookieParam(Fields.COOKIE_ORG) String organization ) {
 		// user stuff
 		UserManager user = null;
 		try {
 			user = new UserManager( userPath );
+			user.setData( new UserData(givenName, familyName, mail, organization) );
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
@@ -400,6 +407,13 @@ public class RestApi extends Application {
 					
 					// add the file
 					ArchiveEntry entry = archive.addArchiveEntry(fileName, temp);
+					
+					// add default meta information
+					if( user.getData() != null && user.getData().hasInformation() == true ) {
+						OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
+						entry.addDescription( new OmexMetaDataObject(entry, metaData) );
+					}
+						
 					LOGGER.info(MessageFormat.format("Successfully added file {0} to archive {1}", fileName, archiveId));
 					
 					// clean up

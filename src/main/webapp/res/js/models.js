@@ -381,7 +381,6 @@ var ArchiveView = Backbone.View.extend({
 		'click .archive-info-edit': 'startArchiveEdit',
 		'click .archive-info-save': 'saveArchive',
 		'click .archive-info-cancel': 'cancelEdit',
-		'click .archive-info-download': 'downloadArchive',
 		'dragover .dropbox': 'dropboxOver',
 		'drop .dropbox': 'dropboxDrop',
 		'click .dropbox a': 'dropboxClick',
@@ -505,12 +504,6 @@ var ArchiveView = Backbone.View.extend({
 				console.log(data);
 			}
 		});
-	},
-	downloadArchive: function(event) {
-		window.location.href = "download/archive/" + this.model.get("id") + ".omex";
-		console.log("download Archive: " + this.model.get("id"));
-		
-		return false;
 	},
 	
 	jstreeClick: function(event, data) {

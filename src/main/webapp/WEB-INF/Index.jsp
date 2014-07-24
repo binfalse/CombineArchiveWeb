@@ -98,7 +98,7 @@
 						<input type="text" class="on-edit" name="archiveName" value="{{# print(archive.name); }}" placeholder="archive name" /><br />
 						
 					<div class="edit-link">
-						<a class="archive-info-download on-not-edit" href="#">[Download]</a>
+						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
 						<a class="archive-info-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-info-save on-edit" href="#">[Save]</a>
 						<a class="archive-info-cancel on-edit" href="#">[Cancel]</a>
@@ -138,9 +138,9 @@
 		<div id="template-archive-entry">
 			<h3>{{# print(fileName); }}</h3>
 			<div style="padding-left: 10px;">
-				filePath: {{# print(filePath); }}<br />
-				format: {{# print(format); }}<br />
-				master: {{# print(master == true ? 'yes' : 'no'); }}<br /><br />
+				<strong>file path:</strong> {{# print(filePath); }}<br />
+				<strong>format:</strong> {{# print(format); }}<br />
+				<strong>master:</strong> {{# print(master == true ? 'yes' : 'no'); }}<br /><br />
 				
 				<div class="edit-link">
 					<a class="archive-file-download on-not-edit" href="#">[Download]</a>

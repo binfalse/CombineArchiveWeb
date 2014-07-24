@@ -225,10 +225,11 @@ var ArchiveView = Backbone.View.extend({
 		// init file tree
 		this.$treeEl = this.$el.find('.archive-jstree');
 		this.$treeEl.jstree({
-			'core': {
-				'data': {'text': "/", 'state': {opened: true}, 'children': this.generateJsTreeJson() }
+			"core": {
+				"data": {"text": "/", "state": {opened: true}, "children": this.generateJsTreeJson() },
+				"check_callback": true
 			},
-			'plugins': ["dnd", "search"]
+			"plugins": ["dnd", "search"]
 		});
 		// work-around for these strange jstree event names
 		var self = this;

@@ -103,7 +103,10 @@
 				</div>
 				
 				<div class="archive-upload">
-					Wir bereiten nun den Versand Ihrer Sendung vor. Sie erhalten eine E-Mail von uns, wenn sie versandt wurde. Sie können jetzt noch eine Stornierung anfordern, falls Sie das möchten.
+					<div class="dropbox">
+						<a href="#">Upload files</a>
+						<input type="file" name="fileUpload" />
+					</div>
 				</div>
 				<div style="clear: left;"></div>
 			</div>
@@ -145,9 +148,10 @@
 		<nav id="navigation"></nav>
 		
 		<div id="startPage" class="subPage">
-			This is a web based
-			interface to read, created, and modify CombineArchives. We are not
-			responsible for any loss of data.
+			<p>
+				This is a web based interface to read, created, and modify CombineArchives. <br />
+				<strong>We are not responsible for any loss of data.</strong>
+			</p>
 		</div>
 		
 		<div id="createPage" class="subPage" style="display: none;"></div>

@@ -63,67 +63,52 @@ nav .highlight
 	font-weight: bold;
 }
 
-#page
-{
-}
-
-
-
-
-
-#dropbox {
-background-color: #eee;
-padding: 40px 50px;
-margin-bottom: 30px;
-border: 3px dashed #bbb;
-text-align: center;
-text-transform: uppercase;
-font-size: 16px;
-font-weight: bold;
-color: #bbb;
-}
-
-#dropbox a {
-background-color: #c00;
-padding: 12px 26px;
-color: #fff;
-font-size: 14px;
-border-radius: 2px;
-cursor: pointer;
-display: inline-block;
-margin-top: 12px;
-line-height: 1;
-}
-
-#dropbox input {
-display: none;
-}
-
-
-
-#filesList
-{
-	width: 300px;
-	float: left;
-}
-#metaWindow
-{
-	float: left;
-	margin-left: 10px;
-	border: 1px dashed #eee;
-}
 
 .clearer
 {
 	clear: both;
 }
 
+/* -------- File Dropbox -------- */
+.dropbox {
+	border: 3px dashed #bbb;
+	border-radius: 3px;
+	margin: 5px 10px;
+	
+	background-color: #eee;
+	color: #bbb;
+	
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 1.2em;
+	font-weight: bold;
+	
+}
+
+.dropbox a {
+	border-radius: 3px;
+	display: inline-block;
+	padding: 0.5em 1.3em;
+	margin: 2em auto;
+	
+	background-color: #c00;
+	color: #fff;
+	text-decoration: none;
+	
+	cursor: pointer;
+}
+
+.dropbox input {
+	display: none;
+}
+
+/* -------- Edit Links -------- */
 div.edit-link {
 	display: block;
 	text-align: right;
 	padding: 0 1em;
 }
-div.edit-link > a, div.edit-link > a:visited, div.edit-link > a:active {
+div.edit-link a, div.edit-link a:visited, div.edit-link a:active {
 	text-decoration: none;
 	text-align: right;
 	font-size: 0.8em;

@@ -54,11 +54,12 @@ public class RestApi extends Application {
 	@GET
 	@Path("/heartbeat")
 	@Produces( MediaType.TEXT_PLAIN )
-	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_FAMILY_NAME) String familyName, @CookieParam(Fields.COOKIE_GIVEN_NAME) String givenName, @CookieParam(Fields.COOKIE_MAIL) String mail, @CookieParam(Fields.COOKIE_ORG) String organization ) {
 		// user stuff
 		UserManager user = null;
 		try {
 			user = new UserManager( userPath );
+			user.setData(new UserData(givenName, familyName, mail, organization));
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );

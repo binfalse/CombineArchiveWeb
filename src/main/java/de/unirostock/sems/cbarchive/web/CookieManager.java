@@ -55,12 +55,14 @@ public class CookieManager
 	/**
 	 * Sets the cookie.
 	 *
-	 * @param c the new cookie
+	 * @param cookie the new cookie
 	 */
-	public void setCookie (Cookie c)
-	{
-		cookies.put (c.getName (), c);
-		response.addCookie (c);
+	public void setCookie (Cookie cookie) {
+		cookie.setPath( "/" );
+		cookie.setMaxAge( Fields.COOKIE_AGE );
+		
+		cookies.put(cookie.getName (), cookie);
+		response.addCookie (cookie);
 	}
 	
 }

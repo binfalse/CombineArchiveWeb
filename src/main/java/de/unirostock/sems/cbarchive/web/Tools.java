@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.NewCookie;
 import javax.xml.bind.DatatypeConverter;
 
 import de.binfalse.bflog.LOGGER;
@@ -41,13 +42,14 @@ public class Tools
 		UserManager user = null;
 		try {
 			user = getUser(cookieManagement);
+			if( user == null ) {
+				user = new UserManager();
+				storeUserCookies(cookieManagement, user);
+			}
 		}
 		catch (IOException e) {
 			throw new CombineArchiveWebCriticalException("Can not find and/or obtain working directory", e);
 		}
-		
-		if( user == null ) 
-			throw new CombineArchiveWebException("Can not get/create user");
 		
 		return user;
 	}
@@ -67,7 +69,6 @@ public class Tools
 
 		cookies.setCookie (pathCookie);
 
-		Cookie path 		= cookies.getCookie( Fields.COOKIE_PATH );
 		Cookie givenName	= cookies.getCookie( Fields.COOKIE_GIVEN_NAME );
 		Cookie familyName	= cookies.getCookie( Fields.COOKIE_FAMILY_NAME );
 		Cookie mail			= cookies.getCookie( Fields.COOKIE_MAIL );
@@ -78,32 +79,32 @@ public class Tools
 		user.setData(userData);
 		
 		if (givenName != null)
-		{
-			givenName.setMaxAge (Fields.COOKIE_AGE);
 			userData.setGivenName(givenName.getValue());
-			cookies.setCookie (givenName);
-		}
 		if (familyName != null)
-		{
-			familyName.setMaxAge (Fields.COOKIE_AGE);
 			userData.setFamilyName(familyName.getValue());
-			cookies.setCookie (familyName);
-		}
 		if (mail != null)
-		{
-			mail.setMaxAge (Fields.COOKIE_AGE);
 			userData.setMail(mail.getValue());
-			cookies.setCookie (mail);
-		}
 		if (organization != null)
-		{
-			organization.setMaxAge (Fields.COOKIE_AGE);
 			userData.setOrganization(organization.getValue());
-			cookies.setCookie (organization);
-		}
+		
+		storeUserCookies(cookies, user);
 		
 		return user;
 
+	}
+	
+	public static void storeUserCookies(CookieManager cookies, UserManager user) {
+		
+		cookies.setCookie( new Cookie(Fields.COOKIE_PATH, user.getPath()) );
+		
+		if( user.getData() != null && user.getData().hasInformation() ) {
+			UserData userData = user.getData();
+			cookies.setCookie(new Cookie( Fields.COOKIE_FAMILY_NAME, userData.getFamilyName() ));
+			cookies.setCookie(new Cookie( Fields.COOKIE_GIVEN_NAME, userData.getGivenName() ));
+			cookies.setCookie(new Cookie( Fields.COOKIE_MAIL, userData.getMail() ));
+			cookies.setCookie(new Cookie( Fields.COOKIE_ORG, userData.getOrganization() ));
+		}
+		
 	}
 
 

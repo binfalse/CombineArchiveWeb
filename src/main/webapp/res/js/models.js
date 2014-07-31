@@ -6,7 +6,6 @@ _.templateSettings =  {
 		interpolate: /\{\{([^#].*?)\}\}/g
 };
 // TODO
-var RestRoot = 'http://localhost:8080/CombineArchiveWeb/rest/v1/';
 
 var ArchiveEntryModel = Backbone.Model.extend({
 	urlRoot: RestRoot + 'archives/0/entries',

@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.cbarchive.web.CombineArchiveWebCriticalException;
-import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.CookieManager;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
@@ -25,6 +23,8 @@ import de.unirostock.sems.cbarchive.web.UserManager;
  *
  */
 public class Index extends HttpServlet {
+
+	private static final long serialVersionUID = 7678663032688543485L;
 
 	private void run (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		LOGGER.setMinLevel (LOGGER.DEBUG);

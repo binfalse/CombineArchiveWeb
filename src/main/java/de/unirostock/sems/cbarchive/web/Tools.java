@@ -3,17 +3,12 @@
  */
 package de.unirostock.sems.cbarchive.web;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,13 +16,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.cbarchive.ArchiveEntry;
-import de.unirostock.sems.cbarchive.CombineArchive;
-import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
 
@@ -113,7 +102,7 @@ public class Tools
 			cookies.setCookie (organization);
 		}
 		
-		return null;
+		return user;
 
 	}
 

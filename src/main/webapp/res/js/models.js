@@ -342,7 +342,7 @@ var ArchiveEntryView = Backbone.View.extend({
 				self.model = model;
 				
 				// complete rerender (quick and dirty)
-				archiveView.fetchCollection();
+				archiveView.fetchCollection(true);
 				// no complete self-re-render necessary 
 //				self.$el.find(".text-archive-entry-filename").html( model.get("fileName") );
 //				self.$el.find(".text-archive-entry-filepath").html( model.get("filePath") );

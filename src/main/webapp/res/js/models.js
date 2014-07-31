@@ -1,9 +1,11 @@
+// see http://backbonejs.org/
 
 //Underscore template interpolate character to {{# ... }}
 _.templateSettings =  {
 		evaluate: /\{\{#(.+?)\}\}/g,
 		interpolate: /\{\{([^#].*?)\}\}/g
 };
+// TODO
 var RestRoot = 'http://localhost:8080/CombineArchiveWeb/rest/v1/';
 
 var ArchiveEntryModel = Backbone.Model.extend({

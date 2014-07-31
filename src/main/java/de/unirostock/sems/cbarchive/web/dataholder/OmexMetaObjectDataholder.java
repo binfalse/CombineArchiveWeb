@@ -35,6 +35,14 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		
 		// TODO
 	}
+	
+	public OmexMetaObjectDataholder(String id, String type, boolean changed) {
+		super(id, type, changed);
+	}
+	
+	public OmexMetaObjectDataholder() {
+		super(null, null, false);
+	}
 
 	@JsonIgnore
 	public Date getCreated() {

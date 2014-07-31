@@ -382,7 +382,7 @@ public class RestApi extends Application {
 					// add default meta information
 					if( user.getData() != null && user.getData().hasInformation() == true ) {
 						OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
-						entry.addDescription( new OmexMetaDataObject(entry, metaData) );
+						entry.addDescription( new OmexMetaDataObject(metaData) );
 					}
 						
 					LOGGER.info(MessageFormat.format("Successfully added file {0} to archive {1}", fileName, archiveId));

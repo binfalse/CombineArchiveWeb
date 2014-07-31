@@ -290,7 +290,67 @@ var ArchiveEntryView = Backbone.View.extend({
 	},
 	
 	events: {
-		//TODO
+		"click .archive-file-edit": "startEntryEdit",
+		"click .archive-file-cancel": "cancelEntryEdit",
+		"click .archive-file-save": "saveEntry"
+	},
+	
+	startEntryEdit: function(event) {
+		if( this.model == null )
+			return false;
+		
+		// set edit field to correct value
+		this.$el.find("input[name='archiveEntryFileName']").val( this.model.get("fileName") );
+		
+		// show all edit-fields
+		this.$el.find(".archive-entry-header").addClass("edit");
+		
+		return false;
+	},
+	cancelEntryEdit: function(event) {
+		// hide all edit fields
+		this.$el.find(".archive-entry-header").removeClass("edit");
+		
+		return false;
+	},
+	saveEntry: function(event) {
+		
+		if( this.model == null )
+			return false;
+		
+		var newFileName = this.$el.find("input[name='archiveEntryFileName']").val();
+		if( newFileName === undefined || newFileName == null || newFileName == "" )
+			return false;
+		
+		var newFilePath = this.model.get("filePath");
+		var len = newFilePath.length - this.model.get("fileName").length;
+		newFilePath = newFilePath.substring( 0, len );
+		newFilePath = newFilePath + newFileName;
+		
+		this.model.set({ "filePath": newFilePath, 
+					"fileName": newFileName });
+		
+		var self = this;
+		this.model.save( {}, {
+			success: function(model, response, options) {
+				// everything ok
+				console.log("updated model successfully");
+				
+				self.cancelEntryEdit(null);
+				self.model = model;
+				
+				// complete rerender (quick and dirty)
+				archiveView.fetchCollection();
+				// no complete self-re-render necessary 
+//				self.$el.find(".text-archive-entry-filename").html( model.get("fileName") );
+//				self.$el.find(".text-archive-entry-filepath").html( model.get("filePath") );
+				
+			},
+			error: function(model, response, options) {
+				console.log("error while update");
+				console.log(response.responseText);
+			}
+		});
 	}
 	
 });
@@ -519,8 +579,7 @@ var ArchiveView = Backbone.View.extend({
 		
 		// creates new view, the rest is magic ;)
 		this.entryView = new ArchiveEntryView({
-			$el: this.$el.find('.archive-fileinfo'),
-			el: '.archive-fileinfo'
+			el: this.$el.find(".archive-fileinfo")
 		});
 		this.entryView.fetch( this.model.get('id'), data.node.data.id );
 		

@@ -23,6 +23,10 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		super(null);
 		//TODO
 	}
+	
+	public XmlTreeMetaObjectDataholder(String id, String type, boolean changed) {
+		super(id, type, changed);
+	}
 
 	@JsonIgnore
 	public Element getXmlDescrition() {

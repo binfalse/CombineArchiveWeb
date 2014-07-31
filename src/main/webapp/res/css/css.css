@@ -206,6 +206,9 @@ div.edit-link > a:hover {
 	word-wrap: break-word;
 	overflow: overlay;
 }
+.archive-entry-frame {
+	padding-left: 10px;
+}
 .archive-meta-area {
 	margin-top: 5px;	
 }

@@ -23,6 +23,7 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
@@ -285,11 +286,27 @@ public class UserManager {
 	}
 
 	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException, IOException, TransformerException {
-
-		CombineArchive combineArchive = getArchive(archiveId).getArchive();
-		ArchiveEntry archiveEntry = combineArchive.getEntry( newEntryDataholder.getFilePath() );
+		
+		Archive archive = getArchive(archiveId);
+		CombineArchive combineArchive = archive.getArchive();
+		ArchiveEntry archiveEntry = null;
+		
+		// searching for the old entry by the id
+		for( ArchiveEntryDataholder entry : archive.getEntries().values() ) {
+			if( entry.getId().equals(newEntryDataholder.getId()) ) {
+				archiveEntry = entry.getArchiveEntry();
+				break;
+			}
+		}
+		
+		if( archiveEntry == null ) {
+			// was not able to find the old entry
+			combineArchive.close();
+			throw new CombineArchiveWebException("Can not find old version of archive entry");
+		}
+		
 		ArchiveEntryDataholder oldEntryDataholder = new ArchiveEntryDataholder(archiveEntry);
-
+		
 		for( MetaObjectDataholder newMetaObject : newEntryDataholder.getMeta() ) {
 
 			// no changes? skip this one.
@@ -323,9 +340,37 @@ public class UserManager {
 			}
 
 		}
-
+		
 		// applies changes in the filename/filepath
-		// TODO delete and re-insert, if filepath has changed
+		String newFilePath = newEntryDataholder.getFilePath();
+		if( !oldEntryDataholder.getFilePath().equals(newFilePath) && newFilePath != null && !newFilePath.isEmpty() ) {
+			// filePath has changed!
+			
+			if( !newFilePath.startsWith("/") ) {
+				newFilePath = "/" + newFilePath;
+			}
+			
+			// extracts the file
+			File tempFile = File.createTempFile( Fields.TEMP_FILE_PREFIX, oldEntryDataholder.getFileName() );
+			archiveEntry.extractFile(tempFile);
+			
+			// adds it under the new path
+			ArchiveEntry newArchiveEntry = combineArchive.addEntry( tempFile, newFilePath, newEntryDataholder.getFormat() );
+			// copy meta information
+			for( MetaDataObject metaDataObject : archiveEntry.getDescriptions() ) {
+				newArchiveEntry.addDescription(metaDataObject);
+			}
+			
+			// is this file the master?
+			if( archiveEntry.equals(combineArchive.getMainEntry()) ) {
+				combineArchive.setMainEntry(newArchiveEntry);
+			}
+			
+			// deletes old file
+			combineArchive.removeEntry( oldEntryDataholder.getFilePath() );
+			// deletes temp file
+			tempFile.delete();
+		}
 
 		combineArchive.pack();
 		combineArchive.close();

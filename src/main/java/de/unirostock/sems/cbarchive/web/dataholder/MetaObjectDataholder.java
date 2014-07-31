@@ -9,11 +9,23 @@ import org.jdom2.output.XMLOutputter;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.web.Tools;
 
+// so Jackson can parse json into childs of this abstract class
+@JsonTypeInfo(
+		use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.PROPERTY,
+		property = "type" )
+@JsonSubTypes({
+	@Type(value = OmexMetaObjectDataholder.class, name = MetaObjectDataholder.TYPE_OMEX ),
+	@Type(value = XmlTreeMetaObjectDataholder.class, name = MetaObjectDataholder.TYPE_XML )
+})
 abstract public class MetaObjectDataholder {
 	
 	public final static String TYPE_NOTSET = "na";
@@ -49,6 +61,13 @@ abstract public class MetaObjectDataholder {
 	public MetaObjectDataholder( MetaDataObject metaObject ) {
 		this.metaObject = metaObject;
 		generateId();
+	}
+	
+	public MetaObjectDataholder(String id, String type, boolean changed) {
+		super();
+		this.id = id;
+		this.type = type;
+		this.changed = changed;
 	}
 	
 	/**

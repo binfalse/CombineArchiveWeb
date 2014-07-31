@@ -137,17 +137,23 @@
 		<!-- **** -->
 		<div id="template-archive-entry">
 			<h3>{{# print(fileName); }}</h3>
-			<div style="padding-left: 10px;">
-				<strong>file path:</strong> {{# print(filePath); }}<br />
-				<strong>format:</strong> {{# print(format); }}<br />
-				<strong>master:</strong> {{# print(master == true ? 'yes' : 'no'); }}<br /><br />
-				
-				<div class="edit-link">
-					<a class="archive-file-download on-not-edit" href="#">[Download]</a>
-					<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
-					<a class="archive-file-save on-edit" href="#">[Save]</a>
-					<a class="archive-file-cancel on-edit" href="#">[Cancel]</a>
-				</div> 
+			<div class="archive-entry-frame">
+				<div class="archive-entry-header">
+					<strong>file name:</strong>
+						<span class="on-not-edit text-archive-entry-filename">{{# print(fileName); }}</span>
+						<input type="text" class="on-edit" name="archiveEntryFileName" value="{{# print(fileName); }}" placeholder="file name" /><br />
+					<strong>file path:</strong>
+						<span class="text-archive-entry-filepath">{{# print(filePath); }}</span><br />
+					<strong>format:</strong> {{# print(format); }}<br />
+					<strong>master:</strong> {{# print(master == true ? 'yes' : 'no'); }}<br /><br />
+					
+					<div class="edit-link">
+						<a class="archive-file-download on-not-edit" href="#">[Download]</a>
+						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
+						<a class="archive-file-save on-edit" href="#">[Save]</a>
+						<a class="archive-file-cancel on-edit" href="#">[Cancel]</a>
+					</div> 
+				</div>
 				
 				<div class="archive-meta-area"></div>
 			</div>

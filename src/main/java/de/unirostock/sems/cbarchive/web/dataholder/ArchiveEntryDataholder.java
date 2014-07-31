@@ -11,7 +11,7 @@ import de.unirostock.sems.cbarchive.web.Tools;
 
 public class ArchiveEntryDataholder {
 	
-	private ArchiveEntry archiveEntry;
+	private ArchiveEntry archiveEntry = null;
 	private boolean master = false;
 	
 	protected String id;
@@ -33,6 +33,30 @@ public class ArchiveEntryDataholder {
 			meta.add( MetaObjectDataholder.construct(metaObject) );
 		}
 			
+	}
+	
+	public ArchiveEntryDataholder(boolean master, String id, String filePath, String fileName, String format, List<MetaObjectDataholder> meta) {
+		super();
+		this.master = master;
+		this.id = id;
+		this.filePath = filePath;
+		this.fileName = fileName;
+		this.format = format;
+		this.meta = meta;
+	}
+	
+	public ArchiveEntryDataholder() {
+		super();
+		this.master = false;
+		this.id = null;
+		this.filePath = null;
+		this.fileName = null;
+		this.format = null;
+	}
+	
+	@JsonIgnore
+	public void updateId() {
+		id = Tools.generateHashId(filePath);
 	}
 	
 	@JsonIgnore
@@ -85,6 +109,20 @@ public class ArchiveEntryDataholder {
 
 	public String getFormat() {
 		return format;
+	}
+	public void setFilePath(String filePath) {
+		if( archiveEntry == null )
+			this.filePath = filePath;
+	}
+
+	public void setFileName(String fileName) {
+		if( archiveEntry == null )
+			this.fileName = fileName;
+	}
+
+	public void setFormat(String format) {
+		if( archiveEntry == null )
+			this.format = format;
 	}
 
 	public List<MetaObjectDataholder> getMeta() {

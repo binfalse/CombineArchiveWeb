@@ -1,6 +1,5 @@
 package de.unirostock.sems.cbarchive.web.rest;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +8,6 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,10 +39,8 @@ import org.jdom2.JDOMException;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
-import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
-import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
@@ -54,31 +50,6 @@ import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
 @Path("v1")
 public class RestApi extends Application {
-
-	@GET
-	@Path("/test")
-	public Response getMsg() {
-
-		String output = "Jersey say hello";
-
-		return Response.status(200).entity(output).build();
-
-	}
-
-	@GET
-	@Path("/test/{param}")
-	@Produces( MediaType.APPLICATION_JSON )
-	public List<String> getMsg(@PathParam("param") String param) {
-		List<String> resp = new ArrayList<String>();
-		//String output = "Jersey say hello: " + param;
-		resp.add("Jersey say hello!");
-		for( int x = 0; x < 10; x++ ) {
-			resp.add( param + String.valueOf(x) );
-		}
-
-		//return Response.status(200).entity(output).build();
-		return resp;
-	}
 
 	@GET
 	@Path("/heartbeat")

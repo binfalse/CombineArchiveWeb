@@ -19,7 +19,7 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Tools;
-import de.unirostock.sems.cbarchive.web.User;
+import de.unirostock.sems.cbarchive.web.UserManager;
 
 public class DownloadServlet extends HttpServlet {
 
@@ -39,7 +39,7 @@ public class DownloadServlet extends HttpServlet {
 		
 		
 		// login stuff
-		User user = null;
+		UserManager user = null;
 		try {
 			user = Tools.doLogin(request, response);
 		} catch (CombineArchiveWebCriticalException e) {
@@ -63,7 +63,7 @@ public class DownloadServlet extends HttpServlet {
 		
 	}
 	
-	private void downloadArchive(HttpServletRequest request, HttpServletResponse response, User user, String archive) throws IOException {
+	private void downloadArchive(HttpServletRequest request, HttpServletResponse response, UserManager user, String archive) throws IOException {
 		
 		// filters for omex extension
 		//		( is just there for the browser to name the downloaded file correctly)
@@ -75,9 +75,9 @@ public class DownloadServlet extends HttpServlet {
 		String archiveName = null;
 		try {
 			archiveFile = user.getArchiveFile(archive);
-			archiveName = user.getArchiveName(archive);
-		} catch (FileNotFoundException e) {
-			LOGGER.warn(e, MessageFormat.format("FileNotFound Exception, while handling donwload request for Archive {1} in Workspace {0}", user.getWd(), archive) );
+			archiveName = user.getArchive(archive, false).getName();
+		} catch (FileNotFoundException | CombineArchiveWebException e) {
+			LOGGER.warn(e, MessageFormat.format("FileNotFound Exception, while handling donwload request for Archive {1} in Workspace {0}", user.getWorkingDir(), archive) );
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage() );
 			return;
 		}
@@ -104,7 +104,7 @@ public class DownloadServlet extends HttpServlet {
 			
 			response.flushBuffer();
 		} catch (IOException e) {
-			LOGGER.error(e,  MessageFormat.format("IOException, while copying streams by handling donwload request for Archive {1} in Workspace {0}", user.getWd(), archive));
+			LOGGER.error(e,  MessageFormat.format("IOException, while copying streams by handling donwload request for Archive {1} in Workspace {0}", user.getWorkingDir(), archive));
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "IOException while sending the file.");
 		}
 	}

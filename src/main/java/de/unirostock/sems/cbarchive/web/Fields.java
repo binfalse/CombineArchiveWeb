@@ -46,4 +46,6 @@ public class Fields {
 	
 	public static final String TEMP_FILE_PREFIX = "caweb";
 	
+	/** Hash Algo for generating temp ids */
+	public static final String HASH_ALGO = "SHA-256";
 }

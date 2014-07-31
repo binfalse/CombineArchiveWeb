@@ -207,16 +207,16 @@ public class UserManager {
 	public Archive getArchive( String archiveId, boolean deepScan ) throws CombineArchiveWebException, FileNotFoundException {
 
 		// gets the properties Key for this archive
-		String archiveKey = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
+		String archiveName = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
 		// check if exists
-		if( archiveKey == null || archiveKey.isEmpty() )
+		if( archiveName == null || archiveName.isEmpty() )
 			// if not, throw an exception!
 			throw new FileNotFoundException("There is no archive in this working space with the ID " + archiveId);
 		else {
 			// get the file
 			File archive = new File( workingDir.getAbsolutePath(), archiveId );
 			if( archive.isFile() && archive.exists() && archive.canRead() ) {
-				return new Archive(archiveId, archiveKey, deepScan == true ? archive : null);
+				return new Archive(archiveId, archiveName, deepScan == true ? archive : null);
 			}
 			else
 				throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
@@ -226,9 +226,9 @@ public class UserManager {
 	public File getArchiveFile( String archiveId ) throws FileNotFoundException {
 
 		// gets the properties Key for this archive
-		String archiveKey = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
+		String archiveName = userProps.getProperty( Fields.PROP_ARCHIVE_PRE + archiveId );
 		// check if exists
-		if( archiveKey == null || archiveKey.isEmpty() )
+		if( archiveName == null || archiveName.isEmpty() )
 			// if not, throw an exception!
 			throw new FileNotFoundException("There is no archive in this working space with the ID " + archiveId);
 		else {

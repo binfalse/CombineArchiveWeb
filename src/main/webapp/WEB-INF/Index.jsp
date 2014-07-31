@@ -188,24 +188,7 @@
 			</p>
 		</div>
 		
-		<div id="createPage" class="subPage" style="display: none;"></div>
-		
-		<div id="detailsPage" class="subPage" style="display: none;">
-			<h2 id="archiveName"></h2>
-			<div id="files">
-				<div id="filesList"></div>
-				<div id="metaWindow"></div>
-				<div class="clearer"></div>
-			</div>
-			<h3>Upload Files</h3>
-			<small>files won't be overwritten, we'll rename them in case of a conflict</small>
-			<div id="addFile"></div>
-			<div><small id="uploadedFileList"></small></div>
-			<div id="export">
-				<button id="exportButton">export as CombineArchive</button>
-			</div>
-		</div>
-		
+		<div id="createPage" class="subPage" style="display: none;"></div>	
 		<div id="archivePage" class="subPage" style="display: none;"></div>
 
 	</div>

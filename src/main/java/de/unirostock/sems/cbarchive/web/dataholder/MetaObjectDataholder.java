@@ -1,11 +1,7 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;

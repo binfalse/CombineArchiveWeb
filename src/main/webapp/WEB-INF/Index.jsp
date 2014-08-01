@@ -37,7 +37,6 @@
 		Internet Explorer. Since we're fighting for open systems and
 		reproducibility we're unwilling to buy and install proprietary
 		software that is not more than a big bug.</div>
-
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
 			<ul id="nav">

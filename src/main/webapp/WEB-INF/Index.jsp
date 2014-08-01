@@ -67,7 +67,6 @@
 			<p>
 				<input type="button" class="save-vcard" value="Save" />
 			</p>
-			
 			<h2>CreateArchive</h2>
 			<p>
 				<label for="newArchiveName">Name of the Archive:</label><br />

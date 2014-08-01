@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.NewCookie;
 import javax.xml.bind.DatatypeConverter;
 
 import de.binfalse.bflog.LOGGER;

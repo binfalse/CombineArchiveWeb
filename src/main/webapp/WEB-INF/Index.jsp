@@ -6,7 +6,6 @@
 	<script type="text/javascript">
 		var RestRoot = 'http://localhost:8080/CombineArchiveWeb/rest/v1/';
 	</script>
-	
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
 <!-- 	<script type="text/javascript" src="res/js/3rd/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script> -->
 	<script type="text/javascript" src="res/js/3rd/jquery-field-selection.js"></script>

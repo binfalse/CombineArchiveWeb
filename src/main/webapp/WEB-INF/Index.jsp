@@ -61,7 +61,7 @@
 				<label for="userFamilyName">Family Name:</label><br />
 				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" value="{{# print(vcard.familyName); }}" /> <span id="userFamilyNameAction"></span><br />
 				<label for="userMail">E-Mail:</label><br />
-				<input type="mail" id="userMail" name="userMail" placeholder="mail address" value="{{# print(vcard.mail); }}" /> <span id="userMailAction"></span><br />
+				<input type="mail" id="userMail" name="userMail" placeholder="email address" value="{{# print(vcard.email); }}" /> <span id="userMailAction"></span><br />
 				<label for="userOrganization">Organization:</label><br />
 				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" /> <span id="userOrganizationAction"></span>
 			</p>

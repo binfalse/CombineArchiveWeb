@@ -36,6 +36,8 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
@@ -55,12 +57,13 @@ public class RestApi extends Application {
 	@GET
 	@Path("/heartbeat")
 	@Produces( MediaType.TEXT_PLAIN )
-	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_FAMILY_NAME) String familyName, @CookieParam(Fields.COOKIE_GIVEN_NAME) String givenName, @CookieParam(Fields.COOKIE_MAIL) String mail, @CookieParam(Fields.COOKIE_ORG) String organization ) {
+	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
 			user = new UserManager( userPath );
-			user.setData(new UserData(givenName, familyName, mail, organization));
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
@@ -93,12 +96,13 @@ public class RestApi extends Application {
 	@GET
 	@Path("/vcard")
 	@Produces( MediaType.APPLICATION_JSON )
-	public Response getOwnVcard( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_FAMILY_NAME) String familyName, @CookieParam(Fields.COOKIE_GIVEN_NAME) String givenName, @CookieParam(Fields.COOKIE_MAIL) String mail, @CookieParam(Fields.COOKIE_ORG) String organization ) {
+	public Response getOwnVcard( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
 			user = new UserManager( userPath );
-			user.setData( new UserData(givenName, familyName, mail, organization) );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
@@ -346,12 +350,13 @@ public class RestApi extends Application {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
 	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files,
-			@CookieParam(Fields.COOKIE_FAMILY_NAME) String familyName, @CookieParam(Fields.COOKIE_GIVEN_NAME) String givenName, @CookieParam(Fields.COOKIE_MAIL) String mail, @CookieParam(Fields.COOKIE_ORG) String organization ) {
+			@CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
 			user = new UserManager( userPath );
-			user.setData( new UserData(givenName, familyName, mail, organization) );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
@@ -652,12 +657,12 @@ public class RestApi extends Application {
 			UserData data = user.getData();
 			if( data != null && data.hasInformation() ) {
 				// adds the cookies
-				builder = builder.cookie(
-						new NewCookie(Fields.COOKIE_FAMILY_NAME, data.getFamilyName(), "/", null, null, Fields.COOKIE_AGE, false),
-						new NewCookie(Fields.COOKIE_GIVEN_NAME, data.getGivenName(), "/", null, null, Fields.COOKIE_AGE, false),
-						new NewCookie(Fields.COOKIE_MAIL, data.getEMail(), "/", null, null, Fields.COOKIE_AGE, false),
-						new NewCookie(Fields.COOKIE_ORG, data.getOrganization(), "/", null, null, Fields.COOKIE_AGE, false)
-						);
+				try {
+					builder = builder.cookie(
+							new NewCookie(Fields.COOKIE_USER, data.toJson(), "/", null, null, Fields.COOKIE_AGE, false) );
+				} catch (JsonProcessingException e) {
+					LOGGER.error(e, "Unable to set user cookies, due to Json encoding error.");
+				}
 			}
 		}
 

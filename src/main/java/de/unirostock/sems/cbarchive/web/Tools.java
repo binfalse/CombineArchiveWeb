@@ -16,6 +16,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.codec.binary.Base64;
+
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
@@ -144,4 +146,5 @@ public class Tools
 			return input;
 		}
 	}
+	
 }

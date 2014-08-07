@@ -853,7 +853,7 @@ var CreateView = Backbone.View.extend({
 
 var MessageView = Backbone.View.extend({
 	
-	el: "#messageBar",
+	el: "#message-bar",
 	
 	initialize: function() {
 		this.templateSuccess = _.template( $("#template-message-success").html() );
@@ -866,6 +866,50 @@ var MessageView = Backbone.View.extend({
 	},
 	render: function() {
 		// not used?
+	},
+	showMessage: function( type, title, text ) {
+		if( text == undefined ) {
+			text = title;
+			title = undefined;
+		}
+		
+		var json = { "message": {
+			"title": title,
+			"text": text
+		}};
+		
+		var template = null;
+		if( type == "success" )
+			template = this.templateSuccess;
+		else if( type == "warning" )
+			template = this.templateWarning;
+		else 
+			template = this.templateError;
+		
+		var html = template(json);
+		this.$el.append(html);
+	},
+	error: function( title, text ) {
+		return this.showMessage("error", title, text);
+	},
+	warning: function( title, text ) {
+		return this.showMessage("warning", title, text);
+	},
+	success: function( title, text ) {
+		return this.showMessage("success", title, text);
+	},
+	
+	events:  {
+		"click .message-button-close": "closeMessage"
+	},
+	closeMessage: function(event) {
+		event.preventDefault();
+		
+		console.log(event);
+		$(event.target).parent().parent().fadeOut("quick", function() {
+			$(this).remove();
+		});
+		return false;
 	}
 });
 

@@ -66,12 +66,22 @@ abstract public class MetaObjectDataholder {
 	 * 
 	 * @param newMetaObject
 	 */
+	@JsonIgnore
 	public abstract void update( MetaObjectDataholder newMetaObject );
+	
+	/**
+	 * Generates a CombineArchive MetaObject, which can be easily added to an ArchvieEntry
+	 *  
+	 * @return
+	 */
+	@JsonIgnore
+	public abstract MetaDataObject getCombineArchiveMetaObject();
 	
 	/**
 	 * Generates a temporarily id for the meta entry
 	 */
-	private void generateId() {
+	@JsonIgnore
+	public void generateId() {
 		
 		Element xmlElement = metaObject.getXmlDescription();
 		String xmlString = new XMLOutputter().outputString(xmlElement);

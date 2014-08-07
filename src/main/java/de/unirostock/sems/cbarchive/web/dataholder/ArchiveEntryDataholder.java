@@ -64,25 +64,13 @@ public class ArchiveEntryDataholder {
 		return archiveEntry;
 	}
 	
-	public MetaObjectDataholder addMetaEntry( MetaObjectDataholder metaObject ) {
+	public void addMetaEntry( MetaObjectDataholder metaObject ) {
 		
-		MetaObjectDataholder enrichedMetaObject = null;
+		// add the metaObject to the combineArchiveEntry...
+		archiveEntry.addDescription( metaObject.getCombineArchiveMetaObject() );
+		// ...and to the internal handler
+		meta.add(metaObject);
 		
-		switch( metaObject.getType() ) {
-		case MetaObjectDataholder.TYPE_OMEX:
-			enrichedMetaObject = new OmexMetaObjectDataholder(metaObject, archiveEntry);
-			break;
-			
-		case MetaObjectDataholder.TYPE_XML:
-			enrichedMetaObject = new XmlTreeMetaObjectDataholder(metaObject, archiveEntry);
-			break;
-		}
-		
-		if( enrichedMetaObject != null ) {
-			archiveEntry.addDescription(enrichedMetaObject.getMetaObject());
-		}
-		
-		return enrichedMetaObject;
 	}
 
 	/* -------- Dataholder Getter/Setter -------- */

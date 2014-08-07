@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.unirostock.sems.cbarchive.ArchiveEntry;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
@@ -25,12 +26,6 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		created		= omex.getCreated();
 		creators	= omex.getCreators();//VCardDataholder.convertVCardList( omex.getCreators() );
 		modified	= omex.getModified();
-	}
-	
-	public OmexMetaObjectDataholder(MetaObjectDataholder metaObject, ArchiveEntry archiveEntry) {
-		super(null);
-		
-		// TODO
 	}
 	
 	public OmexMetaObjectDataholder(String id, String type, boolean changed) {
@@ -82,6 +77,14 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		
 		// got modified today.
 		getModified().add( new Date() );
+	}
+
+	@Override
+	public MetaDataObject getCombineArchiveMetaObject() {
+		this.metaObject = new OmexMetaDataObject( new OmexDescription(creators, modified, created) );
+		// update the id
+		generateId();
+		return metaObject;
 	}
 
 }

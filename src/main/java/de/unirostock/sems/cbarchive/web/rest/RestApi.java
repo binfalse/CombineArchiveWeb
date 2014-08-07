@@ -560,8 +560,9 @@ public class RestApi extends Application {
 			try {
 				// update the entry
 				oldMetaObject.update( metaObject );
-				// TODO update metaObj id
 				archive.getArchive().pack();
+				// force to re-generate the id, after the pack
+				oldMetaObject.generateId();
 			} catch( IOException | TransformerException e ) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
@@ -591,7 +592,43 @@ public class RestApi extends Application {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 				
-		return null;
+		try {
+			Archive archive = user.getArchive(archiveId);
+			
+			// iterate over all archive entries
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such entry found");
+			}
+			
+			// add the description to the entry and pack the archive
+			try {
+				entry.addMetaEntry( metaObject );
+				archive.getArchive().pack();
+				// force to re-generate the id, after the pack
+				metaObject.generateId();
+			} catch( IOException | TransformerException e ) {
+				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+			} finally {
+				archive.getArchive().close();
+			}
+			
+			return buildResponse(200, user).entity( metaObject ).build();
+				
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
 	}
 	
 	// --------------------------------------------------------------------------------

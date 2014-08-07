@@ -56,7 +56,7 @@ var VCardModel = Backbone.Model.extend({
 			
 			var mailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			if( !mailRegex.test(attrs.email) )
-				return "Your E-Mail address has no valid format";
+				return "The format of your E-Mail address is invalid.";
 		}
 		
 		if( attrs.organization !== undefined && attrs.organization !== "" ) {
@@ -772,7 +772,8 @@ var CreateView = Backbone.View.extend({
 		
 		// TODO
 		if( !this.model.isValid() ) {
-			alert( this.model.validationError );
+			messageView.warning("Meta information invalid", this.model.validationError);
+//			alert( this.model.validationError );
 			return false;
 		}
 		

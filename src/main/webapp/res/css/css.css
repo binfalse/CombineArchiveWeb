@@ -78,6 +78,42 @@ nav .highlight
 	clear: both;
 }
 
+/* -------- Message Bar -------- */
+#message-bar {
+	width: 100%;
+	min-height: 0;
+	padding: 5px 0;
+}
+.message {
+	margin: 5px 0;
+	padding: 12px;
+	border: 1px solid;
+	border-radius: 4px;
+}
+.message-buttons {
+	float: right;
+}
+.message-buttons a {
+	text-decoration: none;
+	font-weight: lighter;
+}
+.message-buttons:after {
+	clear: right;
+}
+
+.message-error {
+	background-color: #FF9696;
+	border-color: #FF0000;
+}
+.message-warning {
+	background-color: #FFFC96;
+	border-color: #F2C200;
+}
+.message-success {
+	background-color: #8BE688;
+	border-color: #079100;
+}
+
 /* -------- File Dropbox -------- */
 .dropbox {
 	border: 3px dashed #bbb;

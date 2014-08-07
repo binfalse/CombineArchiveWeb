@@ -183,12 +183,40 @@
 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a>
 			</div> 
 		</div>
+		<!-- **** -->
+		<div id="template-message-success">
+			<div class="message message-success">
+				<strong>{{# print( message.title ? message.title : "Success" ); }}: </strong>
+				{{# print( message.text ); }}
+				<div class="message-buttons">
+					<a class="message-button-close" href="#">[x]</a>
+				</div>
+			</div>
+		</div>
+		<div id="template-message-warning">
+			<div class="message message-warning">
+				<strong>{{# print( message.title ? message.title : "Warning" ); }}: </strong>
+				{{# print( message.text ); }}
+				<div class="message-buttons">
+					<a class="message-button-close" href="#">[x]</a>
+				</div>
+			</div>
+		</div>
+		<div id="template-message-error">
+			<div class="message message-error">
+				<strong>{{# print( message.title ? message.title : "Error" ); }}: </strong>
+				{{# print( message.text ); }}
+				<div class="message-buttons">
+					<a class="message-button-close" href="#">[x]</a>
+				</div>
+			</div>
+		</div>
 	</div>
 
 
 	<div id="page" style="display: none;">
 		<nav id="navigation"></nav>
-		
+		<div id="message-bar"></div>
 		<div id="startPage" class="subPage">
 			<p>
 				This is a web based interface to read, created, and modify CombineArchives. <br />

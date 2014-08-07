@@ -849,5 +849,23 @@ var CreateView = Backbone.View.extend({
 		});
 	}
 	
-	
 });
+
+var MessageView = Backbone.View.extend({
+	
+	el: "#messageBar",
+	
+	initialize: function() {
+		this.templateSuccess = _.template( $("#template-message-success").html() );
+		this.templateWarning = _.template( $("#template-message-warning").html() );
+		this.templateError	 = _.template( $("#template-message-error").html() );
+		
+		$("#template-message-success").remove();
+		$("#template-message-warning").remove();
+		$("#template-message-error").remove();
+	},
+	render: function() {
+		// not used?
+	}
+});
+

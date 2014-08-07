@@ -4,6 +4,7 @@ var workspaceArchives = null;
 var navigationView = null;
 var archiveView = null;
 var createView = null;
+var messageView = null;
 
 function displayError (err)
 {
@@ -31,6 +32,7 @@ $(document).ready(function () {
 			navigationView = new NavigationView({ collection: workspaceArchives });
 			archiveView = new ArchiveView();
 			createView = new CreateView();
+			messageView = new MessageView();
 			
 			navigationView.fetch();
 			

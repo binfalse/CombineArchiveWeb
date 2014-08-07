@@ -1,10 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix='fn' uri='http://java.sun.com/jsp/jstl/functions'%>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	<title>CombineArchiveWeb</title>
 	<script type="text/javascript">
-		var RestRoot = 'http://localhost:8080/CombineArchiveWeb/rest/v1/';
+		var RestRoot = '${ContextPath}/rest/v1/';
 	</script>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
 <!-- 	<script type="text/javascript" src="res/js/3rd/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script> -->

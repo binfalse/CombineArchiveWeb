@@ -49,6 +49,7 @@ public class Index extends HttpServlet {
 		}
 
 		request.setAttribute ("user", user);
+		request.setAttribute ("ContextPath", request.getContextPath ());
 		request.getRequestDispatcher ("/WEB-INF/Index.jsp").forward (request, response);
 	}
 

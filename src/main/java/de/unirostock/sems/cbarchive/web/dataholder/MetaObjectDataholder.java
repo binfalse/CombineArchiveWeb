@@ -1,8 +1,5 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 
@@ -46,9 +43,6 @@ abstract public class MetaObjectDataholder {
 	
 	@JsonIgnore
 	protected MetaDataObject metaObject = null;
-	
-	@JsonIgnore
-	protected Map<String, Object> fields = new HashMap<String, Object>();
 	
 	protected String id = "null";
 	/** type of the meta information */

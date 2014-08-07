@@ -706,6 +706,8 @@ var CreateView = Backbone.View.extend({
 				}
 			});
 		}
+		
+		$('#template-create').remove ();
 	},
 	render: function() {
 		

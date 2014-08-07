@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.codec.binary.Base64;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
@@ -69,24 +69,12 @@ public class Tools
 			return null;
 
 		cookies.setCookie (pathCookie);
-
-		Cookie givenName	= cookies.getCookie( Fields.COOKIE_GIVEN_NAME );
-		Cookie familyName	= cookies.getCookie( Fields.COOKIE_FAMILY_NAME );
-		Cookie mail			= cookies.getCookie( Fields.COOKIE_MAIL );
-		Cookie organization	= cookies.getCookie( Fields.COOKIE_ORG );
+		
+		Cookie userInfo		= cookies.getCookie( Fields.COOKIE_USER );
 		
 		UserManager user = new UserManager(pathCookie.getValue());
-		UserData userData = new UserData();
-		user.setData(userData);
-		
-		if (givenName != null)
-			userData.setGivenName(givenName.getValue());
-		if (familyName != null)
-			userData.setFamilyName(familyName.getValue());
-		if (mail != null)
-			userData.setEMail(mail.getValue());
-		if (organization != null)
-			userData.setOrganization(organization.getValue());
+		if( userInfo != null && !userInfo.getValue().isEmpty() )
+			user.setData( UserData.fromJson( userInfo.getValue() ) ); 
 		
 		storeUserCookies(cookies, user);
 		
@@ -100,10 +88,11 @@ public class Tools
 		
 		if( user.getData() != null && user.getData().hasInformation() ) {
 			UserData userData = user.getData();
-			cookies.setCookie(new Cookie( Fields.COOKIE_FAMILY_NAME, userData.getFamilyName() ));
-			cookies.setCookie(new Cookie( Fields.COOKIE_GIVEN_NAME, userData.getGivenName() ));
-			cookies.setCookie(new Cookie( Fields.COOKIE_MAIL, userData.getEMail() ));
-			cookies.setCookie(new Cookie( Fields.COOKIE_ORG, userData.getOrganization() ));
+			try {
+				cookies.setCookie(new Cookie( Fields.COOKIE_USER, userData.toJson() ));
+			} catch (JsonProcessingException e) {
+				LOGGER.error(e, "Can not store cookies, due to json errors");
+			}
 		}
 		
 	}

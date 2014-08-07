@@ -10,18 +10,6 @@ public class Fields {
 	/** The Constant COOKIE_PATH. */
 	public static final String COOKIE_PATH = "combinearchiveweba";
 
-	/** The Constant COOKIE_GIVEN_NAME. */
-	public static final String COOKIE_GIVEN_NAME = "combinearchivewebb";
-
-	/** The Constant COOKIE_FAMILY_NAME. */
-	public static final String COOKIE_FAMILY_NAME = "combinearchivewebc";
-
-	/** The Constant COOKIE_MAIL. */
-	public static final String COOKIE_MAIL = "combinearchivewebd";
-
-	/** The Constant COOKIE_ORG. */
-	public static final String COOKIE_ORG = "combinearchivewebe";
-
 	// TODO: move this to the context.xml 
 	/** The Constant STORAGE. */
 	public static final File STORAGE = new File ("/tmp/CombineArchiveWebStorage");

@@ -33,7 +33,6 @@ $(document).ready(function () {
 			archiveView = new ArchiveView();
 			createView = new CreateView();
 			messageView = new MessageView();
-			messageView.success("Hello World!");
 			
 			navigationView.fetch();
 			

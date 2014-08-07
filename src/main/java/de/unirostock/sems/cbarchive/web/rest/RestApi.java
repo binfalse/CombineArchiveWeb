@@ -46,6 +46,7 @@ import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
+import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
 @Path("v1")
@@ -414,7 +415,76 @@ public class RestApi extends Application {
 		
 	}
 	
+	// --------------------------------------------------------------------------------
+	// Meta Object Endpoints
+	
 	// TODO Endpoints for meta entries!
+	
+	@GET
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getAllMetaObjects( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		return null;
+	}
+	
+	@GET
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta/{meta_id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @PathParam("meta_id") String metaId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+				
+		return null;
+	}
+	
+	@PUT
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta/{meta_id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response updateMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @PathParam("meta_id") String metaId, @CookieParam(Fields.COOKIE_PATH) String userPath, MetaObjectDataholder metaObject ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+				
+		return null;
+	}
+	
+	@POST
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response createMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath, MetaObjectDataholder metaObject ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+				
+		return null;
+	}
 	
 	// --------------------------------------------------------------------------------
 	// helper functions

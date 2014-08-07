@@ -655,7 +655,7 @@ public class RestApi extends Application {
 				builder = builder.cookie(
 						new NewCookie(Fields.COOKIE_FAMILY_NAME, data.getFamilyName(), "/", null, null, Fields.COOKIE_AGE, false),
 						new NewCookie(Fields.COOKIE_GIVEN_NAME, data.getGivenName(), "/", null, null, Fields.COOKIE_AGE, false),
-						new NewCookie(Fields.COOKIE_MAIL, data.getMail(), "/", null, null, Fields.COOKIE_AGE, false),
+						new NewCookie(Fields.COOKIE_MAIL, data.getEMail(), "/", null, null, Fields.COOKIE_AGE, false),
 						new NewCookie(Fields.COOKIE_ORG, data.getOrganization(), "/", null, null, Fields.COOKIE_AGE, false)
 						);
 			}

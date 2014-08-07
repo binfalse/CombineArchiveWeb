@@ -887,7 +887,7 @@ var MessageView = Backbone.View.extend({
 			template = this.templateError;
 		
 		var html = template(json);
-		this.$el.append(html);
+		this.$el.append(html).hide().fadeIn("quick");
 	},
 	error: function( title, text ) {
 		return this.showMessage("error", title, text);

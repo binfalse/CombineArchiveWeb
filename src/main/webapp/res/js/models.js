@@ -227,7 +227,7 @@ var ArchiveEntryView = Backbone.View.extend({
 		if( this.model == null )
 			return;
 		
-		var json = this.model.toJSON();
+		var json = { "entry": this.model.toJSON(), "archiveId": this.archiveId };
 		var text = this.template(json);
 		this.$el.html( text );
 		

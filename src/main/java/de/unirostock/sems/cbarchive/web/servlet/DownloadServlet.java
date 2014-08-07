@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
 
 import javax.servlet.ServletException;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -38,8 +40,8 @@ public class DownloadServlet extends HttpServlet {
 		LOGGER.setLogStackTrace (true);
 		
 		// set charset
-		response.setCharacterEncoding ("UTF-8");
-		request.setCharacterEncoding ("UTF-8");
+		response.setCharacterEncoding (Fields.CHARSET);
+		request.setCharacterEncoding (Fields.CHARSET);
 		
 		
 		// login stuff
@@ -62,7 +64,7 @@ public class DownloadServlet extends HttpServlet {
 		if( requestUrl.length >= 4 && requestUrl[2].equals("archive") ) {
 			// request to download an archive from the workspace
 			if( requestUrl[3] != null && !requestUrl[3].isEmpty() )
-				downloadArchive(request, response, user, requestUrl[3] );
+				downloadArchive(request, response, user, URLDecoder.decode( requestUrl[3], Fields.CHARSET ) );
 		}
 		else if( requestUrl.length >= 5 && requestUrl[2].equals("file") ) {
 			
@@ -70,7 +72,7 @@ public class DownloadServlet extends HttpServlet {
 			String file = null;
 			
 			if( requestUrl[3] != null && !requestUrl[3].isEmpty() )
-				archive = requestUrl[3];
+				archive = URLDecoder.decode( requestUrl[3], Fields.CHARSET );
 			else
 				return;
 			
@@ -82,7 +84,8 @@ public class DownloadServlet extends HttpServlet {
 					filePath.append( requestUrl[i] );
 				}
 			}
-			file = filePath.toString();
+			// decode the name
+			file = URLDecoder.decode( filePath.toString(), Fields.CHARSET );
 			
 			if( archive != null && !archive.isEmpty() && file != null && !file.isEmpty() )
 				downloadFile(request, response, user, archive, file);
@@ -147,6 +150,9 @@ public class DownloadServlet extends HttpServlet {
 		} catch (FileNotFoundException | CombineArchiveWebException e) {
 			LOGGER.warn(e, MessageFormat.format("Archive FileNotFound Exception, while handling donwload request for File {2} in Archive {1} in Workspace {0}", user.getWorkingDir(), archive, filePath) );
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage() );
+			
+			if( combineArchive != null )
+				combineArchive.close();
 			return;
 		}
 		
@@ -156,6 +162,9 @@ public class DownloadServlet extends HttpServlet {
 		if( entry == null ) {
 			LOGGER.warn( MessageFormat.format("File not found in archive {1} in Workspace {0} : file = {2}", user.getWorkingDir(), archiveId, filePath) );
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found in archive." );
+			
+			if( combineArchive != null )
+				combineArchive.close();
 			return;
 		}
 		
@@ -186,10 +195,15 @@ public class DownloadServlet extends HttpServlet {
 			
 			// remove the temp file
 			tempFile.delete();
+			if( combineArchive != null )
+				combineArchive.close();
 		}
 		catch (IOException e) {
 			LOGGER.warn( MessageFormat.format("Error while extracting and serving file in archive {1} in Workspace {0} : file = {2}", user.getWorkingDir(), archiveId, filePath) );
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while extracting and serving file." );
+			
+			if( combineArchive != null )
+				combineArchive.close();
 			return;
 		}
 		

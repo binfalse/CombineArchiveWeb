@@ -48,4 +48,7 @@ public class Fields {
 	
 	/** Hash Algo for generating temp ids */
 	public static final String HASH_ALGO = "SHA-256";
+	
+	/** The charset for all http related interactions */
+	public static final String CHARSET = "UTF-8";
 }

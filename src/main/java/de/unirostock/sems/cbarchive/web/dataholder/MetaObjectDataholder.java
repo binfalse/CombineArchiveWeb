@@ -27,7 +27,6 @@ abstract public class MetaObjectDataholder {
 	public final static String TYPE_OMEX = "omex";
 	public final static String TYPE_XML = "xmltree";
 	
-	
 	public static MetaObjectDataholder construct( MetaDataObject metaObject ) {
 		MetaObjectDataholder dataholder = null;
 		

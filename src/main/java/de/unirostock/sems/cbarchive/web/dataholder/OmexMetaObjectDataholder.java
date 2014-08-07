@@ -8,10 +8,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
 
 public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 	
-	private List<VCardDataholder> creators = null;
+	private List<VCard> creators = null;
 	private Date created = null;
 	private List<Date> modified = null;
 	
@@ -22,7 +23,7 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		
 		type = MetaObjectDataholder.TYPE_OMEX;
 		created		= omex.getCreated();
-		creators	= VCardDataholder.convertVCardList( omex.getCreators() );
+		creators	= omex.getCreators();//VCardDataholder.convertVCardList( omex.getCreators() );
 		modified	= omex.getModified();
 	}
 	
@@ -44,7 +45,7 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		return created;
 	}
 	
-	public List<VCardDataholder> getCreators() {
+	public List<VCard> getCreators() {
 		return creators;
 	}
 
@@ -52,7 +53,7 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		return modified;
 	}
 	
-	public void setCreators(List<VCardDataholder> creators) {
+	public void setCreators(List<VCard> creators) {
 		this.creators = creators;
 	}
 
@@ -75,7 +76,7 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		}
 		
 		// set new creators list
-		List<VCardDataholder> newCreators = ((OmexMetaObjectDataholder) newMetaObject).getCreators();
+		List<VCard> newCreators = ((OmexMetaObjectDataholder) newMetaObject).getCreators();
 		if( newCreators != null && newCreators.size() > 0 )
 			creators = newCreators;
 		

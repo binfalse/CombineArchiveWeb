@@ -46,7 +46,16 @@ var OmexMetaModel = Backbone.Model.extend({
 	},
 	setUrl: function( archiveId, entryId )  {
 		this.urlRoot = RestRoot + "archives/" + archiveId + "/entries/" + entryId + "/meta";
-	}
+	},
+	// blacklist to exclude the empty field
+    toJSON: function(options) {
+    	console.log(this.attributes);
+    	_.each(this.attributes.creators, function(element, index, list) {
+    		delete list[index].empty;
+    	});
+    	console.log(this.attributes);
+        return this.attributes;
+    },
 });
 
 var ArchiveCollection = Backbone.Collection.extend({

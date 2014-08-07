@@ -433,7 +433,27 @@ public class RestApi extends Application {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
-		return null;
+		try {
+			Archive archive = user.getArchive(archiveId);
+			archive.getArchive().close();
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry != null )
+				return buildResponse(200, user).entity( entry.getMeta() ).build();
+			else
+				return buildErrorResponse(404, user, "No such entry found");
+			
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
 	}
 	
 	@GET
@@ -449,7 +469,42 @@ public class RestApi extends Application {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 				
-		return null;
+		try {
+			Archive archive = user.getArchive(archiveId);
+			archive.getArchive().close();
+			
+			// iterate over all archive entries
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry == null )
+				return buildErrorResponse(404, user, "No such entry found");
+			
+			// iterate over all meta entries
+			MetaObjectDataholder metaObject = null;
+			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
+				if( iterMetaObject.getId().equals(metaId) ) {
+					metaObject = iterMetaObject;
+					break;
+				}
+			}
+			
+			// check if meta entry exists
+			if( metaObject != null )
+				return buildResponse(200, user).entity( metaObject ).build();
+			else
+				return buildErrorResponse(404, user, "No such meta entry found");
+				
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
 	}
 	
 	@PUT

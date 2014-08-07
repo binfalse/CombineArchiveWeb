@@ -520,8 +520,61 @@ public class RestApi extends Application {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
+		
+		try {
+			Archive archive = user.getArchive(archiveId);
+			
+			// iterate over all archive entries
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such entry found");
+			}
+			
+			// iterate over all meta entries
+			MetaObjectDataholder oldMetaObject = null;
+			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
+				if( iterMetaObject.getId().equals(metaId) ) {
+					oldMetaObject = iterMetaObject;
+					break;
+				}
+			}
+			
+			metaId = metaObject.getId();
+			
+			// check if meta entry exists
+			if( oldMetaObject == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such meta entry found");
+			}
+			
+			// update and pack the archive
+			try {
+				// update the entry
+				oldMetaObject.update( metaObject );
+				// TODO update metaObj id
+				archive.getArchive().pack();
+			} catch( IOException | TransformerException e ) {
+				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+			} finally {
+				archive.getArchive().close();
+			}
+			
+			return buildResponse(200, user).entity( oldMetaObject ).build();
 				
-		return null;
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
 	}
 	
 	@POST

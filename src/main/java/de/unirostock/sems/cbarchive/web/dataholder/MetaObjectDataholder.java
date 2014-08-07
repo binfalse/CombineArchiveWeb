@@ -6,8 +6,6 @@ import java.util.Map;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -106,15 +104,6 @@ abstract public class MetaObjectDataholder {
 
 	public void setChanged(boolean changed) {
 		this.changed = changed;
-	}
-	
-	@JsonAnyGetter
-	public Map<String, Object> getAny() {
-		return fields;
-	}
-	@JsonAnySetter
-	public void setAny(String name, Object value) {
-		fields.put(name, value);
 	}
 	
 }

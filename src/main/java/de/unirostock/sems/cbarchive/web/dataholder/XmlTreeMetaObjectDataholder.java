@@ -1,7 +1,5 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
-import java.util.Map;
-
 import org.jdom2.Element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,12 +9,12 @@ import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 
 public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 
-	public static final String FIELD_XML_DESCRIPTION = "xmltree";
+	private Element xmltree = null;
 	
 	public XmlTreeMetaObjectDataholder(MetaDataObject metaObject) {
 		super(metaObject);
 		type = MetaObjectDataholder.TYPE_XML;
-		fields.put( FIELD_XML_DESCRIPTION, metaObject.getXmlDescription() );
+		xmltree = metaObject.getXmlDescription();
 	}
 	
 	public XmlTreeMetaObjectDataholder(MetaObjectDataholder metaObject, ArchiveEntry archiveEntry) {
@@ -27,12 +25,20 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 	public XmlTreeMetaObjectDataholder(String id, String type, boolean changed) {
 		super(id, type, changed);
 	}
-
-	@JsonIgnore
-	public Element getXmlDescrition() {
-		return (Element) fields.get(FIELD_XML_DESCRIPTION);
+	
+	public XmlTreeMetaObjectDataholder() {
+		super(null, null, false);
 	}
 
+	public Element getXmltree() {
+		return xmltree;
+	}
+
+	public void setXmltree(Element xmltree) {
+		this.xmltree = xmltree;
+	}
+
+	@JsonIgnore
 	@Override
 	public void update(MetaObjectDataholder newMetaObject) {
 		
@@ -43,11 +49,10 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 				throw new IllegalArgumentException("Wrong data type");
 		}
 		
-		// get field map
-		Map<String, Object> newFields = newMetaObject.getAny();
-		
 		// apply changes
-		fields.put( FIELD_XML_DESCRIPTION, newFields.get(FIELD_XML_DESCRIPTION) );
+		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmltree();
+		if( newXmltree != null )
+			xmltree = newXmltree;
 		
 	}
 

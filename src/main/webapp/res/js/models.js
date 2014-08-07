@@ -33,8 +33,38 @@ var VCardModel = Backbone.Model.extend({
 	defaults: {
 		'givenName': '',
 		'familyName': '',
-		'mail': '',
+		'email': '',
 		'organization': ''
+	},
+	validate: function( attrs, options ) {
+		if( attrs.givenName == undefined || attrs.givenName == "" )
+			return "A given name should be provided";
+		
+		if( attrs.givenName.length < 2 )
+			return "The given name should be at least 2 characters long.";
+		
+		if( attrs.familyName == undefined || attrs.familyName == "" )
+			return "A family name should be provided";
+		
+		if( attrs.familyName.length < 2 )
+			return "The family name should be at least 2 characters long.";
+		
+		if( attrs.email !== undefined && attrs.email !== "" ) {
+		
+			if( attrs.email.length < 6 )
+				return "Your E-Mail address is to short.";
+			
+			var mailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			if( !mailRegex.test(attrs.email) )
+				return "Your E-Mail address has no valid format";
+		}
+		
+		if( attrs.organization !== undefined && attrs.organization !== "" ) {
+			
+			if( attrs.organization.length < 4 )
+				return "The name of your organization be at least 4 characters.";
+		}
+		
 	}
 });
 
@@ -46,7 +76,16 @@ var OmexMetaModel = Backbone.Model.extend({
 	},
 	setUrl: function( archiveId, entryId )  {
 		this.urlRoot = RestRoot + "archives/" + archiveId + "/entries/" + entryId + "/meta";
-	}
+	},
+	// blacklist to exclude the empty field
+    toJSON: function(options) {
+    	console.log(this.attributes);
+    	_.each(this.attributes.creators, function(element, index, list) {
+    		delete list[index].empty;
+    	});
+    	console.log(this.attributes);
+        return this.attributes;
+    },
 });
 
 var ArchiveCollection = Backbone.Collection.extend({
@@ -728,12 +767,13 @@ var CreateView = Backbone.View.extend({
 	saveVCard: function(event) {
 		this.model.set('givenName', this.$el.find("input[name='userGivenName']").val() );
 		this.model.set('familyName', this.$el.find("input[name='userFamilyName']").val() );
-		this.model.set('mail', this.$el.find("input[name='userMail']").val() );
+		this.model.set('email', this.$el.find("input[name='userMail']").val() );
 		this.model.set('organization', this.$el.find("input[name='userOrganization']").val() );
 		
 		// TODO
 		if( !this.model.isValid() ) {
-			//alert( this.model.validationError );
+			alert( this.model.validationError );
+			return false;
 		}
 		
 		this.model.save({}, {

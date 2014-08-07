@@ -1,8 +1,5 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 
@@ -30,7 +27,6 @@ abstract public class MetaObjectDataholder {
 	public final static String TYPE_OMEX = "omex";
 	public final static String TYPE_XML = "xmltree";
 	
-	
 	public static MetaObjectDataholder construct( MetaDataObject metaObject ) {
 		MetaObjectDataholder dataholder = null;
 		
@@ -46,9 +42,6 @@ abstract public class MetaObjectDataholder {
 	
 	@JsonIgnore
 	protected MetaDataObject metaObject = null;
-	
-	@JsonIgnore
-	protected Map<String, Object> fields = new HashMap<String, Object>();
 	
 	protected String id = "null";
 	/** type of the meta information */
@@ -73,12 +66,22 @@ abstract public class MetaObjectDataholder {
 	 * 
 	 * @param newMetaObject
 	 */
+	@JsonIgnore
 	public abstract void update( MetaObjectDataholder newMetaObject );
+	
+	/**
+	 * Generates a CombineArchive MetaObject, which can be easily added to an ArchvieEntry
+	 *  
+	 * @return
+	 */
+	@JsonIgnore
+	public abstract MetaDataObject getCombineArchiveMetaObject();
 	
 	/**
 	 * Generates a temporarily id for the meta entry
 	 */
-	private void generateId() {
+	@JsonIgnore
+	public void generateId() {
 		
 		Element xmlElement = metaObject.getXmlDescription();
 		String xmlString = new XMLOutputter().outputString(xmlElement);

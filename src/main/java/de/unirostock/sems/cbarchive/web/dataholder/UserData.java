@@ -18,22 +18,22 @@ public class UserData {
 	
 	protected String givenName;
 	protected String familyName;
-	protected String mail;
+	protected String email;
 	protected String organization;
 	
 	public UserData() {
 		super();
 		this.givenName = null;
 		this.familyName = null;
-		this.mail = null;
+		this.email = null;
 		this.organization = null;
 	}
 	
-	public UserData(String givenName, String familyName, String mail, String organization) {
+	public UserData(String givenName, String familyName, String email, String organization) {
 		super();
 		this.givenName = givenName;
 		this.familyName = familyName;
-		this.mail = mail;
+		this.email = email;
 		this.organization = organization;
 	}
 	
@@ -49,11 +49,11 @@ public class UserData {
 	public void setFamilyName(String familyName) {
 		this.familyName = familyName;
 	}
-	public String getMail() {
-		return mail;
+	public String getEMail() {
+		return email;
 	}
-	public void setMail(String mail) {
-		this.mail = mail;
+	public void setEMail(String email) {
+		this.email = email;
 	}
 	public String getOrganization() {
 		return organization;
@@ -65,13 +65,13 @@ public class UserData {
 	@JsonIgnore
 	public boolean hasInformation ()
 	{
-		return givenName != null && familyName != null && mail != null 
-			&& givenName.isEmpty() == false && familyName.isEmpty() == false && mail.isEmpty() == false && mail.length () > 5;
+		return givenName != null && familyName != null && email != null 
+			&& givenName.isEmpty() == false && familyName.isEmpty() == false && email.isEmpty() == false && email.length () > 5;
 	}
 	
 	@JsonIgnore
 	public VCard getVCard() {
-		return new VCard(familyName, givenName, mail, organization);
+		return new VCard(familyName, givenName, email, organization);
 	}
 	
 	@JsonIgnore

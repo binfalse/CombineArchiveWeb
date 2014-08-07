@@ -46,6 +46,7 @@ import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
+import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
 @Path("v1")
@@ -414,7 +415,221 @@ public class RestApi extends Application {
 		
 	}
 	
+	// --------------------------------------------------------------------------------
+	// Meta Object Endpoints
+	
 	// TODO Endpoints for meta entries!
+	
+	@GET
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getAllMetaObjects( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		try {
+			Archive archive = user.getArchive(archiveId);
+			archive.getArchive().close();
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry != null )
+				return buildResponse(200, user).entity( entry.getMeta() ).build();
+			else
+				return buildErrorResponse(404, user, "No such entry found");
+			
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
+	}
+	
+	@GET
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta/{meta_id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @PathParam("meta_id") String metaId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+				
+		try {
+			Archive archive = user.getArchive(archiveId);
+			archive.getArchive().close();
+			
+			// iterate over all archive entries
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry == null )
+				return buildErrorResponse(404, user, "No such entry found");
+			
+			// iterate over all meta entries
+			MetaObjectDataholder metaObject = null;
+			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
+				if( iterMetaObject.getId().equals(metaId) ) {
+					metaObject = iterMetaObject;
+					break;
+				}
+			}
+			
+			// check if meta entry exists
+			if( metaObject != null )
+				return buildResponse(200, user).entity( metaObject ).build();
+			else
+				return buildErrorResponse(404, user, "No such meta entry found");
+				
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
+	}
+	
+	@PUT
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta/{meta_id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response updateMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @PathParam("meta_id") String metaId, @CookieParam(Fields.COOKIE_PATH) String userPath, MetaObjectDataholder metaObject ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		try {
+			Archive archive = user.getArchive(archiveId);
+			
+			// iterate over all archive entries
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such entry found");
+			}
+			
+			// iterate over all meta entries
+			MetaObjectDataholder oldMetaObject = null;
+			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
+				if( iterMetaObject.getId().equals(metaId) ) {
+					oldMetaObject = iterMetaObject;
+					break;
+				}
+			}
+			
+			metaId = metaObject.getId();
+			
+			// check if meta entry exists
+			if( oldMetaObject == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such meta entry found");
+			}
+			
+			// update and pack the archive
+			try {
+				// update the entry
+				oldMetaObject.update( metaObject );
+				archive.getArchive().pack();
+				// force to re-generate the id, after the pack
+				oldMetaObject.generateId();
+			} catch( IOException | TransformerException e ) {
+				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+			} finally {
+				archive.getArchive().close();
+			}
+			
+			return buildResponse(200, user).entity( oldMetaObject ).build();
+				
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
+	}
+	
+	@POST
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response createMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath, MetaObjectDataholder metaObject ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+				
+		try {
+			Archive archive = user.getArchive(archiveId);
+			
+			// iterate over all archive entries
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such entry found");
+			}
+			
+			// add the description to the entry and pack the archive
+			try {
+				entry.addMetaEntry( metaObject );
+				archive.getArchive().pack();
+				// force to re-generate the id, after the pack
+				metaObject.generateId();
+			} catch( IOException | TransformerException e ) {
+				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+			} finally {
+				archive.getArchive().close();
+			}
+			
+			return buildResponse(200, user).entity( metaObject ).build();
+				
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
+	}
 	
 	// --------------------------------------------------------------------------------
 	// helper functions
@@ -440,7 +655,7 @@ public class RestApi extends Application {
 				builder = builder.cookie(
 						new NewCookie(Fields.COOKIE_FAMILY_NAME, data.getFamilyName(), "/", null, null, Fields.COOKIE_AGE, false),
 						new NewCookie(Fields.COOKIE_GIVEN_NAME, data.getGivenName(), "/", null, null, Fields.COOKIE_AGE, false),
-						new NewCookie(Fields.COOKIE_MAIL, data.getMail(), "/", null, null, Fields.COOKIE_AGE, false),
+						new NewCookie(Fields.COOKIE_MAIL, data.getEMail(), "/", null, null, Fields.COOKIE_AGE, false),
 						new NewCookie(Fields.COOKIE_ORG, data.getOrganization(), "/", null, null, Fields.COOKIE_AGE, false)
 						);
 			}

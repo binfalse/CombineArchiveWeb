@@ -82,7 +82,7 @@ public class Tools
 		if (familyName != null)
 			userData.setFamilyName(familyName.getValue());
 		if (mail != null)
-			userData.setMail(mail.getValue());
+			userData.setEMail(mail.getValue());
 		if (organization != null)
 			userData.setOrganization(organization.getValue());
 		
@@ -100,7 +100,7 @@ public class Tools
 			UserData userData = user.getData();
 			cookies.setCookie(new Cookie( Fields.COOKIE_FAMILY_NAME, userData.getFamilyName() ));
 			cookies.setCookie(new Cookie( Fields.COOKIE_GIVEN_NAME, userData.getGivenName() ));
-			cookies.setCookie(new Cookie( Fields.COOKIE_MAIL, userData.getMail() ));
+			cookies.setCookie(new Cookie( Fields.COOKIE_MAIL, userData.getEMail() ));
 			cookies.setCookie(new Cookie( Fields.COOKIE_ORG, userData.getOrganization() ));
 		}
 		

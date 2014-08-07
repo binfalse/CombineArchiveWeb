@@ -5,6 +5,7 @@ import org.jdom2.Element;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.unirostock.sems.cbarchive.ArchiveEntry;
+import de.unirostock.sems.cbarchive.meta.DefaultMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 
 public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
@@ -15,11 +16,6 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		super(metaObject);
 		type = MetaObjectDataholder.TYPE_XML;
 		xmltree = metaObject.getXmlDescription();
-	}
-	
-	public XmlTreeMetaObjectDataholder(MetaObjectDataholder metaObject, ArchiveEntry archiveEntry) {
-		super(null);
-		//TODO
 	}
 	
 	public XmlTreeMetaObjectDataholder(String id, String type, boolean changed) {
@@ -54,6 +50,14 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		if( newXmltree != null )
 			xmltree = newXmltree;
 		
+	}
+
+	@Override
+	public MetaDataObject getCombineArchiveMetaObject() {
+		this.metaObject = new DefaultMetaDataObject(xmltree);
+		// update the id
+		generateId();
+		return metaObject;
 	}
 
 }

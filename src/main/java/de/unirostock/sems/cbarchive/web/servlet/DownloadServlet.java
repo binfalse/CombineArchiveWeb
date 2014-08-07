@@ -145,15 +145,16 @@ public class DownloadServlet extends HttpServlet {
 			archive = user.getArchive(archiveId, true);
 			combineArchive = archive.getArchive();
 		} catch (FileNotFoundException | CombineArchiveWebException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.warn(e, MessageFormat.format("Archive FileNotFound Exception, while handling donwload request for File {2} in Archive {1} in Workspace {0}", user.getWorkingDir(), archive, filePath) );
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage() );
+			return;
 		}
 		
 		
 		// check if file exits in the archive
 		ArchiveEntry entry = combineArchive.getEntry(filePath);
 		if( entry == null ) {
-			// TODO
+			LOGGER.warn( MessageFormat.format("File not found in archive {1} in Workspace {0} : file = {2}", user.getWorkingDir(), archiveId, filePath) );
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found in archive." );
 			return;
 		}
@@ -187,8 +188,8 @@ public class DownloadServlet extends HttpServlet {
 			tempFile.delete();
 		}
 		catch (IOException e) {
-			// TODO
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found in archive." );
+			LOGGER.warn( MessageFormat.format("Error while extracting and serving file in archive {1} in Workspace {0} : file = {2}", user.getWorkingDir(), archiveId, filePath) );
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while extracting and serving file." );
 			return;
 		}
 		

@@ -1,13 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix='fn' uri='http://java.sun.com/jsp/jstl/functions'%>
 <html>
-
 <head>
-	<title>CombineArchiveWebWeb</title>
+	<title>CombineArchiveWeb</title>
 	<script type="text/javascript">
 		var RestRoot = 'http://localhost:8080/CombineArchiveWeb/rest/v1/';
 	</script>
-	
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
 <!-- 	<script type="text/javascript" src="res/js/3rd/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script> -->
 	<script type="text/javascript" src="res/js/3rd/jquery-field-selection.js"></script>
@@ -37,8 +35,7 @@
 	<div id="noBrowser">Unfortunately, we're not able to support
 		Internet Explorer. Since we're fighting for open systems and
 		reproducibility we're unwilling to buy and install proprietary
-		software that is not more than a big bug.</div>
-
+		software that is nothing but a big bug.</div>
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
 			<ul id="nav">
@@ -70,7 +67,6 @@
 			<p>
 				<input type="button" class="save-vcard" value="Save" />
 			</p>
-			
 			<h2>CreateArchive</h2>
 			<p>
 				<label for="newArchiveName">Name of the Archive:</label><br />

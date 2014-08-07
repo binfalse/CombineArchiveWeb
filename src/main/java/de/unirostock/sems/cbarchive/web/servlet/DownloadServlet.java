@@ -16,10 +16,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.ArchiveEntry;
+import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
+import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 
 public class DownloadServlet extends HttpServlet {
 
@@ -59,6 +63,30 @@ public class DownloadServlet extends HttpServlet {
 			// request to download an archive from the workspace
 			if( requestUrl[3] != null && !requestUrl[3].isEmpty() )
 				downloadArchive(request, response, user, requestUrl[3] );
+		}
+		else if( requestUrl.length >= 5 && requestUrl[2].equals("file") ) {
+			
+			String archive = null;
+			String file = null;
+			
+			if( requestUrl[3] != null && !requestUrl[3].isEmpty() )
+				archive = requestUrl[3];
+			else
+				return;
+			
+			StringBuilder filePath = new StringBuilder();
+			for( int i = 4; i < requestUrl.length; i++ ) {
+				
+				if( requestUrl[i] != null && !requestUrl[i].isEmpty() ) {
+					filePath.append("/");
+					filePath.append( requestUrl[i] );
+				}
+			}
+			file = filePath.toString();
+			
+			if( archive != null && !archive.isEmpty() && file != null && !file.isEmpty() )
+				downloadFile(request, response, user, archive, file);
+			
 		}
 		
 	}
@@ -107,6 +135,63 @@ public class DownloadServlet extends HttpServlet {
 			LOGGER.error(e,  MessageFormat.format("IOException, while copying streams by handling donwload request for Archive {1} in Workspace {0}", user.getWorkingDir(), archive));
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "IOException while sending the file.");
 		}
+	}
+	
+	private void downloadFile(HttpServletRequest request, HttpServletResponse response, UserManager user, String archiveId, String filePath) throws IOException {
+		
+		Archive archive = null;
+		CombineArchive combineArchive = null;
+		try {
+			archive = user.getArchive(archiveId, true);
+			combineArchive = archive.getArchive();
+		} catch (FileNotFoundException | CombineArchiveWebException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		// check if file exits in the archive
+		ArchiveEntry entry = combineArchive.getEntry(filePath);
+		if( entry == null ) {
+			// TODO
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found in archive." );
+			return;
+		}
+		
+		// set the mime type of the response
+		response.setContentType( entry.getFormat() );
+		
+		// set the filename of the response
+		response.addHeader("Content-Disposition", 
+				MessageFormat.format("inline; filename=\"{0}\"", entry.getFileName()) );
+		
+		// extract the file
+		try {
+			File tempFile = File.createTempFile( Fields.TEMP_FILE_PREFIX, entry.getFileName() );
+			entry.extractFile(tempFile);
+			
+			OutputStream output = response.getOutputStream();
+			InputStream input = new FileInputStream(tempFile);
+			
+			// copy the streams
+			IOUtils.copy(input, output);
+			
+			// flush'n'close
+			output.flush();
+			output.close();
+			input.close();
+			
+			response.flushBuffer();
+			
+			// remove the temp file
+			tempFile.delete();
+		}
+		catch (IOException e) {
+			// TODO
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found in archive." );
+			return;
+		}
+		
 	}
 
 }

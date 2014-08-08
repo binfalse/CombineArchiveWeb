@@ -81,9 +81,7 @@ nav .highlight
 /* -------- Message Bar -------- */
 #message-bar {
 	width: 100%;
-	min-height: 0;
-	max-height: 100px;
-	padding: 5px 0;
+	padding: 0;
 }
 .message {
 	margin: 5px 0;

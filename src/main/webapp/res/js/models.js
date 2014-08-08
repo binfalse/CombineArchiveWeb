@@ -239,11 +239,17 @@ var MetaEntryView = Backbone.View.extend({
 			success: function(model, response, options) {
 				// everything ok
 				console.log("saved meta entry " + self.model.get("id") + " >> " + model.get("id") + " successfully.");
+				message.success("Meta data successfully saved");
 				self.render();
 			},
 			error: function(model, response, options) {
 				console.log("error while saving meta entry");
-				console.log(response.responseText);
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not save meta data", text );
+				}
+				else
+					messsageView.error( "Unknown Error", "Can not save meta data" );
 			}
 		});
 	}
@@ -331,6 +337,14 @@ var ArchiveEntryView = Backbone.View.extend({
 			reset: true,
 			success: function(model, response, options) {
 				self.render();
+			},
+			error: function(model, response, options) {
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not fetch archive entry information", text );
+				}
+				else
+					messsageView.error( "Unknown Error", "Can not fetch archive entry information." );
 			}
 		});
 	},
@@ -384,6 +398,7 @@ var ArchiveEntryView = Backbone.View.extend({
 			success: function(model, response, options) {
 				// everything ok
 				console.log("updated model successfully");
+				messageView.success( "Saved " + model.get("filePath") + " successfully" );
 				
 				self.cancelEntryEdit(null);
 				self.model = model;
@@ -397,7 +412,12 @@ var ArchiveEntryView = Backbone.View.extend({
 			},
 			error: function(model, response, options) {
 				console.log("error while update");
-				console.log(response.responseText);
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Error while saving archive entry", text );
+				}
+				else
+					messsageView.error( "Unknown Error", "Error while saving archive entry." );
 			}
 		});
 	}
@@ -866,13 +886,9 @@ var MessageView = Backbone.View.extend({
 	el: "#message-bar",
 	
 	initialize: function() {
-		console.log( $("#template-message-success").html() );
-		console.log( $("#template-message-warning").html() );
-//		this.templateSuccess = _.template( $("#template-message-success").html() );
-//		this.templateWarning = _.template( $("#template-message-warning").html() );
-		var errorTempl		 = $("#template-message-error").html();
-		console.log(errorTempl);
-		this.templateError	 = _.template( errorTempl );
+		this.templateSuccess = _.template( $("#template-message-success").html() );
+		this.templateWarning = _.template( $("#template-message-warning").html() );
+		this.templateError	 = _.template( $("#template-message-error").html() );
 		
 		$("#template-message-success").remove();
 		$("#template-message-warning").remove();

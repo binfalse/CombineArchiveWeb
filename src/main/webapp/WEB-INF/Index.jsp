@@ -273,7 +273,7 @@
 
 	</div>
 	<footer>
-		build and maintained by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ University of Rostock
+		built and maintained by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ University of Rostock
 	</footer>
 </body>
 </html>

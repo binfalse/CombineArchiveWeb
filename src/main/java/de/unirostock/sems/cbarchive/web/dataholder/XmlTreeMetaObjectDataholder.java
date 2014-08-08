@@ -4,7 +4,6 @@ import org.jdom2.Element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.meta.DefaultMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 

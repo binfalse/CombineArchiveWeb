@@ -10,6 +10,9 @@ public class RestMultipartApplication extends ResourceConfig {
 
 	public RestMultipartApplication() {
 		super(MultiPartFeature.class);
+		
+		// registers the ObjectMapperResolver for Jackson
+		this.register( ObjectMapperProvider.class );
 	}
 
 	

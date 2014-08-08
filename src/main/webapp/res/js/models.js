@@ -76,16 +76,7 @@ var OmexMetaModel = Backbone.Model.extend({
 	},
 	setUrl: function( archiveId, entryId )  {
 		this.urlRoot = RestRoot + "archives/" + archiveId + "/entries/" + entryId + "/meta";
-	},
-	// blacklist to exclude the empty field
-    toJSON: function(options) {
-    	console.log(this.attributes);
-    	_.each(this.attributes.creators, function(element, index, list) {
-    		delete list[index].empty;
-    	});
-    	console.log(this.attributes);
-        return this.attributes;
-    },
+	}
 });
 
 var ArchiveCollection = Backbone.Collection.extend({
@@ -148,7 +139,7 @@ var NavigationView = Backbone.View.extend({
 					messageView.error( "Unable to receive archives", text );
 				}
 				else
-					messsageView.error( "Unknown Error", "Unable to receive archives" );
+					messageView.error( "Unknown Error", "Unable to receive archives" );
 				console.log(response);
 			}
 		});
@@ -247,7 +238,7 @@ var MetaEntryView = Backbone.View.extend({
 					messageView.error( "Can not save meta data", text );
 				}
 				else
-					messsageView.error( "Unknown Error", "Can not save meta data" );
+					messageView.error( "Unknown Error", "Can not save meta data" );
 			}
 		});
 	}
@@ -342,7 +333,7 @@ var ArchiveEntryView = Backbone.View.extend({
 					messageView.error( "Can not fetch archive entry information", text );
 				}
 				else
-					messsageView.error( "Unknown Error", "Can not fetch archive entry information." );
+					messageView.error( "Unknown Error", "Can not fetch archive entry information." );
 			}
 		});
 	},
@@ -415,7 +406,7 @@ var ArchiveEntryView = Backbone.View.extend({
 					messageView.error( "Error while saving archive entry", text );
 				}
 				else
-					messsageView.error( "Unknown Error", "Error while saving archive entry." );
+					messageView.error( "Unknown Error", "Error while saving archive entry." );
 			}
 		});
 	}
@@ -500,7 +491,7 @@ var ArchiveView = Backbone.View.extend({
 					messageView.error( "Can not fetch archive entries", text );
 				}
 				else
-					messsageView.error( "Unknown Error", "Can not fetch archive entries." );
+					messageView.error( "Unknown Error", "Can not fetch archive entries." );
 			}
 		});
 		
@@ -824,7 +815,7 @@ var CreateView = Backbone.View.extend({
 					messageView.error( "Can not save meta data", text );
 				}
 				else
-					messsageView.error( "Unknown Error", "Can not save meta data." );
+					messageView.error( "Unknown Error", "Can not save meta data." );
 			}
 		});
 		
@@ -891,7 +882,7 @@ var CreateView = Backbone.View.extend({
 					messageView.error( "Can not create new archive", text );
 				}
 				else
-					messsageView.error( "Unknown Error", "Can not create new archive." );
+					messageView.error( "Unknown Error", "Can not create new archive." );
 			}
 		});
 	}

@@ -5,6 +5,7 @@ var navigationView = null;
 var archiveView = null;
 var createView = null;
 var messageView = null;
+var templateCache = {};
 
 function displayError (err)
 {
@@ -20,6 +21,14 @@ $(document).ready(function () {
 		$("#noBrowser").remove ();
 	else
 		return;
+	
+	// read in and compile all tempates
+	$("#templates").children().each( function(index, element) {
+		var id = $(element).attr("id");
+		var html = $(element).html();
+		if( id != undefined && html != undefined && html.length > 1)
+			templateCache[ id ] = _.template(html);
+	});
 	
 	// heatbeat
 	$.get( RestRoot + "heartbeat", function(data) {

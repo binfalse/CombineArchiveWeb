@@ -82,6 +82,7 @@ nav .highlight
 #message-bar {
 	width: 100%;
 	min-height: 0;
+	max-height: 100px;
 	padding: 5px 0;
 }
 .message {
@@ -89,6 +90,9 @@ nav .highlight
 	padding: 12px;
 	border: 1px solid;
 	border-radius: 4px;
+}
+.message ul {
+	margin-bottom: 0;
 }
 .message-buttons {
 	float: right;

@@ -138,11 +138,20 @@ var NavigationView = Backbone.View.extend({
 		this.collection.fetch({
 			reset: false,
 			success: function(collection, response, options) {
-				console.log("ok");
+				// render the navigation bar
+				console.log(response);
 				self.render();
 			},
 			error: function(collection, response, options) {
 				console.log("error: can not get archives");
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					text.unshift( "Can not get archives!" );
+					messageView.error( "Unable to receive archives", text );
+				}
+				else
+					messsageView.error( "Unknown Error", "Unable to receive archives" );
+				console.log(response);
 			}
 		});
 		
@@ -857,9 +866,13 @@ var MessageView = Backbone.View.extend({
 	el: "#message-bar",
 	
 	initialize: function() {
-		this.templateSuccess = _.template( $("#template-message-success").html() );
-		this.templateWarning = _.template( $("#template-message-warning").html() );
-		this.templateError	 = _.template( $("#template-message-error").html() );
+		console.log( $("#template-message-success").html() );
+		console.log( $("#template-message-warning").html() );
+//		this.templateSuccess = _.template( $("#template-message-success").html() );
+//		this.templateWarning = _.template( $("#template-message-warning").html() );
+		var errorTempl		 = $("#template-message-error").html();
+		console.log(errorTempl);
+		this.templateError	 = _.template( errorTempl );
 		
 		$("#template-message-success").remove();
 		$("#template-message-warning").remove();

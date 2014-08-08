@@ -186,29 +186,71 @@
 		<!-- **** -->
 		<div id="template-message-success">
 			<div class="message message-success">
-				<strong>{{# print( message.title ? message.title : "Success" ); }}: </strong>
-				{{# print( message.text ); }}
 				<div class="message-buttons">
 					<a class="message-button-close" href="#">[x]</a>
 				</div>
+				
+				{{# if( message.title ) { }}
+						<strong>{{# print(message.title); }}: </strong>
+				{{#	} }}
+				
+				{{# if( _.isArray(message.text) ) { }}
+					<ul>
+					{{# _.each(message.text, function(txt) { }}
+						<li>{{# print(txt); }}</li>
+					{{# }); }}
+					</ul>
+				{{# } }}
+				
+				{{# if( !_.isArray(message.text) ) { }}
+						<span>{{# print( message.text ); }}</span>
+				{{# } }}
 			</div>
 		</div>
 		<div id="template-message-warning">
 			<div class="message message-warning">
-				<strong>{{# print( message.title ? message.title : "Warning" ); }}: </strong>
-				{{# print( message.text ); }}
 				<div class="message-buttons">
 					<a class="message-button-close" href="#">[x]</a>
 				</div>
+				
+				{{# if( message.title ) { }}
+						<strong>{{# print(message.title); }}: </strong>
+				{{#	} }}
+				
+				{{# if( _.isArray(message.text) ) { }}
+					<ul>
+					{{# _.each(message.text, function(txt) { }}
+						<li>{{# print(txt); }}</li>
+					{{# }); }}
+					</ul>
+				{{# } }}
+				
+				{{# if( !_.isArray(message.text) ) { }}
+						<span>{{# print( message.text ); }}</span>
+				{{# } }}
 			</div>
 		</div>
 		<div id="template-message-error">
 			<div class="message message-error">
-				<strong>{{# print( message.title ? message.title : "Error" ); }}: </strong>
-				{{# print( message.text ); }}
 				<div class="message-buttons">
 					<a class="message-button-close" href="#">[x]</a>
 				</div>
+				
+				{{# if( message.title ) { }}
+						<strong>{{# print(message.title); }}: </strong>
+				{{#	} }}
+				
+				{{# if( _.isArray(message.text) ) { }}
+					<ul>
+					{{# _.each(message.text, function(txt) { }}
+						<li>{{# print(txt); }}</li>
+					{{# }); }}
+					</ul>
+				{{# } }}
+				
+				{{# if( !_.isArray(message.text) ) { }}
+						<span>{{# print( message.text ); }}</span>
+				{{# } }}
 			</div>
 		</div>
 		<!-- **** -->

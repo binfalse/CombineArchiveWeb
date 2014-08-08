@@ -794,7 +794,15 @@ var CreateView = Backbone.View.extend({
 	
 	events: {
 		'click .save-vcard': 'saveVCard',
-		'click .create-archive': 'createArchive'
+		'click .create-archive': 'createArchive',
+		"click a.test": "addMsg"
+	},
+	addMsg: function(event) {
+		messageView.success("Hello World");
+		messageView.error("Error");
+		messageView.warning("Halfdkas");
+		messageView.success("sldfjfs");
+		return false;
 	},
 	saveVCard: function(event) {
 		this.model.set('givenName', this.$el.find("input[name='userGivenName']").val() );
@@ -802,10 +810,8 @@ var CreateView = Backbone.View.extend({
 		this.model.set('email', this.$el.find("input[name='userMail']").val() );
 		this.model.set('organization', this.$el.find("input[name='userOrganization']").val() );
 		
-		// TODO
 		if( !this.model.isValid() ) {
 			messageView.warning("Meta information invalid", this.model.validationError);
-//			alert( this.model.validationError );
 			return false;
 		}
 		
@@ -931,7 +937,14 @@ var MessageView = Backbone.View.extend({
 			template = this.templateError;
 		
 		var html = template(json);
-		this.$el.append(html).hide().fadeIn("quick");
+		var messageBlock = $(html).hide().appendTo(this.$el).fadeIn("quick");
+		// show success messages just for 2 seconds
+		if( type == "success" ) {
+			messageBlock.delay( 2000 ).animate({opacity: 0.15, height: 0}, "700", function() {
+				$(this).remove();
+			});
+		}
+		
 	},
 	error: function( title, text ) {
 		return this.showMessage("error", title, text);
@@ -944,13 +957,13 @@ var MessageView = Backbone.View.extend({
 	},
 	
 	events:  {
-		"click .message-button-close": "closeMessage"
+		"click .message-button-close": "closeMessage",
 	},
 	closeMessage: function(event) {
 		event.preventDefault();
 		
 		console.log(event);
-		$(event.target).parent().parent().fadeOut("quick", function() {
+		$(event.target).parent().parent().animate({opacity: 0.15, height: 0}, "500", function() {
 			$(this).remove();
 		});
 		return false;

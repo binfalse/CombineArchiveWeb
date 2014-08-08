@@ -463,9 +463,6 @@ var ArchiveView = Backbone.View.extend({
 		var self = this;
 		this.$treeEl.on('changed.jstree', function(event, data) { self.jstreeClick.call(self, event, data); } );
 		
-		
-		
-		
 		this.$el.show();
 	},
 	
@@ -474,8 +471,6 @@ var ArchiveView = Backbone.View.extend({
 		this.model = archiveModel;
 		// gets all entries in for this archive
 		this.fetchCollection(true);
-		
-		
 	},
 	
 	fetchCollection: function( render ) {
@@ -500,6 +495,14 @@ var ArchiveView = Backbone.View.extend({
 				// render 
 				if( render == true )
 					self.render();
+			},
+			error: function(collection, response, options) {
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not fetch archive entries", text );
+				}
+				else
+					messsageView.error( "Unknown Error", "Can not fetch archive entries." );
 			}
 		});
 		
@@ -809,10 +812,16 @@ var CreateView = Backbone.View.extend({
 		this.model.save({}, {
 			success: function(model, response, options) {
 				// everything ok
-				console.log(response);
+				messageView.success( "MetaData successfully saved." );
 			},
 			error: function(model, response, options) {
-				console.log(response);
+				console.log("error saving own VCard");
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not save meta data", text );
+				}
+				else
+					messsageView.error( "Unknown Error", "Can not save meta data." );
 			}
 		});
 		
@@ -827,7 +836,6 @@ var CreateView = Backbone.View.extend({
 		
 		// check if there are errors in this model
 		if( !this.model.isValid() ) {
-			// TODO
 			return false;
 		}
 		
@@ -835,7 +843,7 @@ var CreateView = Backbone.View.extend({
 		
 		if( archiveTemplate == undefined ) {
 			// TODO
-			alert("undefined type");
+			messageView.error("Undefined archive template type");
 			return false;
 		}
 		else if( archiveTemplate == "empty" ) {
@@ -867,6 +875,7 @@ var CreateView = Backbone.View.extend({
 			success: function(model, response, options) {
 				// everything ok
 				console.log("created new archive successfully.");
+				messageView.success( "Archive " + model.get("name") + " successfully created.");
 				// add model to navigation collection and re-renders the view
 				navigationView.collection.add([model]);
 				navigationView.render();
@@ -874,7 +883,12 @@ var CreateView = Backbone.View.extend({
 			},
 			error: function(model, response, options) {
 				console.log("error while creating new archive");
-				console.log(response.responseText);
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not create new archive", text );
+				}
+				else
+					messsageView.error( "Unknown Error", "Can not create new archive." );
 			}
 		});
 	}

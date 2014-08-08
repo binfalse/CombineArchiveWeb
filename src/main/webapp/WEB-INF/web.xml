@@ -30,7 +30,7 @@
 		<!-- enable multipart support for file upload -->
 		<init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>de.unirostock.sems.cbarchive.web.rest.RestMultipartApplication</param-value>
+            <param-value>de.unirostock.sems.cbarchive.web.provider.RestMultipartApplication</param-value>
         </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

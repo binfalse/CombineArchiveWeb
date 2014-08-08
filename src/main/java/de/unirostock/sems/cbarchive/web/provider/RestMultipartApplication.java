@@ -1,4 +1,4 @@
-package de.unirostock.sems.cbarchive.web.rest;
+package de.unirostock.sems.cbarchive.web.provider;
 
 import javax.ws.rs.ApplicationPath;
 

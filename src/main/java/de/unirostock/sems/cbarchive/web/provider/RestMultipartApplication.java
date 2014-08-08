@@ -1,4 +1,4 @@
-package de.unirostock.sems.cbarchive.web.rest;
+package de.unirostock.sems.cbarchive.web.provider;
 
 import javax.ws.rs.ApplicationPath;
 
@@ -10,6 +10,9 @@ public class RestMultipartApplication extends ResourceConfig {
 
 	public RestMultipartApplication() {
 		super(MultiPartFeature.class);
+		
+		// registers the ObjectMapperResolver for Jackson
+		this.register( ObjectMapperProvider.class );
 	}
 
 	

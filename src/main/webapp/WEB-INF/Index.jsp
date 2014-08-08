@@ -61,12 +61,13 @@
 				<label for="userFamilyName">Family Name:</label><br />
 				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" value="{{# print(vcard.familyName); }}" /> <span id="userFamilyNameAction"></span><br />
 				<label for="userMail">E-Mail:</label><br />
-				<input type="mail" id="userMail" name="userMail" placeholder="mail address" value="{{# print(vcard.mail); }}" /> <span id="userMailAction"></span><br />
+				<input type="mail" id="userMail" name="userMail" placeholder="email address" value="{{# print(vcard.email); }}" /> <span id="userMailAction"></span><br />
 				<label for="userOrganization">Organization:</label><br />
 				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" /> <span id="userOrganizationAction"></span>
 			</p>
 			<p>
 				<input type="button" class="save-vcard" value="Save" />
+				<a href="#" class="test">Hallo</a>
 			</p>
 			<h2>CreateArchive</h2>
 			<p>
@@ -183,12 +184,83 @@
 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a>
 			</div> 
 		</div>
+		<!-- **** -->
+		<div id="template-message-success">
+			<div class="message message-success">
+				<div class="message-buttons">
+					<a class="message-button-close" href="#">[x]</a>
+				</div>
+				
+				{{# if( message.title ) { }}
+						<strong>{{# print(message.title); }}: </strong>
+				{{#	} }}
+				
+				{{# if( _.isArray(message.text) ) { }}
+					<ul>
+					{{# _.each(message.text, function(txt) { }}
+						<li>{{# print(txt); }}</li>
+					{{# }); }}
+					</ul>
+				{{# } }}
+				
+				{{# if( !_.isArray(message.text) ) { }}
+						<span>{{# print( message.text ); }}</span>
+				{{# } }}
+			</div>
+		</div>
+		<div id="template-message-warning">
+			<div class="message message-warning">
+				<div class="message-buttons">
+					<a class="message-button-close" href="#">[x]</a>
+				</div>
+				
+				{{# if( message.title ) { }}
+						<strong>{{# print(message.title); }}: </strong>
+				{{#	} }}
+				
+				{{# if( _.isArray(message.text) ) { }}
+					<ul>
+					{{# _.each(message.text, function(txt) { }}
+						<li>{{# print(txt); }}</li>
+					{{# }); }}
+					</ul>
+				{{# } }}
+				
+				{{# if( !_.isArray(message.text) ) { }}
+						<span>{{# print( message.text ); }}</span>
+				{{# } }}
+			</div>
+		</div>
+		<div id="template-message-error">
+			<div class="message message-error">
+				<div class="message-buttons">
+					<a class="message-button-close" href="#">[x]</a>
+				</div>
+				
+				{{# if( message.title ) { }}
+						<strong>{{# print(message.title); }}: </strong>
+				{{#	} }}
+				
+				{{# if( _.isArray(message.text) ) { }}
+					<ul>
+					{{# _.each(message.text, function(txt) { }}
+						<li>{{# print(txt); }}</li>
+					{{# }); }}
+					</ul>
+				{{# } }}
+				
+				{{# if( !_.isArray(message.text) ) { }}
+						<span>{{# print( message.text ); }}</span>
+				{{# } }}
+			</div>
+		</div>
+		<!-- **** -->
 	</div>
 
 
 	<div id="page" style="display: none;">
 		<nav id="navigation"></nav>
-		
+		<div id="message-bar"></div>
 		<div id="startPage" class="subPage">
 			<p>
 				This is a web based interface to read, created, and modify CombineArchives. <br />
@@ -201,7 +273,7 @@
 
 	</div>
 	<footer>
-		build and maintained by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ University of Rostock
+		built and maintained by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ University of Rostock
 	</footer>
 </body>
 </html>

@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import org.apache.commons.codec.binary.Base64;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -78,14 +80,23 @@ public class UserData {
 	public String toJson() throws JsonProcessingException {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString( (UserData) this);
+		String json = mapper.writeValueAsString( (UserData) this);
+		
+		json = Base64.encodeBase64URLSafeString( json.getBytes() );
+		return json;
 	}
 	
 	@JsonIgnore
 	public static UserData fromJson( String json ) throws JsonParseException, JsonMappingException, IOException {
 		
+		if( json == null )
+			return null;
+		
+		json = new String( Base64.decodeBase64(json) );
+		
 		ObjectMapper mapper = new ObjectMapper();
-		return mapper.readValue(json, UserData.class);
+		UserData result = mapper.readValue(json, UserData.class);
+		return result;
 	}
 	
 }

@@ -108,9 +108,7 @@ var NavigationView = Backbone.View.extend({
 	el: '#navigation',
 	
 	initialize: function () {
-		var templateText = $('#template-navigation').html();
-//		console.log(templateText);
-		this.template = _.template(templateText);
+		this.template = templateCache["template-navigation"];
 	},
 	render: function() {
 		var json = { 'entries': this.collection.toJSON() };
@@ -261,7 +259,7 @@ var MetaEntryView = Backbone.View.extend({
 var OmexMetaEntryView = MetaEntryView.extend({
 	
 	initialize: function () {
-		this.template = _.template( $("#template-omex-meta-entry").html() ); 
+		this.template = templateCache["template-omex-meta-entry"]; 
 	}
 });
 
@@ -274,7 +272,7 @@ var ArchiveEntryView = Backbone.View.extend({
 	metaViews: {},
 	
 	initialize: function () {
-		this.template = _.template( $('#template-archive-entry').html() );
+		this.template = templateCache["template-archive-entry"];
 	},
 	render: function () {
 		
@@ -433,7 +431,7 @@ var ArchiveView = Backbone.View.extend({
 	el: '#archivePage',
 	
 	initialize: function () {
-		this.template = _.template( $('#template-archive').html() );
+		this.template = templateCache["template-archive"];
 	},
 	
 	render: function() {
@@ -765,8 +763,7 @@ var CreateView = Backbone.View.extend({
 	el: '#createPage',
 	
 	initialize: function() {
-		var text = $('#template-create').html();
-		this.template = _.template( text );
+		this.template = templateCache["template-create"];
 		
 		if( this.model == null ) {
 			this.model = new VCardModel();
@@ -906,13 +903,9 @@ var MessageView = Backbone.View.extend({
 	el: "#message-bar",
 	
 	initialize: function() {
-		this.templateSuccess = _.template( $("#template-message-success").html() );
-		this.templateWarning = _.template( $("#template-message-warning").html() );
-		this.templateError	 = _.template( $("#template-message-error").html() );
-		
-		$("#template-message-success").remove();
-		$("#template-message-warning").remove();
-		$("#template-message-error").remove();
+		this.templateSuccess = templateCache["template-message-success"];
+		this.templateWarning = templateCache["template-message-warning"];
+		this.templateError	 = templateCache["template-message-error"];
 	},
 	render: function() {
 		// not used?

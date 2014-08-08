@@ -24,10 +24,13 @@ $(document).ready(function () {
 	
 	// read in and compile all tempates
 	$("#templates").children().each( function(index, element) {
-		var id = $(element).attr("id");
-		var html = $(element).html();
+		var $el = $(element);
+		var id = $el.attr("id");
+		var html = $el.html();
+		
 		if( id != undefined && html != undefined && html.length > 1)
 			templateCache[ id ] = _.template(html);
+		$el.remove();
 	});
 	
 	// heatbeat

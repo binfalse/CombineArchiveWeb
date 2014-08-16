@@ -762,11 +762,14 @@ var CreateView = Backbone.View.extend({
 			this.model.fetch({
 				success: function( model, reponse, options ) {
 					self.render();
+				},
+				error: function(model, response, options) {
+					console.log("error getting own VCard");
+					self.render();
 				}
 			});
 		}
 		
-		$('#template-create').remove ();
 	},
 	render: function() {
 		

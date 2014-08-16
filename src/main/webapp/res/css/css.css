@@ -71,11 +71,12 @@ nav .highlight
 {
 	font-weight: bold;
 }
-
-
 .clearer
 {
 	clear: both;
+}
+.error-element {
+	background-color: #FF9696
 }
 
 /* -------- Message Bar -------- */

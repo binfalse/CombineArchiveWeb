@@ -57,13 +57,13 @@
 			</p>
 			<p>
 				<label for="userGivenName">Given Name:</label><br />
-				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" value="{{# print(vcard.givenName); }}"/> <span id="userGivenNameAction"></span><br />
+				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" value="{{# print(vcard.givenName); }}"/><br />
 				<label for="userFamilyName">Family Name:</label><br />
-				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" value="{{# print(vcard.familyName); }}" /> <span id="userFamilyNameAction"></span><br />
+				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" value="{{# print(vcard.familyName); }}" /><br />
 				<label for="userMail">E-Mail:</label><br />
-				<input type="mail" id="userMail" name="userMail" placeholder="email address" value="{{# print(vcard.email); }}" /> <span id="userMailAction"></span><br />
+				<input type="mail" id="userMail" name="userMail" placeholder="email address" value="{{# print(vcard.email); }}" /><br />
 				<label for="userOrganization">Organization:</label><br />
-				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" /> <span id="userOrganizationAction"></span>
+				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" />
 			</p>
 			<p>
 				<input type="button" class="save-vcard" value="Save" />
@@ -171,17 +171,51 @@
 				{{# }); }}<br />
 			<strong>creators:</strong>
 				{{# _.each(creators, function(vcard) { }}
-					<p style="padding-left: 10px;">
-						<strong>given name:</strong> {{# print(vcard.givenName); }}<br />
-						<strong>family name:</strong> {{# print(vcard.familyName); }}<br />
-						<strong>E-Mail:</strong> {{# print(vcard.email); }}<br />
-						<strong>organization:</strong> {{# print(vcard.organization); }}<br />
-					</p> 
+					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
+						<strong>given name: </strong>
+							<span class="on-not-edit" data-field="givenName">{{# print(vcard.givenName); }}</span>
+							<input type="text" class="on-edit" data-field="givenName" /> <br />
+						<strong>family name: </strong>
+							<span class="on-not-edit" data-field="familyName">{{# print(vcard.familyName); }}</span>
+							<input type="text" class="on-edit" data-field="familyName" /> <br />
+						<strong>E-Mail: </strong>
+							<span class="on-not-edit" data-field="email">{{# print(vcard.email); }}</span>
+							<input type="text" class="on-edit" data-field="email" /> <br />
+						<strong>organization: </strong>
+							<span class="on-not-edit" data-field="organization">{{# print(vcard.organization); }}</span>
+							<input type="text" class="on-edit" data-field="organization" /> <br />
+						
+						<div class="edit-link">
+							<a class="archive-meta-omex-creator-delete on-edit" href="#">[-]</a>
+						</div>
+					</div> 
 				{{# }); }}
 			<div class="edit-link">
 				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a>
+				<a class="archive-meta-omex-creator-add on-edit" href="#">[+]</a>
 				<a class="archive-meta-save on-edit" href="#">[Save]</a>
 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a>
+			</div> 
+		</div>
+		<!-- **** -->
+		<div id="template-omex-meta-entry-creator">
+			<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
+				<strong>given name: </strong>
+					<span class="on-not-edit" data-field="givenName">{{# print(vcard.givenName); }}</span>
+					<input type="text" class="on-edit" data-field="givenName" placeholder="{{# print(vcard.givenName); }}" /> <br />
+				<strong>family name: </strong>
+					<span class="on-not-edit" data-field="familyName">{{# print(vcard.familyName); }}</span>
+					<input type="text" class="on-edit" data-field="familyName" placeholder="{{# print(vcard.familyName); }}" /> <br />
+				<strong>E-Mail: </strong>
+					<span class="on-not-edit" data-field="email">{{# print(vcard.email); }}</span>
+					<input type="text" class="on-edit" data-field="email" placeholder="{{# print(vcard.email); }}" /> <br />
+				<strong>organization: </strong>
+					<span class="on-not-edit" data-field="organization">{{# print(vcard.organization); }}</span>
+					<input type="text" class="on-edit" data-field="organization" placeholder="{{# print(vcard.organization); }}" /> <br />
+				
+				<div class="edit-link">
+					<a class="archive-meta-omex-creator-delete on-edit" href="#">[-]</a>
+				</div>
 			</div> 
 		</div>
 		<!-- **** -->

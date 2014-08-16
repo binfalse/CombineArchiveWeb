@@ -251,6 +251,79 @@ var OmexMetaEntryView = MetaEntryView.extend({
 	
 	initialize: function () {
 		this.template = templateCache["template-omex-meta-entry"]; 
+	},
+	
+	events: {
+		"click .archive-meta-edit": "startEdit",
+		"click .archive-meta-save": "saveEdit",
+		"click .archive-meta-cancel": "cancelEdit",
+		"click .archive-meta-omex-creator-add": "addCreator",
+		"click .archive-meta-omex-creator-delete": "removeCreator"
+	},
+	startEdit: function(event) {
+		this.$el.find(".archive-meta-omex-creator-box").each( function(index, boxElement) {
+			$(boxElement).find("input").each( function(index, inputElement) {
+				var field = $(inputElement).attr("data-field");
+				var html = $(boxElement).find("span[data-field='" + field + "']").html();
+				$(inputElement).val(html);
+			});
+		});
+		
+		this.$el.addClass("edit");
+		
+		return false;
+	},
+	cancelEdit: function(event) {
+		this.$el.removeClass("edit");
+		this.render();
+		
+		return false;
+	},
+	saveEdit: function(event) {
+		this.$el.find(".error-element").removeClass("error-element");
+		var creators = [];
+		var error = false;
+		
+		this.$el.find(".archive-meta-omex-creator-box").each( function(index, boxElement) {
+			var vcard = new VCardModel();
+			$(boxElement).find("input").each( function(index, inputElement) {
+				var elem = $(inputElement);
+				vcard.set( elem.attr("data-field"), elem.val() );
+			});
+			
+			if( vcard.isValid() ) {
+				creators.push( vcard.toJSON() );
+				error = true;
+			}
+			else {
+				messageView.warning( vcard.validationError );
+				$(boxElement).addClass("error-element");
+			}
+		});
+		
+		if( !error ) {
+			// do it!
+			console.log("do it");
+		}
+		
+		console.log(creators);
+		
+		return false;
+	},
+	addCreator: function(event) {
+		
+		var newForm = $( templateCache["template-omex-meta-entry-creator"]( {"vcard": createView.model.toJSON() } ) );
+		newForm.insertAfter(".archive-meta-omex-creator-box:last");
+		
+		return false;
+	},
+	removeCreator: function(event) {
+		
+		$(event.target).parent().parent().animate({opacity: 0.15, height: 0}, "500", function() {
+			$(this).remove();
+		});
+		
+		return false;
 	}
 });
 
@@ -283,10 +356,10 @@ var ArchiveEntryView = Backbone.View.extend({
 		this.metaViews = {};
 		_.each(this.model.get("meta"), function(metaEntry) {
 			var view = createMetaViews(metaEntry);
-			view.$el = $("<div class='archive-meta-entry' />");
+			view.el = $('<div></div>');
 			view.render();
-			
-			$metaArea.append(view.$el);
+			var x = $('<div class="archive-meta-entry"></div>').append(view.$el);
+			$metaArea.append(x);
 		});
 		
 		function createMetaViews(entry) {

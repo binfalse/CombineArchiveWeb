@@ -101,10 +101,7 @@ abstract public class MetaObjectDataholder {
 			return;
 		}
 		
-		LOGGER.debug(xmlString);
-		
 		id = Tools.generateHashId(xmlString);
-		LOGGER.debug(id);
 	}
 
 	public String getId() {

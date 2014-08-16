@@ -84,7 +84,7 @@ public class Tools
 	
 	public static void storeUserCookies(CookieManager cookies, UserManager user) {
 		
-		cookies.setCookie( new Cookie(Fields.COOKIE_PATH, user.getPath()) );
+		cookies.setCookie( new Cookie(Fields.COOKIE_PATH, user.getWorkspaceId()) );
 		
 		if( user.getData() != null && user.getData().hasInformation() ) {
 			UserData userData = user.getData();

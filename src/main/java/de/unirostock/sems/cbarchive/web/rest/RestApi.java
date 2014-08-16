@@ -46,6 +46,7 @@ import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
@@ -69,7 +70,7 @@ public class RestApi extends Application {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
-		String result = "ok " + user.getPath();
+		String result = "ok " + user.getWorkspaceId();
 		return buildResponse(200, user).entity(result).build();
 	}
 
@@ -86,7 +87,29 @@ public class RestApi extends Application {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
-		String result = "setted " + user.getPath();
+		String result = "setted " + user.getWorkspaceId();
+		return buildResponse(200, user).entity(result).build();
+	}
+	
+	@GET
+	@Path("/store_settings")
+	@Produces( MediaType.TEXT_PLAIN )
+	public Response storeSettings( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		// store the settings
+		WorkspaceManager.getInstance().storeSettings();
+		
+		String result = "ok";
 		return buildResponse(200, user).entity(result).build();
 	}
 	
@@ -654,7 +677,7 @@ public class RestApi extends Application {
 		ResponseBuilder builder = Response.status(status);
 
 		if( user != null ) {
-			builder = builder.cookie( new NewCookie(Fields.COOKIE_PATH, user.getPath(), "/", null, null, Fields.COOKIE_AGE, false) );
+			builder = builder.cookie( new NewCookie(Fields.COOKIE_PATH, user.getWorkspaceId(), "/", null, null, Fields.COOKIE_AGE, false) );
 
 			// gets the user data
 			UserData data = user.getData();

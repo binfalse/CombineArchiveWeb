@@ -13,6 +13,8 @@ public class Fields {
 	// TODO: move this to the context.xml 
 	/** The Constant STORAGE. */
 	public static final File STORAGE = new File ("/tmp/CombineArchiveWebStorage");
+	
+	public static final File SETTINGS_FILE = new File( STORAGE, "CaWeb.settings" );
 
 	/** The Constant COOKIE_AGE. */
 	public static final int COOKIE_AGE = 60*60*24*365;
@@ -28,9 +30,19 @@ public class Fields {
 
 	public static final String WORKINGDIR_PROP_FILE = "settings.properties";
 	
-	public static final String PROP_LAST_SEEN = "last-seen";
-	
 	public static final String PROP_ARCHIVE_PRE = "archive-";
+	
+	public static final String PROP_WORKSPACE_PRE ="workspace-";
+	
+	public static final String PROP_LASTSEEN_PRE = "workspace-lastseen-";
+	
+	public static final String PROP_SEPARATOR = ".";
+	
+	public static final String PROP_SEPARATOR_REGEX = "\\.";
+	
+	/** minimum time after that the settings should be stored */
+	// 5 min.
+	public static final long STORAGE_AGE = 60*5*1000;
 	
 	public static final String TEMP_FILE_PREFIX = "caweb";
 	
@@ -39,4 +51,6 @@ public class Fields {
 	
 	/** The charset for all http related interactions */
 	public static final String CHARSET = "UTF-8";
+
+	
 }

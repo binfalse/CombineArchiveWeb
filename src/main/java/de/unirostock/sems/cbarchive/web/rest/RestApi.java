@@ -108,6 +108,9 @@ public class RestApi extends Application {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
+		if( user.getData() == null )
+			user.setData( new UserData() );
+		
 		return buildResponse(200, user).entity(user.getData()).build();
 	}
 	

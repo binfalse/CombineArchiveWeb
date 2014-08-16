@@ -783,6 +783,7 @@ var CreateView = Backbone.View.extend({
 	events: {
 		'click .save-vcard': 'saveVCard',
 		'click .create-archive': 'createArchive',
+		'keydown #newArchiveName': 'createArchive',
 		"click a.test": "addMsg"
 	},
 	addMsg: function(event) {
@@ -822,6 +823,9 @@ var CreateView = Backbone.View.extend({
 		return false;
 	},
 	createArchive: function(event) {
+		if (event.keyCode && event.keyCode != 13)
+			return;
+		
 		var archiveName = this.$el.find("input[name='newArchiveName']").val();
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
 		

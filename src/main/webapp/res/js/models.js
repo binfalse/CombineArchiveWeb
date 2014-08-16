@@ -301,19 +301,22 @@ var OmexMetaEntryView = MetaEntryView.extend({
 			}
 		});
 		
-		if( !error ) {
-			// do it!
-			console.log("do it");
-		}
-		
 		console.log(creators);
+		
+		if( !error ) {
+			// update model
+			this.model.set("creators", creators);
+			// push to server
+			this.saveModel();
+		}
 		
 		return false;
 	},
 	addCreator: function(event) {
 		
 		var newForm = $( templateCache["template-omex-meta-entry-creator"]( {"vcard": createView.model.toJSON() } ) );
-		newForm.insertAfter(".archive-meta-omex-creator-box:last");
+		this.$el.find(".edit-link:last").before(newForm);
+//		newForm.insertAfter(".archive-meta-omex-creator-box:last");
 		
 		return false;
 	},

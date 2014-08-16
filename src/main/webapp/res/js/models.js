@@ -71,7 +71,10 @@ var VCardModel = Backbone.Model.extend({
 var OmexMetaModel = Backbone.Model.extend({
 	urlRoot: RestRoot + 'archives/0/entries/0/meta',
 	defaults: {
-		"type": "unknown",
+		"creators": [],
+		"created": "",
+		"modified": [],
+		"type": "omex",
 		"changed": false
 	},
 	setUrl: function( archiveId, entryId )  {
@@ -235,7 +238,6 @@ var MetaEntryView = Backbone.View.extend({
 			},
 			error: function(model, response, options) {
 				console.log("error while saving meta entry");
-				self.$el.removeClass("edit");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
 					messageView.error( "Can not save meta data", text );
@@ -364,8 +366,8 @@ var ArchiveEntryView = Backbone.View.extend({
 			var view = createMetaViews.call(self, metaEntry);
 			view.el = $('<div></div>');
 			view.render();
-			var x = $('<div class="archive-meta-entry"></div>').append(view.$el);
-			$metaArea.append(x);
+			var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
+			$metaArea.append(content);
 		});
 		
 		function createMetaViews(entry, context) {
@@ -423,7 +425,8 @@ var ArchiveEntryView = Backbone.View.extend({
 	events: {
 		"click .archive-file-edit": "startEntryEdit",
 		"click .archive-file-cancel": "cancelEntryEdit",
-		"click .archive-file-save": "saveEntry"
+		"click .archive-file-save": "saveEntry",
+		"click .archive-meta-omex-add": "addOmexMeta"
 	},
 	
 	startEntryEdit: function(event) {
@@ -488,6 +491,23 @@ var ArchiveEntryView = Backbone.View.extend({
 					messageView.error( "Unknown Error", "Error while saving archive entry." );
 			}
 		});
+	},
+	addOmexMeta: function(event) {
+		
+		model = new OmexMetaModel();
+		model.setUrl( this.archiveId, this.entryId );
+		view = new OmexMetaEntryView({ "model": model });
+		
+		view.el = $('<div></div>');
+		view.render();
+		var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
+		this.$el.find(".archive-meta-area").append(content);
+		
+		// go into edit mode and add one empty vcard set
+		view.startEdit();
+		view.addCreator();
+		
+		return false;
 	}
 	
 });

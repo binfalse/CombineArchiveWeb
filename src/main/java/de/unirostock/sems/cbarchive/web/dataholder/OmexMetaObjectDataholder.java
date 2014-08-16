@@ -1,5 +1,6 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -82,6 +83,17 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 
 	@Override
 	public MetaDataObject getCombineArchiveMetaObject() {
+		
+		// fill with some default data, if necessary
+		if( created == null )
+			created = new Date();
+		
+		if( modified == null )
+			modified = new ArrayList<Date>();
+		
+		if( modified.isEmpty() )
+			modified.add( new Date() );
+		
 		this.metaObject = new OmexMetaDataObject( new OmexDescription(creators, modified, created) );
 		// update the id
 		generateId();

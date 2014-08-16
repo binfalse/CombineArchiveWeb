@@ -151,6 +151,7 @@
 					<strong>master:</strong> {{# print(entry.master == true ? 'yes' : 'no'); }}<br /><br />
 					
 					<div class="edit-link">
+						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>
 						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}">[Download]</a>
 						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-file-save on-edit" href="#">[Save]</a>

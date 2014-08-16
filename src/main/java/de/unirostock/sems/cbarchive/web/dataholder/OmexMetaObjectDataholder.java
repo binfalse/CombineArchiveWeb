@@ -23,7 +23,7 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		
 		type = MetaObjectDataholder.TYPE_OMEX;
 		created		= omex.getCreated();
-		creators	= omex.getCreators();//VCardDataholder.convertVCardList( omex.getCreators() );
+		creators	= omex.getCreators();
 		modified	= omex.getModified();
 	}
 	
@@ -71,8 +71,10 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		
 		// set new creators list
 		List<VCard> newCreators = ((OmexMetaObjectDataholder) newMetaObject).getCreators();
-		if( newCreators != null && newCreators.size() > 0 )
-			creators = newCreators;
+		if( newCreators != null && newCreators.size() > 0 ) {
+			creators.clear();
+			creators.addAll(newCreators);
+		}
 		
 		// got modified today.
 		getModified().add( new Date() );

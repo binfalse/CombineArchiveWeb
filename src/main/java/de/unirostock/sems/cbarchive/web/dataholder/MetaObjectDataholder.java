@@ -1,5 +1,10 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
+import java.io.IOException;
+
+import javax.xml.transform.TransformerException;
+
+import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
 
@@ -8,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.web.Tools;
@@ -84,9 +91,20 @@ abstract public class MetaObjectDataholder {
 	public void generateId() {
 		
 		Element xmlElement = metaObject.getXmlDescription();
-		String xmlString = new XMLOutputter().outputString(xmlElement);
+		String xmlString = null;
+		try {
+			Document doc = new Document();
+			doc.setRootElement(xmlElement.clone());
+			xmlString = Utils.prettyPrintDocument( doc );
+		} catch (IOException | TransformerException e) {
+			LOGGER.error(e, "Can't generate xml from meta object to generate meta id");
+			return;
+		}
+		
+		LOGGER.debug(xmlString);
 		
 		id = Tools.generateHashId(xmlString);
+		LOGGER.debug(id);
 	}
 
 	public String getId() {

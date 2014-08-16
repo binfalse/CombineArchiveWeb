@@ -224,15 +224,18 @@ var MetaEntryView = Backbone.View.extend({
 			return false;
 		
 		var self = this;
+		var oldId = this.model.get("id");
 		this.model.save({}, {
 			success: function(model, response, options) {
 				// everything ok
-				console.log("saved meta entry " + self.model.get("id") + " >> " + model.get("id") + " successfully.");
-				message.success("Meta data successfully saved");
+				console.log("saved meta entry " + oldId + " >> " + model.get("id") + " successfully.");
+				self.$el.removeClass("edit");
 				self.render();
+				messageView.success("Meta data successfully saved");
 			},
 			error: function(model, response, options) {
 				console.log("error while saving meta entry");
+				self.$el.removeClass("edit");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
 					messageView.error( "Can not save meta data", text );
@@ -291,11 +294,10 @@ var OmexMetaEntryView = MetaEntryView.extend({
 				vcard.set( elem.attr("data-field"), elem.val() );
 			});
 			
-			if( vcard.isValid() ) {
+			if( vcard.isValid() )
 				creators.push( vcard.toJSON() );
-				error = true;
-			}
 			else {
+				error = true;
 				messageView.warning( vcard.validationError );
 				$(boxElement).addClass("error-element");
 			}
@@ -355,17 +357,18 @@ var ArchiveEntryView = Backbone.View.extend({
 			view.leave();
 		});
 		
+		var self = this;
 		var $metaArea = this.$el.find(".archive-meta-area");
 		this.metaViews = {};
 		_.each(this.model.get("meta"), function(metaEntry) {
-			var view = createMetaViews(metaEntry);
+			var view = createMetaViews.call(self, metaEntry);
 			view.el = $('<div></div>');
 			view.render();
 			var x = $('<div class="archive-meta-entry"></div>').append(view.$el);
 			$metaArea.append(x);
 		});
 		
-		function createMetaViews(entry) {
+		function createMetaViews(entry, context) {
 			var model = null;
 			var view = null;
 			

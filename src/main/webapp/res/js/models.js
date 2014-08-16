@@ -733,7 +733,7 @@ var ArchiveView = Backbone.View.extend({
 		var dirNode = undefined;
 		
 		if( currentNode == undefined )
-			return false;
+			dirNode = jstree.get_children_dom("#")[0];
 		else if( currentNode.original.type == "dir" )
 			dirNode = currentNode;
 		else

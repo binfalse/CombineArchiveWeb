@@ -76,7 +76,7 @@ public class WorkspaceManager {
 	public synchronized void updateStorage() {
 		
 		long difference = (new Date()).getTime() - lastSaved.getTime();
-		LOGGER.info( (new Date()).getTime(), "  ", lastSaved.getTime(), "  ", difference, "  ", Fields.STORAGE_AGE );
+//		LOGGER.info( (new Date()).getTime(), "  ", lastSaved.getTime(), "  ", difference, "  ", Fields.STORAGE_AGE );
 		
 		if( difference > Fields.STORAGE_AGE )
 			this.storeSettings();

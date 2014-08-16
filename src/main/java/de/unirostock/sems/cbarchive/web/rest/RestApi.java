@@ -177,6 +177,14 @@ public class RestApi extends Application {
 
 		// gets the list
 		List<Archive> response = user.getArchives(false);
+		// sorts the list of the archives
+		Collections.sort(response, new Comparator<Archive>() {
+			@Override
+			public int compare(Archive o1, Archive o2) {
+				return o1.getName().compareTo( o2.getName() );
+			}
+		});
+		
 		// build response
 		return buildResponse(200, user).entity(response).build();
 	}

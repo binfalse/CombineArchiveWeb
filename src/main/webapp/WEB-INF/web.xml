@@ -11,11 +11,6 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>API</servlet-name>
-		<servlet-class>de.unirostock.sems.cbarchive.web.servlet.Api</servlet-class>
-	</servlet>
-
-	<servlet>
 		<servlet-name>Download</servlet-name>
 		<servlet-class>de.unirostock.sems.cbarchive.web.servlet.DownloadServlet</servlet-class>
 	</servlet>
@@ -34,11 +29,6 @@
         </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>API</servlet-name>
-		<url-pattern>/api/*</url-pattern>
-	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>Download</servlet-name>

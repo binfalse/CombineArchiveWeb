@@ -27,8 +27,25 @@ public class Index extends HttpServlet {
 	private static final long serialVersionUID = 7678663032688543485L;
 
 	private void run (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		LOGGER.setMinLevel (LOGGER.DEBUG);
-		LOGGER.setLogStackTrace (true);
+		
+		LOGGER.setMinLevel (LOGGER.WARN);
+		String desiredLogLevel = getServletContext().getInitParameter("LOGLEVEL");
+		if (desiredLogLevel != null)
+		{
+			if (desiredLogLevel.equals ("DEBUG"))
+			{
+				LOGGER.setMinLevel (LOGGER.DEBUG);
+				LOGGER.setLogStackTrace (true);
+			}
+			else if (desiredLogLevel.equals ("INFO"))
+				LOGGER.setMinLevel (LOGGER.INFO);
+			else if (desiredLogLevel.equals ("WARN"))
+				LOGGER.setMinLevel (LOGGER.WARN);
+			else if (desiredLogLevel.equals ("ERROR"))
+				LOGGER.setMinLevel (LOGGER.ERROR);
+			else if (desiredLogLevel.equals ("NONE"))
+				LOGGER.setLogToStdErr (false);
+		}
 
 		response.setContentType ("text/html");
 		response.setCharacterEncoding ("UTF-8");

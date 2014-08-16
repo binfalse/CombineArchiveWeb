@@ -4,6 +4,31 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
 	<display-name>CombineArchiveWeb</display-name>
+	
+	<!--
+		the default values of following parameters can be overriden in your web server.
+		in case of tomcat: add a file
+		 
+			$CATALINA_BASE/conf/[enginename]/[hostname]/CONTEXTNAME.xml
+		
+		containing something like
+		
+			<Context>
+		  		<Parameter name="LOGLEVEL" value="DEBUG" override="1"/>
+			</Context>
+		
+		also see the documentation of your web server
+	-->
+	
+	<context-param>
+		<param-name>LOGLEVEL</param-name>
+		<param-value>DEBUG</param-value>
+		<description>sets the log level. available levels: DEBUG, INFO, WARN, ERROR, NONE</description>
+	</context-param>
+
+
+
+	<!-- known servlets -->
 
 	<servlet>
 		<servlet-name>Index</servlet-name>
@@ -54,7 +79,10 @@
 		<servlet-name>rest-api</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
+	
 
+	<!-- default -->
+	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>

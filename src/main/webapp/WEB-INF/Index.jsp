@@ -125,13 +125,16 @@
 			<div class="archive-contentarea">
 				<div class="archive-filetree">
 					<div>
+						<div class="edit-link">
+							<a class="archive-folder-add" href="#">[New folder]</a>
+						</div>
 						<div class="archive-jstree"></div>
 					</div>
 				</div>
 				
 				<div class="archive-fileinfo">
 					<div>
-						Wir bereiten nun den Versand Ihrer Sendung vor. Sie erhalten eine E-Mail von uns, wenn sie versandt wurde. Sie können jetzt noch eine Stornierung anfordern, falls Sie das möchten.
+						Select a file to display the associated meta information.
 					</div>
 				</div>
 				<div style="clear: left;"></div>

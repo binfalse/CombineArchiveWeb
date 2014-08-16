@@ -598,13 +598,14 @@ var ArchiveView = Backbone.View.extend({
 	
 	events: {
 		// also see workaround for jsTree in render function
-		'click .archive-info-edit': 'startArchiveEdit',
-		'click .archive-info-save': 'saveArchive',
-		'click .archive-info-cancel': 'cancelEdit',
-		'dragover .dropbox': 'dropboxOver',
-		'drop .dropbox': 'dropboxDrop',
-		'click .dropbox a': 'dropboxClick',
-		'change .dropbox input': 'dropboxManual'
+		"click .archive-info-edit": "startArchiveEdit",
+		"click .archive-info-save": "saveArchive",
+		"click .archive-info-cancel": "cancelEdit",
+		"dragover .dropbox": "dropboxOver",
+		"drop .dropbox": "dropboxDrop",
+		"click .dropbox a": "dropboxClick",
+		"change .dropbox input": "dropboxManual",
+		"click .archive-folder-add": "addFolder"
 	},
 	startArchiveEdit: function(event) {
 		
@@ -724,6 +725,40 @@ var ArchiveView = Backbone.View.extend({
 				console.log(data);
 			}
 		});
+	},
+	addFolder: function(event) {
+		
+		var jstree = this.$treeEl.jstree(true);
+		var currentNode = jstree.get_selected(true)[0];
+		var dirNode = undefined;
+		
+		if( currentNode == undefined )
+			return false;
+		else if( currentNode.original.type == "dir" )
+			dirNode = currentNode;
+		else
+			dirNode = jstree.get_parent(currentNode);
+		
+		console.log(currentNode);
+		console.log(dirNode);
+		var folderName = prompt("Please input new folder name", "new_folder");
+		
+		if( folderName == null )
+			return false;
+		
+		var nodeData = {
+				text: folderName,
+				type: "dir",
+				data: null,
+				state: {
+					'opened': true,
+					'disabled': false,
+					'selected': false
+				}
+		};
+		jstree.create_node(dirNode, nodeData, "last", false, false);
+		
+		return false;
 	},
 	
 	jstreeClick: function(event, data) {

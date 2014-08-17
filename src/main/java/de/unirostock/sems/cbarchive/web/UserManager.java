@@ -281,26 +281,8 @@ public class UserManager {
 				newFilePath = "/" + newFilePath;
 			}
 			
-			// extracts the file
-			File tempFile = File.createTempFile( Fields.TEMP_FILE_PREFIX, oldEntryDataholder.getFileName() );
-			archiveEntry.extractFile(tempFile);
-			
-			// adds it under the new path
-			ArchiveEntry newArchiveEntry = combineArchive.addEntry( tempFile, newFilePath, newEntryDataholder.getFormat() );
-			// copy meta information
-			for( MetaDataObject metaDataObject : archiveEntry.getDescriptions() ) {
-				newArchiveEntry.addDescription(metaDataObject);
-			}
-			
-			// is this file the master?
-			if( archiveEntry.equals(combineArchive.getMainEntry()) ) {
-				combineArchive.setMainEntry(newArchiveEntry);
-			}
-			
-			// deletes old file
-			combineArchive.removeEntry( oldEntryDataholder.getFilePath() );
-			// deletes temp file
-			tempFile.delete();
+			// move it!
+			combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
 		}
 
 		combineArchive.pack();

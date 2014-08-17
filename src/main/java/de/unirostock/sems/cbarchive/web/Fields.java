@@ -9,6 +9,9 @@ public class Fields {
 	
 	/** The Constant COOKIE_PATH. */
 	public static final String COOKIE_PATH = "combinearchiveweba";
+	
+	/** The Constant COOKIE_WORKSPACE_HISTORY */
+	public static final String COOKIE_WORKSPACE_HISTORY = "combinearchivewebhist";
 
 	// TODO: move this to the context.xml 
 	/** The Constant STORAGE. */

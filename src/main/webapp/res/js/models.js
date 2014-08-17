@@ -82,6 +82,13 @@ var OmexMetaModel = Backbone.Model.extend({
 	}
 });
 
+var WorkspaceHistoryModel = Backbone.Model.extend({
+	urlRoot: RestRoot + "workspaces",
+	defaults: {
+		"currentWorkspace": ""
+	}
+});
+
 var ArchiveCollection = Backbone.Collection.extend({
 	model: ArchiveModel,
 	url: RestRoot + 'archives'
@@ -1211,13 +1218,38 @@ var CreateView = Backbone.View.extend({
 var StartView = Backbone.View.extend({
 	
 	el: "#start-page",
+	model: null,
 	
 	initialize: function() {
 		this.template = templateCache["template-start"];
-		this.render();
+		this.model = new WorkspaceHistoryModel();
+		this.fetch();
 	},
 	render: function() {
-		this.$el.html( this.template({}) );
+		var json = { "history": this.model.toJSON() };
+		this.$el.html( this.template(json) );
+	},
+	fetch: function() {
+		
+		if( this.model == null )
+			return;
+		
+		var self = this;
+		this.model.fetch({
+			reset: true,
+			success: function(model, response, options) {
+				self.render();
+			},
+			error: function(model, response, options) {
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not fetch workspace history", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Can not fetch workspace history." );
+			}
+		});
+		
 	},
 	
 	events: {

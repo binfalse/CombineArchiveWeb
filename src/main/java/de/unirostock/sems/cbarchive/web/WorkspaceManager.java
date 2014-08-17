@@ -49,6 +49,10 @@ public class WorkspaceManager {
 		return workspaces.get(workspaceId);
 	}
 	
+	public boolean hasWorkspace( String workspaceId ) {
+		return workspaces.containsKey(workspaceId);
+	}
+	
 	public synchronized Workspace createWorkspace() throws IOException {
 		
 		if( Fields.STORAGE.exists() == false && Fields.STORAGE.mkdirs() == false ) {
@@ -206,5 +210,5 @@ public class WorkspaceManager {
 		}
 		
 	}
-	
+
 }

@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
@@ -32,6 +33,8 @@ import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -47,6 +50,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
+import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 
 @Path("v1")
 public class RestApi extends RestHelper {
@@ -107,6 +111,45 @@ public class RestApi extends RestHelper {
 		
 		String result = "ok";
 		return buildResponse(200, user).entity(result).build();
+	}
+	
+	@GET
+	@Path("/workspaces")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getCurrentWorkspaceId( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+			
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			if( history.getRecentWorkspaces().contains(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspaceId() );
+			
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			historyCookie = history.toCookieJson();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie ", historyCookie, e.getMessage());
+		}
+		
+		return buildResponse(200, user)
+				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+				.entity(history)
+				.build();
 	}
 	
 	// --------------------------------------------------------------------------------

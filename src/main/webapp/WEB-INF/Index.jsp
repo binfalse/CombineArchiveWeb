@@ -54,9 +54,19 @@
 				This is a web based interface to read, created, and modify CombineArchives. <br />
 				<strong>We are not responsible for any loss of data.</strong>
 			</p>
+			
 			<h2>Share Workspace</h2>
 			<p>
-				Blubber...
+				current: {{# print(history.currentWorkspace); }}
+			</p>
+			
+			<h2>Workspace History</h2>
+			<p>
+				<ul>
+				{{# _.each( history.recentWorkspaces, function(entry) { }}
+					<li>{{# print(entry); }}</li>
+				{{# }); }}
+				</ul>
 			</p>
 		</div>
 		<!-- **** -->

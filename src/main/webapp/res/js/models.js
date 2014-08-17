@@ -197,7 +197,7 @@ var NavigationView = Backbone.View.extend({
 		}
 		else {
 			// seems to be no valid navlink
-			$("#startPage").show();
+			$("#start-page").show();
 			alert("no valid link!");
 		}
 		
@@ -1063,7 +1063,7 @@ var CreateView = Backbone.View.extend({
 	
 	model: null,
 	
-	el: '#createPage',
+	el: '#create-page',
 	
 	initialize: function() {
 		this.template = templateCache["template-create"];
@@ -1206,6 +1206,23 @@ var CreateView = Backbone.View.extend({
 		});
 	}
 	
+});
+
+var StartView = Backbone.View.extend({
+	
+	el: "#start-page",
+	
+	initialize: function() {
+		this.template = templateCache["template-start"];
+		this.render();
+	},
+	render: function() {
+		this.$el.html( this.template({}) );
+	},
+	
+	events: {
+		
+	}
 });
 
 var MessageView = Backbone.View.extend({

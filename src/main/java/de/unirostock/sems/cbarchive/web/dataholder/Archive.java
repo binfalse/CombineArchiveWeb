@@ -43,7 +43,8 @@ import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 		property = "template" )
 @JsonSubTypes({
 	@Type( value = Archive.class, name = Archive.TEMPLATE_PLAIN ),
-	@Type( value = ArchiveFromCellMl.class, name= Archive.TEMPLATE_CELLML )
+	@Type( value = ArchiveFromCellMl.class, name = Archive.TEMPLATE_CELLML ),
+	@Type( value = ArchiveFromExisting.class, name = Archive.TEMPLATE_EXISTING )
 })
 public class Archive {
 	

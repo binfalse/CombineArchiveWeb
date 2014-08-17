@@ -47,6 +47,7 @@ import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
@@ -302,6 +303,12 @@ public class RestApi extends RestHelper {
 		if( archive == null ) {
 			LOGGER.error("create archive not possible if archive == null");
 			return buildErrorResponse(400, null, "no archive was transmitted" );
+		}
+		
+		if( archive instanceof ArchiveFromExisting ) {
+			// archive from an existing file
+			// TODO
+			LOGGER.info( ((ArchiveFromExisting) archive).getFile() );
 		}
 		
 		try {

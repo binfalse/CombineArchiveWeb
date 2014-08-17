@@ -145,20 +145,29 @@
 			<h3>{{# print(entry.fileName); }}</h3>
 			<div class="archive-entry-frame">
 				<div class="archive-entry-header">
+					{{# if( entry.filePath != "/" ) { }}
 					<strong>file name:</strong>
 						<span class="on-not-edit text-archive-entry-filename">{{# print(entry.fileName); }}</span>
 						<input type="text" class="on-edit" name="archiveEntryFileName" value="{{# print(entry.fileName); }}" placeholder="file name" /><br />
+					{{# } }}
+					
 					<strong>file path:</strong>
 						<span class="text-archive-entry-filepath">{{# print(entry.filePath); }}</span><br />
+						
+					{{# if( entry.filePath != "/" ) { }}
 					<strong>format:</strong> {{# print(entry.format); }}<br />
+					{{# } }}
+					
 					<strong>master:</strong> {{# print(entry.master == true ? 'yes' : 'no'); }}<br /><br />
 					
 					<div class="edit-link">
 						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>
+						{{# if( entry.filePath != "/" ) { }}
 						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}">[Download]</a>
 						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-file-save on-edit" href="#">[Save]</a>
 						<a class="archive-file-cancel on-edit" href="#">[Cancel]</a>
+						{{# } }}
 					</div> 
 				</div>
 				

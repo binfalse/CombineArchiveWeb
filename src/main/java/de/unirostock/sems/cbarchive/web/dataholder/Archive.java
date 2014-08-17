@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -23,6 +25,7 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 
 /**
@@ -38,7 +41,9 @@ public class Archive {
 	protected String name;
 	
 	@JsonInclude(Include.NON_NULL) 
-	protected Map<String, ArchiveEntryDataholder> entries;
+	protected Map<String, ArchiveEntryDataholder> entries = null;
+	
+	protected List<MetaObjectDataholder> meta = null;
 
 	@JsonIgnore
 	private CombineArchive archive;
@@ -52,7 +57,6 @@ public class Archive {
 		if( file != null )
 			setArchiveFile(file);
 
-		//archive.getMainEntry().getDescriptions().get(0).getAbout();
 	}
 	
 	public Archive() {
@@ -113,6 +117,7 @@ public class Archive {
 			throw new CombineArchiveWebException("The archive is not parsable", e);
 		}
 		
+		
 		// new entry list
 		this.entries = new HashMap<String, ArchiveEntryDataholder>();
 		
@@ -131,7 +136,12 @@ public class Archive {
 			// put it into the map
 			this.entries.put(dataholder.getFilePath(), dataholder);
 		}
-
+		
+		// add the archive meta information as root entry
+		ArchiveEntryDataholder rootDataholder = new ArchiveEntryDataholder(archive, false, "/", "", "");
+		rootDataholder.updateId();
+		this.entries.put("/", rootDataholder );
+		
 	}
 	
 	@JsonIgnore

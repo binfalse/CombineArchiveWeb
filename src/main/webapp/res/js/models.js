@@ -537,18 +537,25 @@ var ArchiveView = Backbone.View.extend({
 		this.$el.html( this.template(json) );
 		
 		// generate json for filetree
+		var data = {
+				"text": "/",
+				"data": this.collection.findWhere( {"filePath": "/"} ),
+				"state": {opened: true},
+				"type": "root",
+				"children": this.generateJsTreeJson()
+			};
 		
 		// init file tree
 		this.$treeEl = this.$el.find('.archive-jstree');
 		this.$treeEl.jstree({
 			"core": {
-				"data": {"text": "/", "state": {opened: true}, "type": "dir", "children": this.generateJsTreeJson() },
+				"data": data,
 				"check_callback": function(operation, node, node_parent, node_position, more) {
 					// operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
                     // in case of 'rename_node' node_position is filled with the new node name
 					
 					if (operation === "move_node") {
-                        return node_parent.original.type == "dir" && node.original.type == "file"; // only allow moving files into directories
+                        return (node_parent.original.type == "dir" || node_parent.original.type == "root") && node.original.type == "file"; // only allow moving files into directories
                     }
                     return true;  //allow all other operations
 				}
@@ -778,8 +785,8 @@ var ArchiveView = Backbone.View.extend({
 		console.log(data);
 		
 		// directories are not yet handled
-		if( data.node.original.type != 'file' )
-			return;
+		if( data.node.original.type != 'file' && data.node.original.type != 'root' )
+			return false;
 		
 		if( this.entryView != null )
 			this.entryView.leave();
@@ -841,9 +848,13 @@ var ArchiveView = Backbone.View.extend({
 		
 		this.collection.each( function(entry) {
 			
+			if( entry.get('fileName') == null || entry.get('fileName') == '' || entry.get('fileName').length == 0 )
+				// root element -> skip this (handled in render routine)
+				return;
+			
 			var path = entry.get('filePath').substring( 0, entry.get('filePath').length - entry.get('fileName').length );
 			if( path == '/' || path == '' ) {
-				// root element, just push it into the array
+				// file in root, just push it into the array
 				jstreeJson.push({
 					'text': entry.get('fileName'),
 					'data': entry,

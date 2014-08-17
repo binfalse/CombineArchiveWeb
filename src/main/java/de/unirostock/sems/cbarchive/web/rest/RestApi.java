@@ -34,8 +34,6 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
@@ -143,7 +141,7 @@ public class RestApi extends RestHelper {
 			
 		} catch (IOException e) {
 			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
-			return buildErrorResponse(500, user, "Error parsing workspace history cookie ", historyCookie, e.getMessage());
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie " + historyCookie, e.getMessage());
 		}
 		
 		return buildResponse(200, user)
@@ -368,7 +366,7 @@ public class RestApi extends RestHelper {
 			return buildResponse(200, user).entity(result).build();
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 
 	}
@@ -405,7 +403,7 @@ public class RestApi extends RestHelper {
 			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 
@@ -559,7 +557,7 @@ public class RestApi extends RestHelper {
 					return buildErrorResponse(500, user, "Can not remove meta description");
 			} catch (TransformerException e) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				combineArchive.close();
 			}
@@ -608,7 +606,7 @@ public class RestApi extends RestHelper {
 			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -659,7 +657,7 @@ public class RestApi extends RestHelper {
 				
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -721,7 +719,7 @@ public class RestApi extends RestHelper {
 				oldMetaObject.generateId();
 			} catch( IOException | TransformerException e ) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				archive.getArchive().close();
 			}
@@ -730,7 +728,7 @@ public class RestApi extends RestHelper {
 				
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -774,7 +772,7 @@ public class RestApi extends RestHelper {
 				metaObject.generateId();
 			} catch( IOException | TransformerException e ) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not create meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not create meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				archive.getArchive().close();
 			}
@@ -783,7 +781,7 @@ public class RestApi extends RestHelper {
 				
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive ", archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -845,14 +843,14 @@ public class RestApi extends RestHelper {
 					return buildErrorResponse(500, user, "Can not remove meta description");
 			} catch (TransformerException e) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				combineArchive.close();
 			}
 			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	

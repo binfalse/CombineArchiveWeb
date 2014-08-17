@@ -103,6 +103,7 @@
 					<div class="edit-link">
 						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
 						<a class="archive-info-edit on-not-edit" href="#">[Edit]</a>
+						<a class="archive-info-delete on-not-edit" href="#">[Delete]</a>
 						<a class="archive-info-save on-edit" href="#">[Save]</a>
 						<a class="archive-info-cancel on-edit" href="#">[Cancel]</a>
 					</div> 
@@ -142,7 +143,11 @@
 		</div>
 		<!-- **** -->
 		<div id="template-archive-entry">
+			{{# if( entry.filePath != "/" ) { }}
 			<h3>{{# print(entry.fileName); }}</h3>
+			{{# } else { }}
+			<h3>Archive Meta Information</h3>
+			{{# } }}
 			<div class="archive-entry-frame">
 				<div class="archive-entry-header">
 					{{# if( entry.filePath != "/" ) { }}
@@ -165,6 +170,7 @@
 						{{# if( entry.filePath != "/" ) { }}
 						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}">[Download]</a>
 						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
+						<a class="archive-file-delete on-not-edit" href="#">[Delete]</a>
 						<a class="archive-file-save on-edit" href="#">[Save]</a>
 						<a class="archive-file-cancel on-edit" href="#">[Cancel]</a>
 						{{# } }}
@@ -205,6 +211,7 @@
 				{{# }); }}
 			<div class="edit-link">
 				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a>
+				<a class="archive-meta-delete on-not-edit" href="#">[Delete]</a>
 				<a class="archive-meta-omex-creator-add on-edit" href="#">[+]</a>
 				<a class="archive-meta-save on-edit" href="#">[Save]</a>
 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a>

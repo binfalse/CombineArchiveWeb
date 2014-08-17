@@ -278,7 +278,7 @@ public class RestApi extends Application {
 	
 	@DELETE
 	@Path( "/archives/{archive_id}" )
-	@Produces( MediaType.APPLICATION_JSON )
+	@Produces( MediaType.TEXT_PLAIN )
 	public Response deleteArchive( @PathParam("archive_id") String id, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
 		// user stuff
 		UserManager user = null;
@@ -296,8 +296,8 @@ public class RestApi extends Application {
 			return buildErrorResponse( 500, user, "Can not delete archive!", e.getMessage() );
 		}	
 		
-		// just return a HTTP ok, without any content
-		return buildResponse(200, user).build();
+		// just return a HTTP ok
+		return buildResponse(200, user).entity("ok").build();
 	}
 
 	// --------------------------------------------------------------------------------
@@ -483,6 +483,7 @@ public class RestApi extends Application {
 	
 	@DELETE
 	@Path( "/archives/{archive_id}/entries/{entry_id}" )
+	@Produces( MediaType.TEXT_PLAIN )
 	public Response deleteArchiveEntry( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
 		// user stuff
 		UserManager user = null;
@@ -511,10 +512,21 @@ public class RestApi extends Application {
 				return buildErrorResponse(404, user, "Can not find archive entry"); 
 			}
 			
-			// remove the entry
-			combineArchive.removeEntry(archiveEntry);
-			// just return a HTTP ok, without any content
-			return buildResponse(200, user).build();
+			// removes the entry and pack/closes the archive
+			try {
+				boolean result = combineArchive.removeEntry(archiveEntry);
+				combineArchive.pack();
+				
+				if( result )
+					return buildResponse(200, user).entity("ok").build();
+				else
+					return buildErrorResponse(500, user, "Can not remove meta description");
+			} catch (TransformerException e) {
+				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+			} finally {
+				combineArchive.close();
+			}
 			
 		} catch (FileNotFoundException | CombineArchiveWebException e) {
 			LOGGER.warn(e, "Can not find archive to delete an entry");
@@ -741,6 +753,7 @@ public class RestApi extends Application {
 	
 	@DELETE
 	@Path( "/archives/{archive_id}/entries/{entry_id}/meta/{meta_id}" )
+	@Produces( MediaType.TEXT_PLAIN )
 	public Response deleteMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @PathParam("meta_id") String metaId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
 		// user stuff
 		UserManager user = null;
@@ -791,7 +804,7 @@ public class RestApi extends Application {
 				combineArchive.pack();
 				
 				if( result )
-					return buildResponse(200, user).build();
+					return buildResponse(200, user).entity("ok").build();
 				else
 					return buildErrorResponse(500, user, "Can not remove meta description");
 			} catch (TransformerException e) {

@@ -157,6 +157,15 @@ var NavigationView = Backbone.View.extend({
 		this.doNavigation( {"currentTarget": $navElem} );
 		return true;
 	},
+	goToCreate: function() {
+		var $navElem = this.$el.find( "#nav-createlink" );
+		
+		if( $navElem.length <= 0 )
+			return false;
+		
+		this.doNavigation( {"currentTarget": $navElem} );
+		return true;
+	},
 	
 	events: {
 		'click .mainLinks': 'doNavigation' 
@@ -246,6 +255,41 @@ var MetaEntryView = Backbone.View.extend({
 					messageView.error( "Unknown Error", "Can not save meta data" );
 			}
 		});
+	},
+	deleteModel: function() {
+		if( this.model == null )
+			return false;
+		
+		var dialog = window.confirm("Do you really want to delete this meta entry from the file? This action is final.");
+		if( dialog == true ) {
+			
+			var self = this;
+			this.model.destroy({ dataType: "text",
+				success: function(model, response, options) {
+					// everything ok
+					console.log("delted model successfully");
+					messageView.success( "Deleted meta entry successfully" );
+					
+					// complete rerender (quick and dirty)
+					if( self.archiveEntryView !== undefined )
+						self.archiveEntryView.fetch();
+					else
+						archiveView.fetchCollection(true);
+				},
+				error: function(model, response, options) {
+					console.log("error while update");
+					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+						var text = response.responseJSON.errors;
+						messageView.error( "Error while deleting meta entry", text );
+					}
+					else
+						messageView.error( "Unknown Error", "Error while deleting meta entry." );
+				}
+			});
+			
+		}
+		
+		return false;
 	}
 });
 
@@ -262,6 +306,7 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		"click .archive-meta-edit": "startEdit",
 		"click .archive-meta-save": "saveEdit",
 		"click .archive-meta-cancel": "cancelEdit",
+		"click .archive-meta-delete": "deleteModel",
 		"click .archive-meta-omex-creator-add": "addCreator",
 		"click .archive-meta-omex-creator-delete": "removeCreator"
 	},
@@ -379,6 +424,7 @@ var ArchiveEntryView = Backbone.View.extend({
 					model = new OmexMetaModel( entry );
 					model.setUrl( this.archiveId, this.entryId );
 					view = new OmexMetaEntryView({ "model": model });
+					view.archiveEntryView = this;
 					break;
 				default:
 					break;
@@ -426,6 +472,7 @@ var ArchiveEntryView = Backbone.View.extend({
 		"click .archive-file-edit": "startEntryEdit",
 		"click .archive-file-cancel": "cancelEntryEdit",
 		"click .archive-file-save": "saveEntry",
+		"click .archive-file-delete": "deleteEntry",
 		"click .archive-meta-omex-add": "addOmexMeta"
 	},
 	
@@ -491,6 +538,38 @@ var ArchiveEntryView = Backbone.View.extend({
 					messageView.error( "Unknown Error", "Error while saving archive entry." );
 			}
 		});
+	},
+	deleteEntry: function(event) {
+		
+		if( this.model == null )
+			return false;
+		
+		var dialog = window.confirm("Do you really want to delete this file from the archive? This action is final.");
+		if( dialog == true ) {
+			
+			this.model.destroy({ dataType: "text",
+			success: function(model, response, options) {
+				// everything ok
+				console.log("delted model successfully");
+				messageView.success( "Deleted " + model.get("filePath") + " successfully" );
+				
+				// complete rerender (quick and dirty)
+				archiveView.fetchCollection(true);
+			},
+			error: function(model, response, options) {
+				console.log("error while update");
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Error while deleting archive entry", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Error while deleting archive entry." );
+			}
+		});
+			
+		}
+		
+		return false;
 	},
 	addOmexMeta: function(event) {
 		
@@ -620,6 +699,7 @@ var ArchiveView = Backbone.View.extend({
 		"click .archive-info-edit": "startArchiveEdit",
 		"click .archive-info-save": "saveArchive",
 		"click .archive-info-cancel": "cancelEdit",
+		"click .archive-info-delete": "deleteArchive",
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
 		"click .dropbox a": "dropboxClick",
@@ -662,7 +742,12 @@ var ArchiveView = Backbone.View.extend({
 			},
 			error: function(model, response, options) {
 				console.log("error while update");
-				console.log(response.responseText);
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not save archive", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Can not save archive." );
 			}
 		});
 		
@@ -670,6 +755,33 @@ var ArchiveView = Backbone.View.extend({
 	},
 	cancelEdit: function(event) {
 		this.$el.find('.archive-info').removeClass('edit');
+		return false;
+	},
+	deleteArchive: function(event) {
+		
+		var dialog = window.confirm("Do you really want to delete the entire archive? This action is final.");
+		
+		if( dialog == true ) {
+			this.model.destroy({ dataType: "text",
+				success: function(model, response, options) {
+					// everything ok
+					console.log("deleted archive successfully");
+//					messageView.success("Deleted archive successfully");
+					navigationView.goToCreate();
+					navigationView.fetch();
+				},
+				error: function(model, response, options) {
+					console.log("error while deleting archive");
+					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+						var text = response.responseJSON.errors;
+						messageView.error( "Can not delete archive", text );
+					}
+					else
+						messageView.error( "Unknown Error", "Can not delete archive." );
+				}
+			});
+		}
+		
 		return false;
 	},
 	dropboxOver: function(event) {

@@ -860,6 +860,13 @@ var ArchiveView = Backbone.View.extend({
 			},
 			error: function(data) {
 				console.log(data);
+				console.log("error uploading file.");
+				if( data !== undefined && data.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not move file", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Can not upload file.", data );
 			}
 		});
 	},

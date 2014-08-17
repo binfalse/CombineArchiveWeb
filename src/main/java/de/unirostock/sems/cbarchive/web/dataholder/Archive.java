@@ -18,7 +18,10 @@ import org.jdom2.JDOMException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -34,19 +37,32 @@ import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
  */
 // so Jersey parses this as root dataholder, if passed to create or update or something...
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonTypeInfo(
+		use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.PROPERTY,
+		property = "template" )
+@JsonSubTypes({
+	@Type( value = Archive.class, name = Archive.TEMPLATE_PLAIN ),
+	@Type( value = ArchiveFromCellMl.class, name= Archive.TEMPLATE_CELLML )
+})
 public class Archive {
-	protected String id;
-	protected String name;
+	
+	public static final String TEMPLATE_PLAIN		= "plain";
+	public static final String TEMPLATE_CELLML		= "cellml";
+	public static final String TEMPLATE_EXISTING	= "existing";
+	
+	protected String template	= TEMPLATE_PLAIN;
+	protected String id			= null;
+	protected String name		= null;
 	
 	@JsonInclude(Include.NON_NULL) 
 	protected Map<String, ArchiveEntryDataholder> entries = null;
-	
 	protected List<MetaObjectDataholder> meta = null;
 
 	@JsonIgnore
-	private CombineArchive archive;
+	private CombineArchive archive	= null;
 	@JsonIgnore
-	private File archiveFile;
+	private File archiveFile		= null;
 
 	public Archive(String id, String name, File file) throws CombineArchiveWebException {
 		this.id = id;
@@ -54,28 +70,19 @@ public class Archive {
 		this.archiveFile = file;
 		if( file != null )
 			setArchiveFile(file);
-
 	}
 	
 	public Archive() {
-		this.id = null;
-		this.name = null;
-		this.archive = null;
-		this.archiveFile = null;
+		// ...
 	}
 	
 	public Archive(String name) {
-		this.id = null;
 		this.name = name;
-		this.archive = null;
-		this.archiveFile = null;
 	}
 	
 	public Archive(String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.archive = null;
-		this.archiveFile = null;
 	}
 
 	public String getId() {
@@ -96,6 +103,14 @@ public class Archive {
 	
 	public Map<String, ArchiveEntryDataholder> getEntries() {
 		return entries;
+	}
+	
+	public String getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
 	@JsonIgnore

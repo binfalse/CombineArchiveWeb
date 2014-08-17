@@ -46,6 +46,7 @@ import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
@@ -292,6 +293,10 @@ public class RestApi extends RestHelper {
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if( archive instanceof ArchiveFromCellMl ) {
+			LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
 		}
 		
 		if( archive == null ) {

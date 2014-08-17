@@ -1105,7 +1105,7 @@ var CreateView = Backbone.View.extend({
 		'click .save-vcard': 'saveVCard',
 		'click .create-archive': 'createArchive',
 		'keydown #newArchiveName': 'createArchive',
-		'click input[name="newArchiveTemplate"]': 'updateArchiveTemplate',
+		"click input[name='newArchiveTemplate']": 'updateArchiveTemplate',
 		"click a.test": "addMsg"
 	},
 	addMsg: function(event) {
@@ -1123,16 +1123,16 @@ var CreateView = Backbone.View.extend({
 			return false;
 		}
 		else if( archiveTemplate == "empty" ) {
-			$("#cellMlImporter").hide ();
-			$("#archiveUploader").hide ();
+			this.$el.find(".on-archive-upload").hide ();
+			this.$el.find(".on-archive-cellml").hide ();
 		}
 		else if( archiveTemplate == "file" ) {
-			$("#cellMlImporter").hide ();
-			$("#archiveUploader").show ();
+			this.$el.find(".on-archive-upload").show ();
+			this.$el.find(".on-archive-cellml").hide ();
 		}
 		else if( archiveTemplate == "cellml" ) {
-			$("#cellMlImporter").show ();
-			$("#archiveUploader").hide ();
+			this.$el.find(".on-archive-upload").hide ();
+			this.$el.find(".on-archive-cellml").show ();
 		}
 		else {
 			// no known type of archive
@@ -1194,31 +1194,36 @@ var CreateView = Backbone.View.extend({
 		else if( archiveTemplate == "empty" ) {
 			// create new empty archive
 			// nothing else do to...
+			archiveModel.set("template", "plain");
 		}
 		else if( archiveTemplate == "file" ) {
 			// create new archive based on a file
 			// TODO make file upload and stuff...
+			archiveModel.set("template", "existing");
 		}
 		else if( archiveTemplate == "cellml" ) {
 			// create new archive based on a CellMl repository
 			// TODO get url and stuff
-			var link = $("#cellMlLink").val ();
-			if (!link.match (/https?:\/\/models.cellml.org\//))
-			{
-				messageView.error ("expected a link to a cellml repository");
-				return false;
-			}
-			//archiveModel.set ("cellmllink", link);
+			archiveModel.set("template", "cellml");
+			
+			var link = this.$el.find("input[name='newArchiveCellMlLink']").val();
+//			if (!link.match (/https?:\/\/models.cellml.org\//))
+//			{
+//				messageView.error ("expected a link to a cellml repository");
+//				return false;
+//			}
+			// add link to the model
+			archiveModel.set ("cellmlLink", link);
 		}
 		else {
 			// no known type of archive
-			alert("unknown type");
+			messageView.error("Undefined archive template type");
 			return false;
 		}
 		
 		if( !archiveModel.isValid() ) {
 			// model is not valid
-			alert( "error: " + archiveModel.validationError );
+			messageView.error("Archive parameter invalid", archiveModel.validationError);
 			return false;
 		}
 		

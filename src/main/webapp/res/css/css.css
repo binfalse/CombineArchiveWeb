@@ -259,10 +259,9 @@ div.edit-link > a:hover {
 	background-color: #eee;
 }
 
+/* -------- Create View -------- */
 
-
-#archiveUploader,
-#cellMlImporter
-{
-	display:none;
+.on-archive-cellml, .on-archive-upload {
+	display: none;
+	padding: 0 20px;
 }

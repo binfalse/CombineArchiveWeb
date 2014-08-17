@@ -200,6 +200,17 @@ public class UserManager {
 
 		return uuid;
 	}
+	
+	public void deleteArchive( String archiveId ) throws IOException {
+		
+		File archiveFile = getArchiveFile(archiveId);
+		// deletes the archive file
+		if( !archiveFile.delete() )
+			throw new IOException("Can not delete archive file");
+		
+		// removes the internal reference from the settings
+		workspace.getArchives().remove(archiveId);
+	}
 
 	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException, IOException, TransformerException {
 		
@@ -291,6 +302,6 @@ public class UserManager {
 		combineArchive.pack();
 		combineArchive.close();
 	}
-
+	
 
 }

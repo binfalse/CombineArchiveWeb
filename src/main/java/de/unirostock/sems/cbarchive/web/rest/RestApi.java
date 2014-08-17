@@ -1,5 +1,6 @@
 package de.unirostock.sems.cbarchive.web.rest;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -40,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
+import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
@@ -272,6 +275,30 @@ public class RestApi extends Application {
 		}
 			
 	}
+	
+	@DELETE
+	@Path( "/archives/{archive_id}" )
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response deleteArchive( @PathParam("archive_id") String id, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		try {
+			user.deleteArchive(id);
+		} catch (IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not delete archive {1} in WorkingDir {0}", user.getWorkingDir(), id) );
+			return buildErrorResponse( 500, user, "Can not delete archive!", e.getMessage() );
+		}	
+		
+		// just return a HTTP ok, without any content
+		return buildResponse(200, user).build();
+	}
 
 	// --------------------------------------------------------------------------------
 	// archive entries
@@ -454,10 +481,52 @@ public class RestApi extends Application {
 		
 	}
 	
+	@DELETE
+	@Path( "/archives/{archive_id}/entries/{entry_id}" )
+	public Response deleteArchiveEntry( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		// getting the archive
+		try {
+			Archive archive = user.getArchive(archiveId);
+			CombineArchive combineArchive = archive.getArchive();
+			ArchiveEntry archiveEntry = null;
+			
+			// searching for the old entry by the id
+			for( ArchiveEntryDataholder entry : archive.getEntries().values() ) {
+				if( entry.getId().equals(entryId) ) {
+					archiveEntry = entry.getArchiveEntry();
+					break;
+				}
+			}
+			
+			if( archiveEntry == null ) {
+				return buildErrorResponse(404, user, "Can not find archive entry"); 
+			}
+			
+			// remove the entry
+			combineArchive.removeEntry(archiveEntry);
+			// just return a HTTP ok, without any content
+			return buildResponse(200, user).build();
+			
+		} catch (FileNotFoundException | CombineArchiveWebException e) {
+			LOGGER.warn(e, "Can not find archive to delete an entry");
+			return buildErrorResponse(404, user, "Can not find archive", e.getMessage());
+		} catch (IOException e) {
+			LOGGER.warn(e, "Can not delete archive entry");
+			return buildErrorResponse(404, user, "Can not delete archive entry", e.getMessage());
+		}
+	}
+	
 	// --------------------------------------------------------------------------------
 	// Meta Object Endpoints
-	
-	// TODO Endpoints for meta entries!
 	
 	@GET
 	@Path( "/archives/{archive_id}/entries/{entry_id}/meta" )
@@ -664,6 +733,63 @@ public class RestApi extends Application {
 			
 			return buildResponse(200, user).entity( metaObject ).build();
 				
+		} catch (CombineArchiveWebException | IOException e) {
+			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+		}
+	}
+	
+	@DELETE
+	@Path( "/archives/{archive_id}/entries/{entry_id}/meta/{meta_id}" )
+	public Response deleteMetaObject( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @PathParam("meta_id") String metaId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		try {
+			Archive archive = user.getArchive(archiveId);
+			
+			// iterate over all archive entries
+			ArchiveEntryDataholder entry = null;
+			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
+				if( iterEntry.getId().equals(entryId) ) {
+					entry = iterEntry;
+					break;
+				}
+			}
+			
+			// check if entry exists
+			if( entry == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such entry found");
+			}
+			
+			// iterate over all meta entries
+			MetaObjectDataholder metaObject = null;
+			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
+				if( iterMetaObject.getId().equals(metaId) ) {
+					metaObject = iterMetaObject;
+					break;
+				}
+			}
+			
+			// check if meta entry exists
+			if( metaObject == null ) {
+				archive.getArchive().close();
+				return buildErrorResponse(404, user, "No such meta entry found");
+			}
+			
+			// removes the meta entry
+			if( entry.getArchiveEntry().removeDescription( metaObject.getMetaObject() ) )
+				return buildResponse(200, user).build();
+			else
+				return buildErrorResponse(500, user, "Can not remove meta description");
+			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );

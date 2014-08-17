@@ -1226,7 +1226,7 @@ var StartView = Backbone.View.extend({
 		this.fetch();
 	},
 	render: function() {
-		var json = { "history": this.model.toJSON() };
+		var json = { "history": this.model.toJSON(), "baseUrl": location.protocol+'//'+location.host+location.pathname+(location.search?location.search:"") };
 		this.$el.html( this.template(json) );
 	},
 	fetch: function() {

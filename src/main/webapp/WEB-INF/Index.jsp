@@ -57,7 +57,9 @@
 			
 			<h2>Share Workspace</h2>
 			<p>
-				current: {{# print(history.currentWorkspace); }}
+				To share this workspace, just spread this link into the world: <br />
+				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(history.currentWorkspace); }}" /> 
+				<br /><br />But keep in mind: This software is not made for heavily collaboration!
 			</p>
 			
 			<h2>Workspace History</h2>

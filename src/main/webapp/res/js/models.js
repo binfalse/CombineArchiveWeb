@@ -5,7 +5,6 @@ _.templateSettings =  {
 		evaluate: /\{\{#(.+?)\}\}/g,
 		interpolate: /\{\{([^#].*?)\}\}/g
 };
-// TODO
 
 var ArchiveEntryModel = Backbone.Model.extend({
 	urlRoot: RestRoot + 'archives/0/entries',
@@ -872,13 +871,13 @@ var ArchiveView = Backbone.View.extend({
 		
 		if( currentNode == undefined )
 			dirNode = jstree.get_children_dom("#")[0];
-		else if( currentNode.original.type == "dir" )
+		else if( currentNode.original.type == "dir" || currentNode.original.type == "root" )
 			dirNode = currentNode;
 		else
 			dirNode = jstree.get_parent(currentNode);
 		
-		console.log(currentNode);
-		console.log(dirNode);
+//		console.log(currentNode);
+//		console.log(dirNode);
 		var folderName = prompt("Please input new folder name", "new_folder");
 		
 		if( folderName == null )

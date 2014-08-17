@@ -65,7 +65,16 @@ public class WorkspaceManager {
 		
 		Workspace workspace = new Workspace(uuid);
 		workspace.setWorkspaceDir(workingDir);
+		
+		// create working dir
+		if( workingDir.mkdirs() == false ) {
+			LOGGER.error( "Can not create working directory", workingDir );
+			throw new IOException( "Can not create working directory" );
+		}
+		
 		workspace.updateLastseen();
+		// add to settings
+		workspaces.put(uuid, workspace);
 		
 		return workspace;
 	}

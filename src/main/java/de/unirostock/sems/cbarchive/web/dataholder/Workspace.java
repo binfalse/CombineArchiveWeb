@@ -46,7 +46,7 @@ public class Workspace {
 
 	public File getWorkspaceDir() throws IOException {
 		
-		if( workspaceDir == null && workspaceId != null && !workspaceId.isEmpty() ) {
+		if( (workspaceDir == null || !workspaceDir.exists()) && workspaceId != null && !workspaceId.isEmpty() ) {
 			
 			workspaceDir = new File( Fields.STORAGE, workspaceId );
 			if( !workspaceDir.exists() || !workspaceDir.isDirectory() ) {

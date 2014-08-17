@@ -2,8 +2,10 @@ package de.unirostock.sems.cbarchive.web.dataholder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -20,11 +22,11 @@ import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 
 public class WorkspaceHistory {
 	
-	private List<String> recentWorkspaces = new ArrayList<String>();
+	private Map<String, String> recentWorkspaces = new HashMap<String, String>();
 	@JsonInclude(Include.NON_NULL) 
 	private String currentWorkspace = null;
 	
-	public WorkspaceHistory(List<String> recentWorkspaces, String currentWorkspace) {
+	public WorkspaceHistory(Map<String, String> recentWorkspaces, String currentWorkspace) {
 		super();
 		this.recentWorkspaces = recentWorkspaces;
 		this.currentWorkspace = currentWorkspace;
@@ -44,11 +46,11 @@ public class WorkspaceHistory {
 		this.currentWorkspace = currentWorkspace;
 	}
 
-	public List<String> getRecentWorkspaces() {
+	public Map<String, String> getRecentWorkspaces() {
 		return recentWorkspaces;
 	}
 
-	public void setRecentWorkspaces(List<String> recentWorkspaces) {
+	public void setRecentWorkspaces(Map<String, String> recentWorkspaces) {
 		this.recentWorkspaces = recentWorkspaces;
 	}
 	
@@ -59,7 +61,7 @@ public class WorkspaceHistory {
 	public void cleanUpHistory() {
 		WorkspaceManager workspaceManager = WorkspaceManager.getInstance();
 
-		Iterator<String> iter = recentWorkspaces.iterator();
+		Iterator<String> iter = recentWorkspaces.keySet().iterator();
 		while( iter.hasNext() ) {
 			String elem = iter.next();
 			if( workspaceManager.hasWorkspace(elem) == false )
@@ -72,7 +74,7 @@ public class WorkspaceHistory {
 	public String toCookieJson() throws JsonProcessingException {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		String json = mapper.writeValueAsString( (List<String>) recentWorkspaces );
+		String json = mapper.writeValueAsString( (List<String>) new ArrayList<String>( recentWorkspaces.keySet() ) );
 		
 		json = Base64.encodeBase64URLSafeString( json.getBytes() );
 		return json;
@@ -89,7 +91,17 @@ public class WorkspaceHistory {
 		ObjectMapper mapper = new ObjectMapper();
 		List<String> recent = mapper.readValue(json, new TypeReference<List<String>>(){} );
 		
-		return new WorkspaceHistory(recent, null);
+		WorkspaceManager workspaceManager = WorkspaceManager.getInstance();
+		WorkspaceHistory result = new WorkspaceHistory();
+		
+		// looking up the names
+		for( String elem : recent ) {
+			Workspace workspace = workspaceManager.getWorkspace(elem);
+			if( workspace != null )
+				result.getRecentWorkspaces().put(workspace.getWorkspaceId(), workspace.getName());
+		}
+		
+		return result;
 	}
 	
 	

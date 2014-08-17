@@ -135,8 +135,8 @@ public class RestApi extends RestHelper {
 			if( history == null )
 				history = new WorkspaceHistory();
 			
-			if( history.getRecentWorkspaces().contains(user.getWorkspaceId()) == false )
-				history.getRecentWorkspaces().add( user.getWorkspaceId() );
+			if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
 			
 			history.setCurrentWorkspace( user.getWorkspaceId() );
 			historyCookie = history.toCookieJson();

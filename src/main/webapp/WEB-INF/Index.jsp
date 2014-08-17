@@ -65,8 +65,13 @@
 			<h2>Workspace History</h2>
 			<p>
 				<ul>
-				{{# _.each( history.recentWorkspaces, function(entry) { }}
-					<li>{{# print(entry); }}</li>
+				{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
+					{{# if( key != history.currentWorkspace ) { }}
+					<li>
+						<strong>{{# print(value); }}</strong> &nbsp;
+						<a href="{{# print(baseUrl); }}rest/share/{{# print(key); }}">{{# print(key); }}</a>
+					</li>
+					{{# } }}
 				{{# }); }}
 				</ul>
 			</p>

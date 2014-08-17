@@ -16,6 +16,8 @@ import javax.ws.rs.core.Response;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.WorkspaceManager;
+import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 
 @Path( "share" )
@@ -43,11 +45,14 @@ public class ShareApi extends RestHelper {
 			if( history == null )
 				history = new WorkspaceHistory();
 			
-			if( history.getRecentWorkspaces().contains(user.getWorkspaceId()) == false )
-				history.getRecentWorkspaces().add( user.getWorkspaceId() );
+			if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
 			
-			if( history.getRecentWorkspaces().contains( oldUserPath ) == false )
-				history.getRecentWorkspaces().add( oldUserPath );
+			if( oldUserPath != null && !oldUserPath.isEmpty() && history.getRecentWorkspaces().containsKey( oldUserPath ) == false ) {
+				Workspace workspace = WorkspaceManager.getInstance().getWorkspace(oldUserPath);
+				if( workspace != null )
+					history.getRecentWorkspaces().put( oldUserPath, workspace.getName() );
+			}
 			
 			history.setCurrentWorkspace( user.getWorkspaceId() );
 			historyCookie = history.toCookieJson();

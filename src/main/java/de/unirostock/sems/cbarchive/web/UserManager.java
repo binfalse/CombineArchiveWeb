@@ -64,6 +64,10 @@ public class UserManager {
 	public File getWorkingDir() {
 		return workingDir;
 	}
+	
+	public Workspace getWorkspace() {
+		return workspace;
+	}
 
 	/**
 	 * Lists all available archives for the user, with content <br />

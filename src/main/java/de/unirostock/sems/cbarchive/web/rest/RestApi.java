@@ -181,7 +181,7 @@ public class RestApi extends Application {
 		Collections.sort(response, new Comparator<Archive>() {
 			@Override
 			public int compare(Archive o1, Archive o2) {
-				return o1.getName().compareTo( o2.getName() );
+				return o1.getName().toLowerCase().compareTo( o2.getName().toLowerCase() );
 			}
 		});
 		
@@ -298,7 +298,7 @@ public class RestApi extends Application {
 			Collections.sort(result, new Comparator<ArchiveEntryDataholder>() {
 				@Override
 				public int compare(ArchiveEntryDataholder o1, ArchiveEntryDataholder o2) {
-					return o2.getFileName().compareTo(o1.getFileName());
+					return o1.getFileName().toLowerCase().compareTo(o2.getFileName().toLowerCase());
 				}
 			});
 			

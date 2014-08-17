@@ -542,14 +542,26 @@ var ArchiveView = Backbone.View.extend({
 		this.$treeEl = this.$el.find('.archive-jstree');
 		this.$treeEl.jstree({
 			"core": {
-				"data": {"text": "/", "state": {opened: true}, "children": this.generateJsTreeJson() },
-				"check_callback": true
+				"data": {"text": "/", "state": {opened: true}, "type": "dir", "children": this.generateJsTreeJson() },
+				"check_callback": function(operation, node, node_parent, node_position, more) {
+					// operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
+                    // in case of 'rename_node' node_position is filled with the new node name
+					
+					if (operation === "move_node") {
+                        return node_parent.original.type == "dir" && node.original.type == "file"; // only allow moving files into directories
+                    }
+                    return true;  //allow all other operations
+				}
+			},
+			"dnd": {
+				"check_while_dragging": true
 			},
 			"plugins": ["dnd", "search"]
 		});
 		// work-around for these strange jstree event names
 		var self = this;
 		this.$treeEl.on('changed.jstree', function(event, data) { self.jstreeClick.call(self, event, data); } );
+		this.$treeEl.on("move_node.jstree", function(event, data) { self.jstreeMove.call(self, event, data); } );
 		
 		this.$el.show();
 	},
@@ -777,6 +789,49 @@ var ArchiveView = Backbone.View.extend({
 			el: this.$el.find(".archive-fileinfo")
 		});
 		this.entryView.fetch( this.model.get('id'), data.node.data.id );
+		
+	},
+	jstreeMove: function(event, data) {
+		
+		console.log(data);
+		var jstree = this.$treeEl.jstree(true);
+		
+		var path = data.node.text;
+		var par = jstree.get_node(data.parent);
+		while( par != null && par != undefined && par.id != "#" ) {
+			var npath = par.text;
+			if( npath.indexOf("/", npath.length - 1) === -1 )
+				npath = npath + "/";
+			
+			path = npath + path;
+			//path = par.text + ( par.text.indexOf("/", par.text.length-1) === -1 ? "/" : "") + path;
+			par = jstree.get_node( jstree.get_parent(par) );
+		}
+		console.log(path);
+		
+		var model = this.collection.findWhere( {"id": data.node.data.id } );
+		if( model.get("filePath") != path ) {
+			// path has changed
+			model.set("filePath", path);
+			var self = this;
+			model.save({}, {
+				success: function(model, response, options) {
+					// everything ok
+					messageView.success( "file successfully moved." );
+					self.fetchCollection(true);
+				},
+				error: function(model, response, options) {
+					console.log("error moving file.");
+					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+						var text = response.responseJSON.errors;
+						messageView.error( "Can not move file", text );
+					}
+					else
+						messageView.error( "Unknown Error", "Can not move file." );
+				}
+				
+			});
+		}
 		
 	},
 	

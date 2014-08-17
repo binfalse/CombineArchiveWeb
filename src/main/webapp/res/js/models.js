@@ -52,7 +52,7 @@ var VCardModel = Backbone.Model.extend({
 		if( attrs.email !== undefined && attrs.email !== "" ) {
 		
 			if( attrs.email.length < 6 )
-				return "Your E-Mail address is to short.";
+				return "Your E-Mail address is too short.";
 			
 			var mailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			if( !mailRegex.test(attrs.email) )
@@ -1196,6 +1196,13 @@ var CreateView = Backbone.View.extend({
 		else if( archiveTemplate == "cellml" ) {
 			// create new archive based on a CellMl repository
 			// TODO get url and stuff
+			var link = $("#cellMlLink").val ();
+			if (!link.match (/https?:\/\/models.cellml.org\//))
+			{
+				messageView.error ("expected a link to a cellml repository");
+				return false;
+			}
+			//archiveModel.set ("cellmllink", link);
 		}
 		else {
 			// no known type of archive

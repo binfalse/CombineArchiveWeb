@@ -56,7 +56,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 
 @Path("v1")
-public class RestApi extends Application {
+public class RestApi extends RestHelper {
 
 	@GET
 	@Path("/heartbeat")
@@ -820,63 +820,4 @@ public class RestApi extends Application {
 		}
 	}
 	
-	// --------------------------------------------------------------------------------
-	// helper functions
-
-	/**
-	 * Generates ResponseBuilder an sets cookies, if possible
-	 * 
-	 * @param status
-	 * @param user
-	 * @return ResponseBuilder
-	 */
-	private ResponseBuilder buildResponse( int status, UserManager user ) {
-
-		ResponseBuilder builder = Response.status(status);
-
-		if( user != null ) {
-			builder = builder.cookie( new NewCookie(Fields.COOKIE_PATH, user.getWorkspaceId(), "/", null, null, Fields.COOKIE_AGE, false) );
-
-			// gets the user data
-			UserData data = user.getData();
-			if( data != null && data.hasInformation() ) {
-				// adds the cookies
-				try {
-					builder = builder.cookie(
-							new NewCookie(Fields.COOKIE_USER, data.toJson(), "/", null, null, Fields.COOKIE_AGE, false) );
-				} catch (JsonProcessingException e) {
-					LOGGER.error(e, "Unable to set user cookies, due to Json encoding error.");
-				}
-			}
-		}
-
-		return builder;
-	}
-
-	/**
-	 * Generates an error response
-	 * 
-	 * @param status
-	 * @param user
-	 * @param errors
-	 * @return Response
-	 */
-	private Response buildErrorResponse( int status, UserManager user, String... errors ) {
-
-		// ResponseBuilder builder = Response.status(status);
-		ResponseBuilder builder = buildResponse(status, user);
-
-		Map<String, Object> result = new HashMap<String, Object>();
-		List<String> errorList = new LinkedList<String>();
-
-		for( String error : errors ) {
-			errorList.add( error );
-		}
-
-		result.put("status", "error");
-		result.put("errors", errorList);
-
-		return builder.entity(result).build();
-	}
-
 }

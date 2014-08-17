@@ -1099,6 +1099,7 @@ var CreateView = Backbone.View.extend({
 		'click .save-vcard': 'saveVCard',
 		'click .create-archive': 'createArchive',
 		'keydown #newArchiveName': 'createArchive',
+		'click input[name="newArchiveTemplate"]': 'updateArchiveTemplate',
 		"click a.test": "addMsg"
 	},
 	addMsg: function(event) {
@@ -1107,6 +1108,31 @@ var CreateView = Backbone.View.extend({
 		messageView.warning("Halfdkas");
 		messageView.success("sldfjfs");
 		return false;
+	},
+	updateArchiveTemplate: function (event) {
+		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
+		if( archiveTemplate == undefined ) {
+			// TODO
+			messageView.error("Undefined archive template type");
+			return false;
+		}
+		else if( archiveTemplate == "empty" ) {
+			$("#cellMlImporter").hide ();
+			$("#archiveUploader").hide ();
+		}
+		else if( archiveTemplate == "file" ) {
+			$("#cellMlImporter").hide ();
+			$("#archiveUploader").show ();
+		}
+		else if( archiveTemplate == "cellml" ) {
+			$("#cellMlImporter").show ();
+			$("#archiveUploader").hide ();
+		}
+		else {
+			// no known type of archive
+			alert("unknown type");
+			return false;
+		}
 	},
 	saveVCard: function(event) {
 		this.model.set('givenName', this.$el.find("input[name='userGivenName']").val() );

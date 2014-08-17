@@ -81,9 +81,11 @@
 				
 				<input type="radio" id="newArchiveTemplate-File" name="newArchiveTemplate" value="file" />
 				<label for="newArchiveTemplate-File">Upload an existing archive</label><br />
+				<span id='archiveUploader'><input type="file" name="somename" size="chars" /><br /></span>
 				
 				<input type="radio" id="newArchiveTemplate-CellMl" name="newArchiveTemplate" value="cellml" />
-				<label for="newArchiveTemplate-CellMl">Create an archive from CellMl model repository</label>
+				<label for="newArchiveTemplate-CellMl">Create an archive from CellMl model repository</label><br />
+				<span id='cellMlImporter'><input type="text" id="cellMlLink" name="cellMlLink" placeholder="link to CellML repository" /><br /></span>
 			</p>
 			<p>
 				<input type="button" class="create-archive" value="Create Archive" />

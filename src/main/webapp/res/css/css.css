@@ -258,3 +258,11 @@ div.edit-link > a:hover {
 	border-radius: 3px;
 	background-color: #eee;
 }
+
+
+
+#archiveUploader,
+#cellMlImporter
+{
+	display:none;
+}

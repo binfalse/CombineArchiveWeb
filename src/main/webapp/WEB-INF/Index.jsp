@@ -40,12 +40,41 @@
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
 			<ul id="nav">
-				<li><a class="mainLinks highlight" data-linktype="page" data-page="startPage" id="nav-startlink">start</a></li>
-				<li><a class="mainLinks" data-linktype="page" data-page="createPage" id="nav-createlink">create</a></li> 
+				<li><a class="mainLinks highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
+				<li><a class="mainLinks" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
 				{{#	_.each(entries, function(entry) { }}
 				<li><a class="mainLinks archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" >{{# print(entry.name); }}</a></li>
 				{{# }); }}
 			</ul>
+		</div>
+		<!-- **** -->
+		<div id="template-start">
+			<h2>Disclaimer</h2>
+			<p>
+				This is a web based interface to read, created, and modify CombineArchives. <br />
+				<strong>We are not responsible for any loss of data.</strong>
+			</p>
+			
+			<h2>Share Workspace</h2>
+			<p>
+				To share this workspace, just spread this link into the world: <br />
+				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(history.currentWorkspace); }}" /> 
+				<br /><br />But keep in mind: This software is not made for heavily collaboration!
+			</p>
+			
+			<h2>Workspace History</h2>
+			<p>
+				<ul>
+				{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
+					{{# if( key != history.currentWorkspace ) { }}
+					<li>
+						<strong>{{# print(value); }}</strong> &nbsp;
+						<a href="{{# print(baseUrl); }}rest/share/{{# print(key); }}">{{# print(key); }}</a>
+					</li>
+					{{# } }}
+				{{# }); }}
+				</ul>
+			</p>
 		</div>
 		<!-- **** -->
 		<div id="template-create">
@@ -317,14 +346,9 @@
 	<div id="page" style="display: none;">
 		<nav id="navigation"></nav>
 		<div id="message-bar"></div>
-		<div id="startPage" class="subPage">
-			<p>
-				This is a web based interface to read, created, and modify CombineArchives. <br />
-				<strong>We are not responsible for any loss of data.</strong>
-			</p>
-		</div>
+		<div id="start-page" class="subPage"></div>
 		
-		<div id="createPage" class="subPage" style="display: none;"></div>	
+		<div id="create-page" class="subPage" style="display: none;"></div>	
 		<div id="archivePage" class="subPage" style="display: none;"></div>
 
 	</div>

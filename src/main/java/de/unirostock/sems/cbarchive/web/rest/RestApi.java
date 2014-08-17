@@ -12,10 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
@@ -26,19 +24,15 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -54,9 +48,10 @@ import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
+import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 
 @Path("v1")
-public class RestApi extends Application {
+public class RestApi extends RestHelper {
 
 	@GET
 	@Path("/heartbeat")
@@ -114,6 +109,45 @@ public class RestApi extends Application {
 		
 		String result = "ok";
 		return buildResponse(200, user).entity(result).build();
+	}
+	
+	@GET
+	@Path("/workspaces")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getCurrentWorkspaceId( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Can not create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+			
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
+			
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			historyCookie = history.toCookieJson();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie " + historyCookie, e.getMessage());
+		}
+		
+		return buildResponse(200, user)
+				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+				.entity(history)
+				.build();
 	}
 	
 	// --------------------------------------------------------------------------------
@@ -332,7 +366,7 @@ public class RestApi extends Application {
 			return buildResponse(200, user).entity(result).build();
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 
 	}
@@ -369,7 +403,7 @@ public class RestApi extends Application {
 			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 
@@ -523,7 +557,7 @@ public class RestApi extends Application {
 					return buildErrorResponse(500, user, "Can not remove meta description");
 			} catch (TransformerException e) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				combineArchive.close();
 			}
@@ -572,7 +606,7 @@ public class RestApi extends Application {
 			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -623,7 +657,7 @@ public class RestApi extends Application {
 				
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -685,7 +719,7 @@ public class RestApi extends Application {
 				oldMetaObject.generateId();
 			} catch( IOException | TransformerException e ) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				archive.getArchive().close();
 			}
@@ -694,7 +728,7 @@ public class RestApi extends Application {
 				
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -738,7 +772,7 @@ public class RestApi extends Application {
 				metaObject.generateId();
 			} catch( IOException | TransformerException e ) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not create meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not create meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				archive.getArchive().close();
 			}
@@ -747,7 +781,7 @@ public class RestApi extends Application {
 				
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive ", archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -809,74 +843,15 @@ public class RestApi extends Application {
 					return buildErrorResponse(500, user, "Can not remove meta description");
 			} catch (TransformerException e) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				combineArchive.close();
 			}
 			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive {0} entries in WorkingDir {1}", e.getMessage() );
+			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
-	// --------------------------------------------------------------------------------
-	// helper functions
-
-	/**
-	 * Generates ResponseBuilder an sets cookies, if possible
-	 * 
-	 * @param status
-	 * @param user
-	 * @return ResponseBuilder
-	 */
-	private ResponseBuilder buildResponse( int status, UserManager user ) {
-
-		ResponseBuilder builder = Response.status(status);
-
-		if( user != null ) {
-			builder = builder.cookie( new NewCookie(Fields.COOKIE_PATH, user.getWorkspaceId(), "/", null, null, Fields.COOKIE_AGE, false) );
-
-			// gets the user data
-			UserData data = user.getData();
-			if( data != null && data.hasInformation() ) {
-				// adds the cookies
-				try {
-					builder = builder.cookie(
-							new NewCookie(Fields.COOKIE_USER, data.toJson(), "/", null, null, Fields.COOKIE_AGE, false) );
-				} catch (JsonProcessingException e) {
-					LOGGER.error(e, "Unable to set user cookies, due to Json encoding error.");
-				}
-			}
-		}
-
-		return builder;
-	}
-
-	/**
-	 * Generates an error response
-	 * 
-	 * @param status
-	 * @param user
-	 * @param errors
-	 * @return Response
-	 */
-	private Response buildErrorResponse( int status, UserManager user, String... errors ) {
-
-		// ResponseBuilder builder = Response.status(status);
-		ResponseBuilder builder = buildResponse(status, user);
-
-		Map<String, Object> result = new HashMap<String, Object>();
-		List<String> errorList = new LinkedList<String>();
-
-		for( String error : errors ) {
-			errorList.add( error );
-		}
-
-		result.put("status", "error");
-		result.put("errors", errorList);
-
-		return builder.entity(result).build();
-	}
-
 }

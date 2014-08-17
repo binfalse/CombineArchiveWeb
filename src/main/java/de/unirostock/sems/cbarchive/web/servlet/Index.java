@@ -3,9 +3,12 @@
  */
 package de.unirostock.sems.cbarchive.web.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
+import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
 
@@ -25,20 +29,28 @@ import de.unirostock.sems.cbarchive.web.UserManager;
 public class Index extends HttpServlet {
 
 	private static final long serialVersionUID = 7678663032688543485L;
-
-	private void run (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		ServletContext context = config.getServletContext();
 		
+		// Log Level
 		LOGGER.setMinLevel (LOGGER.WARN);
-		String desiredLogLevel = getServletContext().getInitParameter("LOGLEVEL");
+		String desiredLogLevel = context.getInitParameter("LOGLEVEL");
+		
 		if (desiredLogLevel != null)
 		{
+			LOGGER.warn("Try to set log level to ", desiredLogLevel);
+			
 			if (desiredLogLevel.equals ("DEBUG"))
 			{
 				LOGGER.setMinLevel (LOGGER.DEBUG);
 				LOGGER.setLogStackTrace (true);
 			}
-			else if (desiredLogLevel.equals ("INFO"))
+			else if (desiredLogLevel.equals ("INFO")) {
 				LOGGER.setMinLevel (LOGGER.INFO);
+			}
 			else if (desiredLogLevel.equals ("WARN"))
 				LOGGER.setMinLevel (LOGGER.WARN);
 			else if (desiredLogLevel.equals ("ERROR"))
@@ -46,7 +58,22 @@ public class Index extends HttpServlet {
 			else if (desiredLogLevel.equals ("NONE"))
 				LOGGER.setLogToStdErr (false);
 		}
+		
+		// Storage
+		String storage = context.getInitParameter("STORAGE");
+		LOGGER.error(storage);
+		if( storage != null ) {
+			Fields.STORAGE = new File( storage );
+			Fields.SETTINGS_FILE = new File( Fields.STORAGE, Fields.SETTINGS_FILE_NAME );
+			
+			LOGGER.info("Setted storage to ", Fields.STORAGE);
+		}
+	}
 
+
+
+	private void run (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		
 		response.setContentType ("text/html");
 		response.setCharacterEncoding ("UTF-8");
 		request.setCharacterEncoding ("UTF-8");

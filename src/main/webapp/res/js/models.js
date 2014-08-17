@@ -5,7 +5,6 @@ _.templateSettings =  {
 		evaluate: /\{\{#(.+?)\}\}/g,
 		interpolate: /\{\{([^#].*?)\}\}/g
 };
-// TODO
 
 var ArchiveEntryModel = Backbone.Model.extend({
 	urlRoot: RestRoot + 'archives/0/entries',
@@ -79,6 +78,13 @@ var OmexMetaModel = Backbone.Model.extend({
 	},
 	setUrl: function( archiveId, entryId )  {
 		this.urlRoot = RestRoot + "archives/" + archiveId + "/entries/" + entryId + "/meta";
+	}
+});
+
+var WorkspaceHistoryModel = Backbone.Model.extend({
+	urlRoot: RestRoot + "workspaces",
+	defaults: {
+		"currentWorkspace": ""
 	}
 });
 
@@ -197,7 +203,7 @@ var NavigationView = Backbone.View.extend({
 		}
 		else {
 			// seems to be no valid navlink
-			$("#startPage").show();
+			$("#start-page").show();
 			alert("no valid link!");
 		}
 		
@@ -865,13 +871,13 @@ var ArchiveView = Backbone.View.extend({
 		
 		if( currentNode == undefined )
 			dirNode = jstree.get_children_dom("#")[0];
-		else if( currentNode.original.type == "dir" )
+		else if( currentNode.original.type == "dir" || currentNode.original.type == "root" )
 			dirNode = currentNode;
 		else
 			dirNode = jstree.get_parent(currentNode);
 		
-		console.log(currentNode);
-		console.log(dirNode);
+//		console.log(currentNode);
+//		console.log(dirNode);
 		var folderName = prompt("Please input new folder name", "new_folder");
 		
 		if( folderName == null )
@@ -1063,7 +1069,7 @@ var CreateView = Backbone.View.extend({
 	
 	model: null,
 	
-	el: '#createPage',
+	el: '#create-page',
 	
 	initialize: function() {
 		this.template = templateCache["template-create"];
@@ -1239,6 +1245,48 @@ var CreateView = Backbone.View.extend({
 		});
 	}
 	
+});
+
+var StartView = Backbone.View.extend({
+	
+	el: "#start-page",
+	model: null,
+	
+	initialize: function() {
+		this.template = templateCache["template-start"];
+		this.model = new WorkspaceHistoryModel();
+		this.fetch();
+	},
+	render: function() {
+		var json = { "history": this.model.toJSON(), "baseUrl": location.protocol+'//'+location.host+location.pathname+(location.search?location.search:"") };
+		this.$el.html( this.template(json) );
+	},
+	fetch: function() {
+		
+		if( this.model == null )
+			return;
+		
+		var self = this;
+		this.model.fetch({
+			reset: true,
+			success: function(model, response, options) {
+				self.render();
+			},
+			error: function(model, response, options) {
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Can not fetch workspace history", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Can not fetch workspace history." );
+			}
+		});
+		
+	},
+	
+	events: {
+		
+	}
 });
 
 var MessageView = Backbone.View.extend({

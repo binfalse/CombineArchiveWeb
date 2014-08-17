@@ -9,12 +9,16 @@ public class Fields {
 	
 	/** The Constant COOKIE_PATH. */
 	public static final String COOKIE_PATH = "combinearchiveweba";
-
-	// TODO: move this to the context.xml 
-	/** The Constant STORAGE. */
-	public static final File STORAGE = new File ("/tmp/CombineArchiveWebStorage");
 	
-	public static final File SETTINGS_FILE = new File( STORAGE, "CaWeb.settings" );
+	/** The Constant COOKIE_WORKSPACE_HISTORY */
+	public static final String COOKIE_WORKSPACE_HISTORY = "combinearchivewebhist";
+	
+	public static final String SETTINGS_FILE_NAME = "CaWeb.settings";
+	
+	/** The Constant STORAGE. */
+	public static File STORAGE = new File ("/tmp/CombineArchiveWebStorage");
+	
+	public static File SETTINGS_FILE = new File( STORAGE, SETTINGS_FILE_NAME );
 
 	/** The Constant COOKIE_AGE. */
 	public static final int COOKIE_AGE = 60*60*24*365;

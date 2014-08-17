@@ -8,6 +8,7 @@ import java.util.Map;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.Fields;
+import de.unirostock.sems.cbarchive.web.Tools;
 
 public class Workspace {
 	
@@ -20,16 +21,19 @@ public class Workspace {
 	public Workspace(String workspaceId, String name) {
 		super();
 		this.workspaceId = workspaceId;
-		this.name = name;
+		
+		if( name == null || name.isEmpty() )
+			this.name = "Workspace " + Tools.DATE_FORMATTER.format( new Date() );
+		else
+			this.name = name;
 	}
 
 	public Workspace(String workspaceId) {
-		super();
-		this.workspaceId = workspaceId;
+		this(workspaceId, null);
 	}
 
 	public Workspace() {
-		super();
+		this(null, null);
 	}
 	
 	public void updateLastseen() {
@@ -46,7 +50,7 @@ public class Workspace {
 
 	public File getWorkspaceDir() throws IOException {
 		
-		if( workspaceDir == null && workspaceId != null && !workspaceId.isEmpty() ) {
+		if( (workspaceDir == null || !workspaceDir.exists()) && workspaceId != null && !workspaceId.isEmpty() ) {
 			
 			workspaceDir = new File( Fields.STORAGE, workspaceId );
 			if( !workspaceDir.exists() || !workspaceDir.isDirectory() ) {

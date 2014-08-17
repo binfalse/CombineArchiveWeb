@@ -22,10 +22,15 @@
 	
 	<context-param>
 		<param-name>LOGLEVEL</param-name>
-		<param-value>DEBUG</param-value>
+		<param-value>WARN</param-value>
 		<description>sets the log level. available levels: DEBUG, INFO, WARN, ERROR, NONE</description>
 	</context-param>
-
+	
+	<context-param>
+		<param-name>STORAGE</param-name>
+		<param-value>/tmp/CombineArchiveWebStorage</param-value>
+		<description>sets the persistent storage directory.</description>
+	</context-param>
 
 
 	<!-- known servlets -->
@@ -33,6 +38,7 @@
 	<servlet>
 		<servlet-name>Index</servlet-name>
 		<servlet-class>de.unirostock.sems.cbarchive.web.servlet.Index</servlet-class>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet>

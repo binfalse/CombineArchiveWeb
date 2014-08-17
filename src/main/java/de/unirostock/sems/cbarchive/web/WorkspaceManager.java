@@ -49,6 +49,10 @@ public class WorkspaceManager {
 		return workspaces.get(workspaceId);
 	}
 	
+	public boolean hasWorkspace( String workspaceId ) {
+		return workspaces.containsKey(workspaceId);
+	}
+	
 	public synchronized Workspace createWorkspace() throws IOException {
 		
 		if( Fields.STORAGE.exists() == false && Fields.STORAGE.mkdirs() == false ) {
@@ -65,7 +69,16 @@ public class WorkspaceManager {
 		
 		Workspace workspace = new Workspace(uuid);
 		workspace.setWorkspaceDir(workingDir);
+		
+		// create working dir
+		if( workingDir.mkdirs() == false ) {
+			LOGGER.error( "Can not create working directory", workingDir );
+			throw new IOException( "Can not create working directory" );
+		}
+		
 		workspace.updateLastseen();
+		// add to settings
+		workspaces.put(uuid, workspace);
 		
 		return workspace;
 	}
@@ -197,5 +210,5 @@ public class WorkspaceManager {
 		}
 		
 	}
-	
+
 }

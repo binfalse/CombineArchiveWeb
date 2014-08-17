@@ -3,6 +3,7 @@
 var workspaceArchives = null;
 var navigationView = null;
 var archiveView = null;
+var startView = null;
 var createView = null;
 var messageView = null;
 var templateCache = {};
@@ -43,6 +44,7 @@ $(document).ready(function () {
 			workspaceArchives = new ArchiveCollection();
 			navigationView = new NavigationView({ collection: workspaceArchives });
 			archiveView = new ArchiveView();
+			startView = new StartView();
 			createView = new CreateView();
 			messageView = new MessageView();
 			

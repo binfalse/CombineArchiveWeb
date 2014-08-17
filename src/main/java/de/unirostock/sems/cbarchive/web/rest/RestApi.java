@@ -726,7 +726,7 @@ public class RestApi extends Application {
 				metaObject.generateId();
 			} catch( IOException | TransformerException e ) {
 				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+				return buildErrorResponse( 500, user, "Can not create meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
 			} finally {
 				archive.getArchive().close();
 			}
@@ -753,6 +753,7 @@ public class RestApi extends Application {
 		
 		try {
 			Archive archive = user.getArchive(archiveId);
+			CombineArchive combineArchive = archive.getArchive();
 			
 			// iterate over all archive entries
 			ArchiveEntryDataholder entry = null;
@@ -784,11 +785,21 @@ public class RestApi extends Application {
 				return buildErrorResponse(404, user, "No such meta entry found");
 			}
 			
-			// removes the meta entry
-			if( entry.getArchiveEntry().removeDescription( metaObject.getMetaObject() ) )
-				return buildResponse(200, user).build();
-			else
-				return buildErrorResponse(500, user, "Can not remove meta description");
+			// removes the meta entry and pack/closes the archive
+			try {
+				boolean result = entry.getArchiveEntry().removeDescription( metaObject.getMetaObject() );
+				combineArchive.pack();
+				
+				if( result )
+					return buildResponse(200, user).build();
+				else
+					return buildErrorResponse(500, user, "Can not remove meta description");
+			} catch (TransformerException e) {
+				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive {0} entries in WorkingDir {1}", e.getMessage() );
+			} finally {
+				combineArchive.close();
+			}
 			
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );

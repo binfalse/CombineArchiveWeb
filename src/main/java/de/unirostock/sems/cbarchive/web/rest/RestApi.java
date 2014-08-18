@@ -43,6 +43,7 @@ import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.VcImporter;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
@@ -295,10 +296,6 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
-		if( archive instanceof ArchiveFromCellMl ) {
-			LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
-		}
-		
 		if( archive == null ) {
 			LOGGER.error("create archive not possible if archive == null");
 			return buildErrorResponse(400, null, "no archive was transmitted" );
@@ -307,7 +304,23 @@ public class RestApi extends RestHelper {
 		try {
 			String id = user.createArchive( archive.getName() );
 			archive.setId(id);
+			
+			if( archive instanceof ArchiveFromCellMl ) {
+				LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
+				try
+				{
+					//Archive arch = user.getArchive (id);
+					if (!VcImporter.importRepo ((ArchiveFromCellMl) archive))
+						throw new CombineArchiveWebException ("importing cellml repo failed");
+				}
+				catch (CombineArchiveWebException e)
+				{
+					LOGGER.error (e, "cannot create archive");
+					return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
+				}
+			}
 			return buildResponse(200, user).entity(archive).build();
+			
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {
 			LOGGER.error(e, MessageFormat.format("Can not create archive in WorkingDir {0}", user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );

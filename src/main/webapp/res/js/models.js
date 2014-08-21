@@ -1210,7 +1210,7 @@ var CreateView = Backbone.View.extend({
 		}
 		else if( archiveTemplate == "file" ) {
 			// create new archive based on a file
-			// TODO make file upload and stuff...
+			// TODO check mime-type and size
 			archiveModel.set("template", "existing");
 			
 			// show waiting stuff
@@ -1235,7 +1235,7 @@ var CreateView = Backbone.View.extend({
 				data: formData,
 				success: function(data) {
 					console.log(data);
-					self.fetchCollection(true);
+					navigationView.fetchCollection(true);
 					// not necessary to display, because complete view gets re-rendered
 					self.$el.find(".dropbox .icon").hide();
 					self.$el.find(".dropbox a").show();

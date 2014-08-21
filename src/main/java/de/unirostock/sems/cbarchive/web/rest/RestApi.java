@@ -366,34 +366,39 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(400, null, "no archive was transmitted" );
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			return null;
+			LOGGER.error(e, "Can not parse archive information!");
+			return buildErrorResponse(500, user, "Can not parse archive information!");
 		}
 		
-		if( archive instanceof ArchiveFromExisting ) {
-			// archive from an existing file
-			// TODO
-			return null;
+		if( archive instanceof ArchiveFromExisting == false ) {
+			// archive is generated from an existing file
+			// delegate to the original Endpoint
+			return createArchive(userPath, archive);
 		}
 		
 		try {
-			String id = user.createArchive( archive.getName() );
+			// check for mime type and size
+			// TODO
+			
+			// write uploaded file to temp
+			// copy the stream to a temp file
+			java.nio.file.Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, file.getFormDataContentDisposition().getFileName() );
+			// write file to disk
+			OutputStream output = new FileOutputStream( temp.toFile() );
+			InputStream input = file.getEntityAs(InputStream.class);
+			IOUtils.copy( input, output);
+			
+			output.flush();
+			output.close();
+			input.close();
+			
+			// creates a existing archive in the working space (check is included)
+			String id = user.createArchive( archive.getName(), temp.toFile() );
 			archive.setId(id);
 			
-			if( archive instanceof ArchiveFromCellMl ) {
-				LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
-				try
-				{
-					//Archive arch = user.getArchive (id);
-					if (!VcImporter.importRepo ((ArchiveFromCellMl) archive))
-						throw new CombineArchiveWebException ("importing cellml repo failed");
-				}
-				catch (CombineArchiveWebException e)
-				{
-					LOGGER.error (e, "cannot create archive");
-					return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
-				}
-			}
+			// remove temp file
+			temp.toFile().delete();
+			
 			return buildResponse(200, user).entity(archive).build();
 			
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {

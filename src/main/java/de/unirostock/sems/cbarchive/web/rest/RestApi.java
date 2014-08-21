@@ -18,21 +18,30 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Providers;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -52,10 +61,11 @@ import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
+import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
 @Path("v1")
 public class RestApi extends RestHelper {
-
+	
 	@GET
 	@Path("/heartbeat")
 	@Produces( MediaType.TEXT_PLAIN )
@@ -334,7 +344,7 @@ public class RestApi extends RestHelper {
 	@Path( "/archives" )
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
-	public Response createArchiveFromMultipart( @CookieParam(Fields.COOKIE_PATH) String userPath, Archive archive ) {
+	public Response createArchiveFromMultipart( @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("archive") String serializedArchive, @FormDataParam("file") FormDataBodyPart file ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -344,19 +354,26 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
-		if( archive instanceof ArchiveFromCellMl ) {
-			LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
-		}
-		
-		if( archive == null ) {
-			LOGGER.error("create archive not possible if archive == null");
-			return buildErrorResponse(400, null, "no archive was transmitted" );
+		// maps the Archive dataholder manually
+		Archive archive = null;
+		try {
+			ObjectMapper mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
+//			archive = mapper.readValue(serializedArchive, new TypeReference<Archive>(){} );
+			archive = mapper.readValue(serializedArchive, Archive.class);
+			
+			if( archive == null ) {
+				LOGGER.error("create archive not possible if archive == null");
+				return buildErrorResponse(400, null, "no archive was transmitted" );
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return null;
 		}
 		
 		if( archive instanceof ArchiveFromExisting ) {
 			// archive from an existing file
 			// TODO
-			LOGGER.info( ((ArchiveFromExisting) archive).getFile() );
+			return null;
 		}
 		
 		try {

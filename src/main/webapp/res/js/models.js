@@ -1223,10 +1223,8 @@ var CreateView = Backbone.View.extend({
 			}
 			var self = this;
 			var formData = new FormData();
-			formData.append("file", this.file);
-			_.each( archiveModel.toJSON(), function(value, key, list) {
-				formData.append(key, value);
-			});
+			formData.append( "file", this.file );
+			formData.append( "archive", JSON.stringify(archiveModel.toJSON()) );
 			
 			// upload it
 			$.ajax({
@@ -1244,6 +1242,8 @@ var CreateView = Backbone.View.extend({
 				},
 				error: function(data) {
 					console.log(data);
+					self.$el.find(".dropbox .icon").hide();
+					self.$el.find(".dropbox a").show();
 				}
 			});
 			

@@ -1233,17 +1233,39 @@ var CreateView = Backbone.View.extend({
 				processData: false,
 				contentType: false,
 				data: formData,
-				success: function(data) {
-					console.log(data);
-					navigationView.fetchCollection(true);
-					// not necessary to display, because complete view gets re-rendered
+				success: function(response) {
+					console.log(response);
+					
 					self.$el.find(".dropbox .icon").hide();
 					self.$el.find(".dropbox a").show();
+					
+					if( response !== undefined ) {
+						var model = new ArchiveModel( {
+							"id": response.id,
+							"name": response.name
+						});
+						console.log( model.toJSON() );
+						
+						messageView.success( "Archive " + model.get("name") + " successfully uploaded.");
+						
+						// add model to navigation collection and re-renders the view
+						navigationView.collection.add([model]);
+						navigationView.render();
+						navigationView.selectArchive( model.get("id") );
+					}
 				},
-				error: function(data) {
-					console.log(data);
+				error: function(response) {
+					console.log(response);
 					self.$el.find(".dropbox .icon").hide();
 					self.$el.find(".dropbox a").show();
+					
+					console.log("error while uploading new archive");
+					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+						var text = response.responseJSON.errors;
+						messageView.error( "Can not create new archive", text );
+					}
+					else
+						messageView.error( "Unknown Error", "Can not create new archive." );
 				}
 			});
 			

@@ -320,7 +320,7 @@ public class RestApi extends RestHelper {
 					return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
 				}
 			}
-			return buildResponse(200, user).entity(archive).build();e(200, user).entity(archive).build();
+			return buildResponse(200, user).entity(archive).build();
 			
 			
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {

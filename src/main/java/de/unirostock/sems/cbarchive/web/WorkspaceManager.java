@@ -203,6 +203,11 @@ public class WorkspaceManager {
 		try {
 			OutputStream output = new FileOutputStream( Fields.SETTINGS_FILE );
 			properties.store(output, null);
+
+			// flush'n'close
+			output.flush();
+			output.close();
+			
 			// set time of last store to now
 			lastSaved = new Date();
 		} catch (IOException e) {

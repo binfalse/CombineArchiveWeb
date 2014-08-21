@@ -302,16 +302,27 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse(400, null, "no archive was transmitted" );
 		}
 		
-		if( archive instanceof ArchiveFromExisting ) {
-			// archive from an existing file
-			// TODO
-			LOGGER.info( ((ArchiveFromExisting) archive).getFile() );
-		}
-		
 		try {
 			String id = user.createArchive( archive.getName() );
 			archive.setId(id);
-			return buildResponse(200, user).entity(archive).build();
+			
+			if( archive instanceof ArchiveFromCellMl ) {
+				LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
+				try
+				{
+					//Archive arch = user.getArchive (id);
+					if (!VcImporter.importRepo ((ArchiveFromCellMl) archive))
+						throw new CombineArchiveWebException ("importing cellml repo failed");
+				}
+				catch (CombineArchiveWebException e)
+				{
+					LOGGER.error (e, "cannot create archive");
+					return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
+				}
+			}
+			return buildResponse(200, user).entity(archive).build();e(200, user).entity(archive).build();
+			
+			
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {
 			LOGGER.error(e, MessageFormat.format("Can not create archive in WorkingDir {0}", user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );

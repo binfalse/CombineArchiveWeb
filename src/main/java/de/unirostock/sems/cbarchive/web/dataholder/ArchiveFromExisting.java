@@ -1,9 +1,11 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 public class ArchiveFromExisting extends Archive {
 	
+	@FormDataParam("file")
 	protected FormDataBodyPart file = null;
 	
 	public ArchiveFromExisting() {

@@ -1221,14 +1221,36 @@ var CreateView = Backbone.View.extend({
 				messageView.warning("Please select an file");
 				return false;
 			}
+			var self = this;
+			var formData = new FormData();
+			formData.append("file", this.file);
+			_.each( archiveModel.toJSON(), function(value, key, list) {
+				formData.append(key, value);
+			});
 			
-			
+			// upload it
+			$.ajax({
+				"url": archiveModel.urlRoot,
+				"type": "POST",
+				processData: false,
+				contentType: false,
+				data: formData,
+				success: function(data) {
+					console.log(data);
+					self.fetchCollection(true);
+					// not necessary to display, because complete view gets re-rendered
+					self.$el.find(".dropbox .icon").hide();
+					self.$el.find(".dropbox a").show();
+				},
+				error: function(data) {
+					console.log(data);
+				}
+			});
 			
 			return false;
 		}
 		else if( archiveTemplate == "cellml" ) {
 			// create new archive based on a CellMl repository
-			// TODO get url and stuff
 			archiveModel.set("template", "cellml");
 			
 			var link = this.$el.find("input[name='newArchiveCellMlLink']").val();
@@ -1317,24 +1339,6 @@ var CreateView = Backbone.View.extend({
 		this.file = file;
 		this.$el.find(".dropbox .file-name-display").html(file.name).show();
 		
-		// upload it
-//		$.ajax({
-//			"url": this.collection.url,
-//			"type": "POST",
-//			processData: false,
-//			contentType: false,
-//			data: formData,
-//			success: function(data) {
-//				console.log(data);
-//				self.fetchCollection(true);
-//				// not necessary to display, because complete view gets re-rendered
-////				this.$el.find(".dropbox .icon").hide();
-////				this.$el.find(".dropbox a").show();
-//			},
-//			error: function(data) {
-//				console.log(data);
-//			}
-//		});
 	}
 	
 });

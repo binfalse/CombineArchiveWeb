@@ -22,6 +22,7 @@ var ArchiveEntryModel = Backbone.Model.extend({
 var ArchiveModel = Backbone.Model.extend({
 	urlRoot: RestRoot + 'archives',
 	defaults: {
+		'template': 'plain',
 		'name': 'n/a'
 	}
 	
@@ -1068,6 +1069,7 @@ var ArchiveView = Backbone.View.extend({
 var CreateView = Backbone.View.extend({
 	
 	model: null,
+	file: null,
 	
 	el: '#create-page',
 	
@@ -1106,6 +1108,10 @@ var CreateView = Backbone.View.extend({
 		'click .create-archive': 'createArchive',
 		'keydown #newArchiveName': 'createArchive',
 		"click input[name='newArchiveTemplate']": 'updateArchiveTemplate',
+		"dragover .dropbox": "dropboxOver",
+		"drop .dropbox": "dropboxDrop",
+		"click .dropbox a": "dropboxClick",
+		"change .dropbox input": "dropboxManual",
 		"click a.test": "addMsg"
 	},
 	addMsg: function(event) {
@@ -1186,6 +1192,12 @@ var CreateView = Backbone.View.extend({
 		
 		var archiveModel = new ArchiveModel({'name': archiveName}, {'collection': workspaceArchives});
 		
+		if( !archiveModel.isValid() ) {
+			// model is not valid
+			messageView.error("Archive parameter invalid", archiveModel.validationError);
+			return false;
+		}
+		
 		if( archiveTemplate == undefined ) {
 			// TODO
 			messageView.error("Undefined archive template type");
@@ -1198,12 +1210,69 @@ var CreateView = Backbone.View.extend({
 		}
 		else if( archiveTemplate == "file" ) {
 			// create new archive based on a file
-			// TODO make file upload and stuff...
+			// TODO check mime-type and size
 			archiveModel.set("template", "existing");
+			
+			// show waiting stuff
+			this.$el.find(".dropbox .icon").show();
+			this.$el.find(".dropbox a").hide();
+			
+			if( this.file == null ) {
+				messageView.warning("Please select an file");
+				return false;
+			}
+			var self = this;
+			var formData = new FormData();
+			formData.append( "file", this.file );
+			formData.append( "archive", JSON.stringify(archiveModel.toJSON()) );
+			
+			// upload it
+			$.ajax({
+				"url": archiveModel.urlRoot,
+				"type": "POST",
+				processData: false,
+				contentType: false,
+				data: formData,
+				success: function(response) {
+					console.log(response);
+					
+					self.$el.find(".dropbox .icon").hide();
+					self.$el.find(".dropbox a").show();
+					
+					if( response !== undefined ) {
+						var model = new ArchiveModel( {
+							"id": response.id,
+							"name": response.name
+						});
+						console.log( model.toJSON() );
+						
+						messageView.success( "Archive " + model.get("name") + " successfully uploaded.");
+						
+						// add model to navigation collection and re-renders the view
+						navigationView.collection.add([model]);
+						navigationView.render();
+						navigationView.selectArchive( model.get("id") );
+					}
+				},
+				error: function(response) {
+					console.log(response);
+					self.$el.find(".dropbox .icon").hide();
+					self.$el.find(".dropbox a").show();
+					
+					console.log("error while uploading new archive");
+					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+						var text = response.responseJSON.errors;
+						messageView.error( "Can not create new archive", text );
+					}
+					else
+						messageView.error( "Unknown Error", "Can not create new archive." );
+				}
+			});
+			
+			return false;
 		}
 		else if( archiveTemplate == "cellml" ) {
 			// create new archive based on a CellMl repository
-			// TODO get url and stuff
 			archiveModel.set("template", "cellml");
 			
 			var link = this.$el.find("input[name='newArchiveCellMlLink']").val();
@@ -1218,12 +1287,6 @@ var CreateView = Backbone.View.extend({
 		else {
 			// no known type of archive
 			messageView.error("Undefined archive template type");
-			return false;
-		}
-		
-		if( !archiveModel.isValid() ) {
-			// model is not valid
-			messageView.error("Archive parameter invalid", archiveModel.validationError);
 			return false;
 		}
 		
@@ -1248,6 +1311,56 @@ var CreateView = Backbone.View.extend({
 					messageView.error( "Unknown Error", "Can not create new archive." );
 			}
 		});
+	},
+	dropboxOver: function(event) {
+		// disables default drag'n'drop behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
+		// shows nice copy icon
+		event.originalEvent.dataTransfer.dropEffect = 'copy';
+	},
+	dropboxDrop: function(event) {
+		// disables default drag'n'drop behavior
+		event.stopPropagation();
+		event.preventDefault();
+				
+		// get files transmitted with drop
+		var files = event.originalEvent.dataTransfer.files;
+		this.stashFile(files);
+		
+	},
+	dropboxClick: function(event) {
+		var $button = this.$el.find(".dropbox input[name='newArchiveExisting']");
+		$button.trigger("click");
+	},
+	dropboxManual: function(event) {
+		// disables default drag'n'drop behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
+		if( this.collection == null )
+			this.collection = new ArchiveEntryCollection();
+		
+		// get files transmitted with drop
+		console.log(event);
+		var files = event.target.files;
+		this.stashFile(files);
+	},
+	stashFile: function(file) {
+		
+		if( file == null || file == undefined ) {
+			this.$el.find(".dropbox .file-name-display").html("").hide();
+			this.file = null;
+			return false;
+		}
+		
+		// just take the first file
+		file = file[0];
+		// put it on stage
+		this.file = file;
+		this.$el.find(".dropbox .file-name-display").html(file.name).show();
+		
 	}
 	
 });

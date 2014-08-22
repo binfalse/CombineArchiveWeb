@@ -104,22 +104,30 @@
 				<input type="text" id="newArchiveName" name="newArchiveName" placeholder="archive name" />
 			</p>
 			
-			<p>
+			<div style="margin: 0.5em 0;">
 				<input type="radio" id="newArchiveTemplate-Empty" name="newArchiveTemplate" value="empty" checked="checked" />
 				<label for="newArchiveTemplate-Empty">Create an empty archive</label><br />
 				
 				<input type="radio" id="newArchiveTemplate-File" name="newArchiveTemplate" value="file" />
 				<label for="newArchiveTemplate-File">Upload an existing archive</label><br />
-				<span class="on-archive-upload">
-					<input type="file" name="newArchiveExisting" size="chars" /><br />
-				</span>
+				<div class="on-archive-upload">
+					<!-- <input type="file" name="newArchiveExisting" size="chars" /> -->
+					<div class="dropbox">
+						<div class="center-button">
+							<a href="#">Upload file</a>
+							<div class="icon"> </div>
+						</div>
+						<div class="file-name-display">Test...</div>
+						<input type="file" name="newArchiveExisting" />
+					</div><br />
+				</div>
 				
 				<input type="radio" id="newArchiveTemplate-CellMl" name="newArchiveTemplate" value="cellml" />
 				<label for="newArchiveTemplate-CellMl">Create an archive from CellMl model repository</label><br />
-				<span class="on-archive-cellml">
+				<div class="on-archive-cellml">
 					<input type="text" name="newArchiveCellMlLink" placeholder="link to CellML repository" /><br />
-				</span>
-			</p>
+				</div>
+			</div>
 			<p>
 				<input type="button" class="create-archive" value="Create Archive" />
 			</p>
@@ -146,7 +154,7 @@
 				
 				<div class="archive-upload">
 					<div class="dropbox">
-						<div>
+						<div class="center-button">
 							<a href="#">Upload files</a>
 							<div class="icon"> </div>
 						</div>

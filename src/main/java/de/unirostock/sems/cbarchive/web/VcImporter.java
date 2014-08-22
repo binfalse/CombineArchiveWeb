@@ -1,12 +1,15 @@
 package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.transform.TransformerException;
+
+import org.jdom2.JDOMException;
 
 import com.aragost.javahg.Changeset;
 import com.aragost.javahg.Repository;
@@ -16,6 +19,7 @@ import com.google.common.io.Files;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
+import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
@@ -35,14 +39,24 @@ public class VcImporter
 {
 	/**
 	 * @param archive
+	 * @param id 
+	 * @param user 
 	 * @return true or false.
 	 * @throws IOException 
 	 * @throws TransformerException 
+	 * @throws CombineArchiveException 
+	 * @throws ParseException 
+	 * @throws JDOMException 
+	 * @throws CombineArchiveWebException 
 	 */
-	public static boolean importRepo (ArchiveFromCellMl archive) throws IOException, TransformerException
+	public static boolean importRepo (ArchiveFromCellMl archive, String id, UserManager user) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
 	{
 		String link = archive.getCellmlLink ();
+		
+		File archiveFile = user.getArchiveFile (id);
+		archive.setArchiveFile (archiveFile);
 		CombineArchive ca = archive.getArchive ();
+		// archive.getArchive ();
 		
 		File f = Files.createTempDir ();
 		Repository repo = Repository.clone(f, link);
@@ -73,35 +87,53 @@ public class VcImporter
 			HashMap<String, VCard> users = new HashMap<String, VCard> ();
 			for (Changeset cs : relevantVersions)
 			{
-				//System.out.println ("changed in " + cs.getTimestamp ().getDate ());
+				LOGGER.debug ("cs: " + cs.getTimestamp ().getDate () + " -- " + cs.getUser ());
 				modified.add (cs.getTimestamp ().getDate ());
 			
-				String user = cs.getUser ();
+				String vcuser = cs.getUser ();
 				String firstName = "";
 				String lastName = "";
 				String mail = "";
 				
-				int pos = user.lastIndexOf ("<");
-				lastName = user.substring (0, pos).trim ();
-				mail = user.substring (pos + 1, user.length () - 1).trim ();
-				
-				pos = lastName.lastIndexOf (" ");
-				if (pos > 0)
+				String[] tokens = vcuser.split (" ");
+				int lastNameToken = tokens.length - 1;
+				// is there a mail address?
+				if (tokens[lastNameToken].contains ("@"))
 				{
-					firstName = lastName.substring (0, pos);
-					lastName = lastName.substring (pos + 1);
+					mail = tokens[lastNameToken];
+					if (mail.startsWith ("<") && mail.endsWith (">"))
+						mail = mail.substring (1, mail.length () - 1);
+					lastNameToken--;
 				}
 				
-				String id = "[" + firstName + "] -- [" + lastName + "] -- [" + mail + "]";
-				if (users.get (id) == null)
+				// search for a non-empty last name
+				while (lastNameToken >= 0)
 				{
-					users.put (id, new VCard (lastName, firstName, mail, null));
+					if (tokens[lastNameToken].length () > 0)
+					{
+						lastName = tokens[lastNameToken];
+						break;
+					}
+					lastNameToken--;
+				}
+				
+				// and first name of course...
+				for (int i = 0; i < lastNameToken; i++)
+					if (tokens[i].length () > 0)
+						firstName += tokens[i] + " ";
+				firstName = firstName.trim ();
+				
+				String userid = "[" + firstName + "] -- [" + lastName + "] -- [" + mail + "]";
+				LOGGER.debug ("this is user: " + userid);
+				if (users.get (userid) == null)
+				{
+					users.put (userid, new VCard (lastName, firstName, mail, null));
 				}
 			}
 			
 			for (VCard vc : users.values ())
 				creators.add (vc);
-			
+
 			caFile.addDescription (new OmexMetaDataObject (new OmexDescription (
         creators, modified, modified.get (modified.size () - 1))));
 			

@@ -1,5 +1,6 @@
 package de.unirostock.sems.cbarchive.web.rest;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -310,7 +311,7 @@ public class RestApi extends RestHelper {
 				try
 				{
 					//Archive arch = user.getArchive (id);
-					if (!VcImporter.importRepo ((ArchiveFromCellMl) archive))
+					if (!VcImporter.importRepo ((ArchiveFromCellMl) archive, id, user))
 						throw new CombineArchiveWebException ("importing cellml repo failed");
 				}
 				catch (CombineArchiveWebException e)

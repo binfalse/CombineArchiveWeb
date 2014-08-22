@@ -72,7 +72,7 @@ public class WorkspaceManager {
 		
 		// create working dir
 		if( workingDir.mkdirs() == false ) {
-			LOGGER.error( "Can not create working directory", workingDir );
+			LOGGER.error( "Can not create working directory ", workingDir );
 			throw new IOException( "Can not create working directory" );
 		}
 		

@@ -19,7 +19,6 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
-import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;

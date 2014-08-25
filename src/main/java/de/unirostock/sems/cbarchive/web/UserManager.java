@@ -13,6 +13,8 @@ import javax.xml.transform.TransformerException;
 
 import org.jdom2.JDOMException;
 
+import com.google.common.io.Files;
+
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
@@ -182,6 +184,10 @@ public class UserManager {
 	}
 
 	public String createArchive( String name ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
+		return createArchive(name, null);
+	}
+	
+	public String createArchive( String name, File existingArchive ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
 		
 		// generates new unique UID
 		String uuid = UUID.randomUUID ().toString ();
@@ -191,11 +197,22 @@ public class UserManager {
 			uuid = UUID.randomUUID ().toString ();
 			archiveFile = new File (workingDir, uuid);
 		}
-
-		// creates and packs the new empty archive
-		CombineArchive archive = new CombineArchive (archiveFile);
-		archive.pack ();
-		archive.close ();
+		
+		if( existingArchive != null && existingArchive.exists() ) {
+			// an archive already exists
+			// check if combineArchive is valid
+			CombineArchive combineArchive = new CombineArchive( existingArchive );
+			combineArchive.close();
+			
+			// copy files
+			Files.copy(existingArchive, archiveFile);
+		}
+		else {
+			// creates and packs the new empty archive
+			CombineArchive archive = new CombineArchive (archiveFile);
+			archive.pack ();
+			archive.close ();
+		}
 		
 		// update the Properties
 		workspace.getArchives().put(uuid, name);

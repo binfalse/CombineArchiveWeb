@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.Providers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -24,7 +26,13 @@ import de.unirostock.sems.cbarchive.web.dataholder.UserData;
  *
  */
 public abstract class RestHelper extends Application {
-
+	
+	/**
+	 * Access to the provider registered to this applications
+	 */
+	@Context
+	Providers providers;
+	
 	/**
 	 * Generates ResponseBuilder an sets cookies, if possible
 	 * 

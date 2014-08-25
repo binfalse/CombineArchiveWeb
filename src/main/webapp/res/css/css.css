@@ -133,14 +133,23 @@ nav .highlight
 	
 }
 
-.dropbox div {
+.dropbox div.center-button {
 	border-radius: 3px;
 	display: inline-block;
 	padding: 0.5em 1.3em;
-	margin: 2em auto;
+	margin: 1em auto;
 	
 	background-color: #c00;
 	text-decoration: none;
+}
+
+.dropbox div.file-name-display {
+	display: none;
+	text-transform: none;
+	text-align: center;
+	font-weight: lighter;
+	font-size: 0.9em;
+	margin: -0.1em auto 1em auto;
 }
 
 .dropbox a {
@@ -259,10 +268,35 @@ div.edit-link > a:hover {
 	background-color: #eee;
 }
 
+/* -------- Create View -------- */
 
-
-#archiveUploader,
-#cellMlImporter
-{
-	display:none;
+.on-archive-cellml, .on-archive-upload {
+	display: none;
+	padding: 0 20px;
+}
+.on-archive-upload {
+	width: 300px;
+	font-size: 12px;
+}
+div.loading-container {
+	margin: 0.5em 20px 0.5em 5px;
+	float: right;
+}
+div.loading-indicator {
+	border-radius: 3px;
+	display: inline-block;
+	margin: 0 auto;
+	
+	background-color: #c00;
+	text-decoration: none;
+	
+	display: none;
+}
+div.loading-indicator .icon {
+	background: no-repeat url("upload-loader.gif");
+	background-position: center center;
+	padding: 0.5em 1.3em;
+	margin: 0;
+	width: 31px;
+	height: 31px;
 }

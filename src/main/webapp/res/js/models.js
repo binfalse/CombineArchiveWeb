@@ -1115,10 +1115,9 @@ var CreateView = Backbone.View.extend({
 		"click a.test": "addMsg"
 	},
 	addMsg: function(event) {
-		messageView.success("Hello World");
-		messageView.error("Error");
-		messageView.warning("Halfdkas");
-		messageView.success("sldfjfs");
+		this.$el.find(".create-archive").attr("disabled", "disabled");
+		this.$el.find("#newArchiveName").attr("disabled", "disabled");
+		this.$el.find("input[name='newArchiveTemplate']").attr("disabled", "disabled");
 		return false;
 	},
 	updateArchiveTemplate: function (event) {
@@ -1181,12 +1180,18 @@ var CreateView = Backbone.View.extend({
 		
 		var archiveName = this.$el.find("input[name='newArchiveName']").val();
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
+		var self = this;
 		
 		// first of all, save the VCard
 		this.saveVCard();
 		
 		// check if there are errors in this model
 		if( !this.model.isValid() ) {
+			return false;
+		}
+		
+		if( archiveName == null || archiveName == undefined || archiveName == "" ) {
+			messageView.error("An archive name should be provided.");
 			return false;
 		}
 		
@@ -1199,7 +1204,6 @@ var CreateView = Backbone.View.extend({
 		}
 		
 		if( archiveTemplate == undefined ) {
-			// TODO
 			messageView.error("Undefined archive template type");
 			return false;
 		}
@@ -1213,15 +1217,14 @@ var CreateView = Backbone.View.extend({
 			// TODO check mime-type and size
 			archiveModel.set("template", "existing");
 			
-			// show waiting stuff
-			this.$el.find(".dropbox .icon").show();
-			this.$el.find(".dropbox a").hide();
-			
 			if( this.file == null ) {
 				messageView.warning("Please select an file");
 				return false;
 			}
-			var self = this;
+			
+			// show waiting stuff
+			showLoadingIndicator.call(self);
+			
 			var formData = new FormData();
 			formData.append( "file", this.file );
 			formData.append( "archive", JSON.stringify(archiveModel.toJSON()) );
@@ -1236,8 +1239,12 @@ var CreateView = Backbone.View.extend({
 				success: function(response) {
 					console.log(response);
 					
-					self.$el.find(".dropbox .icon").hide();
-					self.$el.find(".dropbox a").show();
+					// hide loading stuff and clear inputs
+					hideLoadingIndicator.call(self);
+					self.$el.find("input[name='newArchiveName']").val("");
+					self.$el.find("input[name='newArchiveCellMlLink']").val("");
+					self.$el.find(".dropbox .file-name-display").hide();
+					self.file = null;
 					
 					if( response !== undefined ) {
 						var model = new ArchiveModel( {
@@ -1256,8 +1263,8 @@ var CreateView = Backbone.View.extend({
 				},
 				error: function(response) {
 					console.log(response);
-					self.$el.find(".dropbox .icon").hide();
-					self.$el.find(".dropbox a").show();
+					// hide loading stuff
+					hideLoadingIndicator.call(self);
 					
 					console.log("error while uploading new archive");
 					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
@@ -1276,11 +1283,10 @@ var CreateView = Backbone.View.extend({
 			archiveModel.set("template", "cellml");
 			
 			var link = this.$el.find("input[name='newArchiveCellMlLink']").val();
-//			if (!link.match (/https?:\/\/models.cellml.org\//))
-//			{
-//				messageView.error ("expected a link to a cellml repository");
-//				return false;
-//			}
+			if( !link.match(/https?:\/\/models.cellml.org\//) && !link.match(/^hg\ clone\ https?:\/\/models\.cellml\.org\//) ) {
+				messageView.error ("expected a link to a cellml repository");
+				return false;
+			}
 			// add link to the model
 			archiveModel.set ("cellmlLink", link);
 		}
@@ -1290,12 +1296,21 @@ var CreateView = Backbone.View.extend({
 			return false;
 		}
 		
+		showLoadingIndicator.call(self);
 		// push it
 		archiveModel.save({}, {
 			success: function(model, response, options) {
 				// everything ok
 				console.log("created new archive successfully.");
 				messageView.success( "Archive " + model.get("name") + " successfully created.");
+				
+				// hide loading stuff and clear inputs
+				hideLoadingIndicator.call(self);
+				self.$el.find("input[name='newArchiveName']").val("");
+				self.$el.find("input[name='newArchiveCellMlLink']").val("");
+				self.$el.find(".dropbox .file-name-display").hide();
+				self.file = null;
+				
 				// add model to navigation collection and re-renders the view
 				navigationView.collection.add([model]);
 				navigationView.render();
@@ -1303,6 +1318,10 @@ var CreateView = Backbone.View.extend({
 			},
 			error: function(model, response, options) {
 				console.log("error while creating new archive");
+				
+				// hide loading stuff
+				hideLoadingIndicator.call(self);
+				
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
 					messageView.error( "Can not create new archive", text );
@@ -1311,6 +1330,24 @@ var CreateView = Backbone.View.extend({
 					messageView.error( "Unknown Error", "Can not create new archive." );
 			}
 		});
+		
+		function showLoadingIndicator() {
+			//loading stuff
+			this.$el.find(".loading-indicator").show();
+			
+			// disable inputs
+			this.$el.find(".create-archive").attr("disabled", "disabled");
+			this.$el.find("#newArchiveName").attr("disabled", "disabled");
+			this.$el.find("input[name='newArchiveTemplate']").attr("disabled", "disabled");
+		}
+		function hideLoadingIndicator() {
+			this.$el.find(".loading-indicator").hide();
+			
+			// enable inputs
+			this.$el.find(".create-archive").removeAttr("disabled");
+			this.$el.find("#newArchiveName").removeAttr("disabled");
+			this.$el.find("input[name='newArchiveTemplate']").removeAttr("disabled");
+		}
 	},
 	dropboxOver: function(event) {
 		// disables default drag'n'drop behavior
@@ -1346,6 +1383,10 @@ var CreateView = Backbone.View.extend({
 		console.log(event);
 		var files = event.target.files;
 		this.stashFile(files);
+		
+		// resets only this input
+		$(event.target).wrap("<form>").parent("form").trigger("reset");
+		$(event).unwrap();
 	},
 	stashFile: function(file) {
 		

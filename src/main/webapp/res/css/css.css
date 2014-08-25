@@ -278,3 +278,25 @@ div.edit-link > a:hover {
 	width: 300px;
 	font-size: 12px;
 }
+div.loading-container {
+	margin: 0.5em 20px 0.5em 5px;
+	float: right;
+}
+div.loading-indicator {
+	border-radius: 3px;
+	display: inline-block;
+	margin: 0 auto;
+	
+	background-color: #c00;
+	text-decoration: none;
+	
+	display: none;
+}
+div.loading-indicator .icon {
+	background: no-repeat url("upload-loader.gif");
+	background-position: center center;
+	padding: 0.5em 1.3em;
+	margin: 0;
+	width: 31px;
+	height: 31px;
+}

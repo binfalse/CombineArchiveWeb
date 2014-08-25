@@ -104,7 +104,7 @@
 				<input type="text" id="newArchiveName" name="newArchiveName" placeholder="archive name" />
 			</p>
 			
-			<div style="margin: 0.5em 0;">
+			<div style="margin: 0.5em 0; float: left;">
 				<input type="radio" id="newArchiveTemplate-Empty" name="newArchiveTemplate" value="empty" checked="checked" />
 				<label for="newArchiveTemplate-Empty">Create an empty archive</label><br />
 				
@@ -115,7 +115,6 @@
 					<div class="dropbox">
 						<div class="center-button">
 							<a href="#">Upload file</a>
-							<div class="icon"> </div>
 						</div>
 						<div class="file-name-display">Test...</div>
 						<input type="file" name="newArchiveExisting" />
@@ -128,6 +127,13 @@
 					<input type="text" name="newArchiveCellMlLink" placeholder="link to CellML repository" /><br />
 				</div>
 			</div>
+			<div class="loading-container">
+				<div class="loading-indicator">
+					<div class="icon"></div>
+				</div>
+			</div>
+			<div class="clearer"></div>
+			
 			<p>
 				<input type="button" class="create-archive" value="Create Archive" />
 			</p>

@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,9 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
+import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
@@ -183,10 +187,18 @@ public class UserManager {
 	}
 
 	public String createArchive( String name ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
-		return createArchive(name, null);
+		return createArchive(name, null, null);
 	}
 	
 	public String createArchive( String name, File existingArchive ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
+		return createArchive(name, existingArchive, null);
+	}
+	
+	public String createArchive( String name, VCard creator ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
+		return createArchive(name, null, creator);
+	}
+	
+	private String createArchive( String name, File existingArchive, VCard creator ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
 		
 		// generates new unique UID
 		String uuid = UUID.randomUUID ().toString ();
@@ -209,6 +221,13 @@ public class UserManager {
 		else {
 			// creates and packs the new empty archive
 			CombineArchive archive = new CombineArchive (archiveFile);
+			
+			// adds the creator and the current date, if provided
+			if( creator != null && !creator.isEmpty() ) {
+				OmexDescription description = new OmexDescription( creator, new Date() );
+				archive.addDescription( new OmexMetaDataObject(description) );
+			}
+			
 			archive.pack ();
 			archive.close ();
 		}

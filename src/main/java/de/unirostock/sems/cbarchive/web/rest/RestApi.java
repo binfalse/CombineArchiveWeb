@@ -290,11 +290,13 @@ public class RestApi extends RestHelper {
 	@Path( "/archives" )
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.APPLICATION_JSON )
-	public Response createArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, Archive archive ) {
+	public Response createArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, Archive archive, @CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
 			user = new UserManager( userPath );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
@@ -306,7 +308,7 @@ public class RestApi extends RestHelper {
 		}
 		
 		try {
-			String id = user.createArchive( archive.getName() );
+			String id = user.createArchive( archive.getName(), user.getData().getVCard() );
 			archive.setId(id);
 			
 			if( archive instanceof ArchiveFromCellMl ) {
@@ -337,11 +339,13 @@ public class RestApi extends RestHelper {
 	@Path( "/archives" )
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
-	public Response createArchiveFromMultipart( @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("archive") String serializedArchive, @FormDataParam("file") FormDataBodyPart file ) {
+	public Response createArchiveFromMultipart( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, @FormDataParam("archive") String serializedArchive, @FormDataParam("file") FormDataBodyPart file ) {
 		// user stuff
 		UserManager user = null;
 		try {
 			user = new UserManager( userPath );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
 			LOGGER.error(e, "Can not create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
@@ -351,7 +355,6 @@ public class RestApi extends RestHelper {
 		Archive archive = null;
 		try {
 			ObjectMapper mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
-//			archive = mapper.readValue(serializedArchive, new TypeReference<Archive>(){} );
 			archive = mapper.readValue(serializedArchive, Archive.class);
 			
 			if( archive == null ) {
@@ -366,7 +369,7 @@ public class RestApi extends RestHelper {
 		if( archive instanceof ArchiveFromExisting == false ) {
 			// archive is generated from an existing file
 			// delegate to the original Endpoint
-			return createArchive(userPath, archive);
+			return createArchive(userPath, archive, userJson);
 		}
 		
 		try {

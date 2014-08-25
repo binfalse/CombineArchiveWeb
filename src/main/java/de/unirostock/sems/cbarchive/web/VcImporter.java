@@ -23,7 +23,6 @@ import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
-import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
 
 
@@ -53,20 +52,27 @@ public class VcImporter
 	{
 		String link = archive.getCellmlLink ();
 		
+		if( link == null || link.isEmpty() )
+			throw new CombineArchiveWebException("The link should not be empty");
+		
+		// if link starts with "hg clone", remove it
+		if( link.toLowerCase().startsWith("hg clone ") )
+			link = link.substring(9);
+		
 		File archiveFile = user.getArchiveFile (id);
 		archive.setArchiveFile (archiveFile);
 		CombineArchive ca = archive.getArchive ();
 		// archive.getArchive ();
 		
-		File f = Files.createTempDir ();
-		Repository repo = Repository.clone(f, link);
+		File tempDir = Files.createTempDir ();
+		Repository repo = Repository.clone(tempDir, link);
 		if( repo == null )
 		{
-			LOGGER.error ("Cannot clone Mercurial Repository " + link + " into " + f);
+			LOGGER.error ("Cannot clone Mercurial Repository " + link + " into " + tempDir);
 			return false;
 		}
 		
-		List<File> relevantFiles = scanRepository(f, repo);
+		List<File> relevantFiles = scanRepository(tempDir, repo);
 		System.out.println ("before LogCommand");
 		LogCommand logCmd = new LogCommand(repo);
 		System.out.println ("after LogCommand");
@@ -75,7 +81,7 @@ public class VcImporter
 			List<Changeset> relevantVersions = logCmd.execute(cur.getAbsolutePath ());
 			
 			ArchiveEntry caFile = ca.addEntry (
-			   f,
+			   tempDir,
 			   cur, 
 			   // TODO
 			   "stuff");

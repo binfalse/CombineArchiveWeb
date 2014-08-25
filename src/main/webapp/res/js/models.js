@@ -1175,7 +1175,7 @@ var CreateView = Backbone.View.extend({
 		return false;
 	},
 	createArchive: function(event) {
-		if (event.keyCode && event.keyCode != 13)
+		if (event.keyCode =! undefined && event.keyCode != null && event.keyCode != 13)
 			return;
 		
 		var archiveName = this.$el.find("input[name='newArchiveName']").val();

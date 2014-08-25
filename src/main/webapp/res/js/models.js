@@ -362,6 +362,8 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		if( !error ) {
 			// update model
 			this.model.set("creators", creators);
+			// set type of meta data
+			this.model.set("type", "omex");
 			// push to server
 			this.saveModel();
 		}

@@ -65,6 +65,23 @@ var VCardModel = Backbone.Model.extend({
 				return "The name of your organization be at least 4 characters.";
 		}
 		
+	},
+	isEmpty: function() {
+		var empty = true;
+		
+		if( this.get("givenName") !== undefined && this.get("givenName") != "" )
+			empty = false;
+		
+		if( this.get("familyName") !== undefined && this.get("familyName") !== "" )
+			empty = false;
+		
+		if( this.get("email") !== undefined && this.get("email") !== "" )
+			empty = false;
+		
+		if( this.get("organization") !== undefined && this.get("organization") !== "" )
+			empty = false;
+		
+		return empty;
 	}
 });
 
@@ -347,6 +364,9 @@ var OmexMetaEntryView = MetaEntryView.extend({
 				var elem = $(inputElement);
 				vcard.set( elem.attr("data-field"), elem.val() );
 			});
+			
+			if( vcard.isEmpty() && createView.model != null && createView.model.isEmpty() == false )
+				vcard.set( createView.model.toJSON() );
 			
 			if( vcard.isValid() )
 				creators.push( vcard.toJSON() );

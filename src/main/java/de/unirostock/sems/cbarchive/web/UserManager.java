@@ -20,6 +20,7 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
@@ -318,6 +319,13 @@ public class UserManager {
 			
 			// move it!
 			combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
+			
+			// add modified date to all omex descriptions for the root element
+			for( MetaDataObject metaObject : combineArchive.getDescriptions() ) {
+				if( metaObject instanceof OmexMetaDataObject )
+					((OmexMetaDataObject) metaObject).getOmexDescription().getModified().add( new Date() );
+			}
+			
 		}
 		
 		// set the master flag

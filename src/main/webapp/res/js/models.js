@@ -351,12 +351,17 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		this.$el.removeClass("edit");
 		this.render();
 		
+		var messageId = "vcard-" + this.model.get("id");
+		messageView.removeMessages( messageId );
+		
 		return false;
 	},
 	saveEdit: function(event) {
 		this.$el.find(".error-element").removeClass("error-element");
 		var creators = [];
 		var error = false;
+		var messageId = "vcard-" + this.model.get("id");
+		messageView.removeMessages( messageId );
 		
 		this.$el.find(".archive-meta-omex-creator-box").each( function(index, boxElement) {
 			var vcard = new VCardModel();
@@ -372,7 +377,7 @@ var OmexMetaEntryView = MetaEntryView.extend({
 				creators.push( vcard.toJSON() );
 			else {
 				error = true;
-				messageView.warning( vcard.validationError );
+				messageView.warning( undefined, vcard.validationError, messageId );
 				$(boxElement).addClass("error-element");
 			}
 		});
@@ -1150,13 +1155,19 @@ var CreateView = Backbone.View.extend({
 		"drop .dropbox": "dropboxDrop",
 		"click .dropbox a": "dropboxClick",
 		"change .dropbox input": "dropboxManual",
-		"click a.test": "addMsg"
+		"click a.test": "addMsg",
+		"click a.test2": "rmvMsg"
 	},
 	addMsg: function(event) {
-		this.$el.find(".create-archive").attr("disabled", "disabled");
-		this.$el.find("#newArchiveName").attr("disabled", "disabled");
-		this.$el.find("input[name='newArchiveTemplate']").attr("disabled", "disabled");
+//		this.$el.find(".create-archive").attr("disabled", "disabled");
+//		this.$el.find("#newArchiveName").attr("disabled", "disabled");
+//		this.$el.find("input[name='newArchiveTemplate']").attr("disabled", "disabled");
+		messageView.warning("Hello", "World", "test");
+		messageView.error("World", "Hello", "test");
 		return false;
+	},
+	rmvMsg: function(event) {
+		messageView.removeMessages("test");
 	},
 	updateArchiveTemplate: function (event) {
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
@@ -1189,8 +1200,11 @@ var CreateView = Backbone.View.extend({
 		this.model.set('email', this.$el.find("input[name='userMail']").val() );
 		this.model.set('organization', this.$el.find("input[name='userOrganization']").val() );
 		
+		// remove old error messages
+		messageView.removeMessages("ownvcard");
+		
 		if( !this.model.isValid() ) {
-			messageView.warning("Meta information invalid", this.model.validationError);
+			messageView.warning("Meta information invalid", this.model.validationError, "ownvcard");
 			return false;
 		}
 		
@@ -1498,15 +1512,19 @@ var MessageView = Backbone.View.extend({
 	render: function() {
 		// not used?
 	},
-	showMessage: function( type, title, text ) {
-		if( text == undefined ) {
+	showMessage: function( type, title, text, referring ) {
+		if( text == undefined && referring == undefined ) {
 			text = title;
 			title = undefined;
 		}
 		
+		if( referring == undefined || referring == null )
+			referring == "";
+		
 		var json = { "message": {
 			"title": title,
-			"text": text
+			"text": text,
+			"referring": referring 
 		}};
 		
 		var template = null;
@@ -1527,14 +1545,24 @@ var MessageView = Backbone.View.extend({
 		}
 		
 	},
-	error: function( title, text ) {
-		return this.showMessage("error", title, text);
+	removeMessages: function( referring ) {
+		
+		if( referring == undefined || referring == null || referring == "" )
+			return false;
+		
+		this.$el.find(".message[data-referring='" + referring + "']").animate({opacity: 0.15, height: 0}, "500", function() {
+			$(this).remove();
+		});
+		
 	},
-	warning: function( title, text ) {
-		return this.showMessage("warning", title, text);
+	error: function( title, text, referring ) {
+		return this.showMessage("error", title, text, referring);
 	},
-	success: function( title, text ) {
-		return this.showMessage("success", title, text);
+	warning: function( title, text, referring ) {
+		return this.showMessage("warning", title, text, referring);
+	},
+	success: function( title, text, referring ) {
+		return this.showMessage("success", title, text, referring);
 	},
 	
 	events:  {

@@ -101,6 +101,7 @@
 			<p>
 				<input type="button" class="save-vcard" value="Save" />
 				<a href="#" class="test">Hallo</a>
+				<a href="#" class="test2">Hallo2</a>
 			</p>
 			<h2>CreateArchive</h2>
 			<p>
@@ -297,7 +298,7 @@
 		</div>
 		<!-- **** -->
 		<div id="template-message-success">
-			<div class="message message-success">
+			<div class="message message-success" data-referring="{{# print( message.referring ); }}">
 				<div class="message-buttons">
 					<a class="message-button-close" href="#">[x]</a>
 				</div>
@@ -320,7 +321,7 @@
 			</div>
 		</div>
 		<div id="template-message-warning">
-			<div class="message message-warning">
+			<div class="message message-warning" data-referring="{{# print( message.referring ); }}">
 				<div class="message-buttons">
 					<a class="message-button-close" href="#">[x]</a>
 				</div>
@@ -343,7 +344,7 @@
 			</div>
 		</div>
 		<div id="template-message-error">
-			<div class="message message-error">
+			<div class="message message-error" data-referring="{{# print( message.referring ); }}">
 				<div class="message-buttons">
 					<a class="message-button-close" href="#">[x]</a>
 				</div>

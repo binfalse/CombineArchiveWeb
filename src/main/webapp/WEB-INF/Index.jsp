@@ -40,10 +40,10 @@
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
 			<ul id="nav">
-				<li><a class="mainLinks highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
-				<li><a class="mainLinks" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
+				<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
+				<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
 				{{#	_.each(entries, function(entry) { }}
-				<li><a class="mainLinks archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" >{{# print(entry.name); }}</a></li>
+				<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" >{{# print(entry.name); }}</a></li>
 				{{# }); }}
 			</ul>
 		</div>
@@ -64,16 +64,20 @@
 			
 			<h2>Workspace History</h2>
 			<p>
-				<ul>
-				{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
-					{{# if( key != history.currentWorkspace ) { }}
-					<li>
-						<strong>{{# print(value); }}</strong> &nbsp;
-						<a href="{{# print(baseUrl); }}rest/share/{{# print(key); }}">{{# print(key); }}</a>
-					</li>
-					{{# } }}
-				{{# }); }}
-				</ul>
+				{{# if( _.size(history.recentWorkspaces) == 1 ) { }}
+					There are no Workspaces, you had visited in the past.
+				{{# } else { }}
+					<ul>
+					{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
+						{{# if( key != history.currentWorkspace ) { }}
+						<li>
+							<strong>{{# print(value); }}</strong> &nbsp;
+							<a href="{{# print(baseUrl); }}rest/share/{{# print(key); }}">{{# print(key); }}</a>
+						</li>
+						{{# } }}
+					{{# }); }}
+					</ul>
+				{{# } }}
 			</p>
 		</div>
 		<!-- **** -->

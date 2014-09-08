@@ -64,9 +64,18 @@ nav li
 }
 nav ul li a:before
 {
-	content: "::";/*\00BB";*/
 	margin-top: 3px;
 }
+nav ul li a.command-link:before {
+	content: "[";
+}
+nav ul li a.command-link:after {
+	content: "]";
+}
+nav ul li a.archive-link:before {
+	content: "::";
+}
+
 nav .highlight
 {
 	font-weight: bold;

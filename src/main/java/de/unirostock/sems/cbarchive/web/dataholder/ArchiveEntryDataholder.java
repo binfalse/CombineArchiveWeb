@@ -1,10 +1,13 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.meta.MetaDataHolder;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
@@ -22,6 +25,7 @@ public class ArchiveEntryDataholder {
 	protected String id;
 	protected String filePath;
 	protected String fileName;
+	protected long fileSize;
 	protected String format;
 	protected List<MetaObjectDataholder> meta = new ArrayList<MetaObjectDataholder>();
 
@@ -34,7 +38,14 @@ public class ArchiveEntryDataholder {
 		fileName	= archiveEntry.getFileName();
 		format		= archiveEntry.getFormat();
 		id			= Tools.generateHashId(filePath);
-
+		
+		try {
+			fileSize	= Files.size( archiveEntry.getPath() );
+		} catch (IOException e) {
+			LOGGER.warn(e, "Can not determine file size for ", filePath);
+			fileSize	= 0;
+		}
+		
 		copyMetaData(archiveEntry);
 	}
 
@@ -123,6 +134,11 @@ public class ArchiveEntryDataholder {
 	public String getFormat() {
 		return format;
 	}
+	
+	public long getFileSize() {
+		return fileSize;
+	}
+
 	public void setFilePath(String filePath) {
 		if( archiveEntry == null )
 			this.filePath = filePath;

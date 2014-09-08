@@ -214,6 +214,7 @@
 						
 					{{# if( entry.filePath != "/" ) { }}
 					<strong>format:</strong> {{# print(entry.format); }}<br />
+					<strong>size:</strong> {{# print( bytesToSize(entry.fileSize) ); }}<br />
 					{{# } }}
 					
 					<strong>master:</strong>

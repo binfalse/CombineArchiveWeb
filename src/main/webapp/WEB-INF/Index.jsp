@@ -212,7 +212,10 @@
 					<strong>format:</strong> {{# print(entry.format); }}<br />
 					{{# } }}
 					
-					<strong>master:</strong> {{# print(entry.master == true ? 'yes' : 'no'); }}<br /><br />
+					<strong>master:</strong>
+						<span class="on-not-edit text-archive-entry-master">{{# print(entry.master == true ? 'yes' : 'no'); }}</span>
+						<input type="checkbox" class="on-edit" name="archiveEntryMaster" />
+					<br /><br />
 					
 					<div class="edit-link">
 						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>

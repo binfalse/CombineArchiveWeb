@@ -319,6 +319,12 @@ public class UserManager {
 			// move it!
 			combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
 		}
+		
+		// set the master flag
+		if( newEntryDataholder.isMaster() )
+			combineArchive.setMainEntry( archiveEntry );
+//		else
+//			combineArchive.removeMainEntry( archiveEntry );
 
 		combineArchive.pack();
 		combineArchive.close();

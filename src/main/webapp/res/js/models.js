@@ -511,6 +511,10 @@ var ArchiveEntryView = Backbone.View.extend({
 		
 		// set edit field to correct value
 		this.$el.find("input[name='archiveEntryFileName']").val( this.model.get("fileName") );
+		if( this.model.get("master") == true ) 
+			this.$el.find("input[name='archiveEntryMaster']").attr("checked", "checked");
+		else
+			this.$el.find("input[name='archiveEntryMaster']").removeAttr("checked");
 		
 		// show all edit-fields
 		this.$el.find(".archive-entry-header").addClass("edit");
@@ -532,13 +536,18 @@ var ArchiveEntryView = Backbone.View.extend({
 		if( newFileName === undefined || newFileName == null || newFileName == "" )
 			return false;
 		
+		var newFileMasterFlag = this.$el.find("input[name='archiveEntryMaster']").is(":checked");
+		if( newFileMasterFlag !== true )
+			newFileMasterFlag = false;
+		
 		var newFilePath = this.model.get("filePath");
 		var len = newFilePath.length - this.model.get("fileName").length;
 		newFilePath = newFilePath.substring( 0, len );
 		newFilePath = newFilePath + newFileName;
 		
 		this.model.set({ "filePath": newFilePath, 
-					"fileName": newFileName });
+					"fileName": newFileName,
+					"master": newFileMasterFlag });
 		
 		var self = this;
 		this.model.save( {}, {

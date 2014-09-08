@@ -23,17 +23,9 @@ public class Fields {
 	/** The Constant COOKIE_AGE. */
 	public static final int COOKIE_AGE = 60*60*24*365;
 
-	/** The Constant MAX_ARCHIVES. */
-	public static final int MAX_ARCHIVES = 10;
-
-	/** The Constant MAX_FILES_PER_ARCHIVE. */
-	public static final int MAX_FILES_PER_ARCHIVE = 20;
-
 	/** The Constant MAX_FILE_SIZE. */
 	public static final int MAX_FILE_SIZE = 1024*1024;
 
-	public static final String WORKINGDIR_PROP_FILE = "settings.properties";
-	
 	public static final String PROP_ARCHIVE_PRE = "archive-";
 	
 	public static final String PROP_WORKSPACE_PRE ="workspace-";
@@ -48,6 +40,7 @@ public class Fields {
 	// 5 min.
 	public static final long STORAGE_AGE = 60*5*1000;
 	
+	/** Prefix for temp files */
 	public static final String TEMP_FILE_PREFIX = "caweb";
 	
 	/** Hash Algo for generating temp ids */
@@ -56,5 +49,14 @@ public class Fields {
 	/** The charset for all http related interactions */
 	public static final String CHARSET = "UTF-8";
 
+	// ------------------------------------------------------------------------
+	// Quotas
 	
+	/** Maximum size in bytes of all workspaces together. 0 means unlimited */
+	public static long QUOTA_TOTAL_SIZE = 0;
+	
+	/** Maximum size in bytes of all archives in one workspaces together. 0 means unlimited */
+	public static long QUOTA_WORKSPACE_SIZE = 0;
+	
+	//TODO Quota: archive, *count, max upload size etc
 }

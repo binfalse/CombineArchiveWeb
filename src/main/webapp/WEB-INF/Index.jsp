@@ -243,7 +243,7 @@
 			<strong>created:</strong> {{# print( new XDate(created).toLocaleString() ); }}<br />
 			<strong>modified:</strong>
 				{{# _.each(modified, function(modDate) { }}
-					{{# print( new XDate(modDate).toLocaleString() + "; &nbsp;&nbsp;" ); }}
+					<nobr>[{{# print( new XDate(modDate).toLocaleString() ); }}]</nobr>&nbsp;&nbsp;
 				{{# }); }}<br />
 			<strong>creators:</strong>
 				{{# _.each(creators, function(vcard) { }}

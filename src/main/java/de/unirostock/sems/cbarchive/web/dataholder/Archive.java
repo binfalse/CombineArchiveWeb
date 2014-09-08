@@ -137,14 +137,14 @@ public class Archive {
 		
 		// gather information
 		Collection<ArchiveEntry> archiveEntries = archive.getEntries();
-		ArchiveEntry mainEntry = archive.getMainEntry();
+		List<ArchiveEntry> mainEntries = archive.getMainEntries();
 		
 		// iterate over entries
 		for( ArchiveEntry entry : archiveEntries ) {
 			
 			// entry information are gathered in the entry dataholder
 			ArchiveEntryDataholder dataholder = new ArchiveEntryDataholder(entry);
-			if( entry == mainEntry )
+			if( mainEntries.contains(entry) )
 				dataholder.setMaster(true);
 			
 			// put it into the map

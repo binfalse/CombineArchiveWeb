@@ -328,11 +328,11 @@ public class UserManager {
 			
 		}
 		
-		// set the master flag
+		// set the master flag or remove it
 		if( newEntryDataholder.isMaster() )
-			combineArchive.setMainEntry( archiveEntry );
-//		else
-//			combineArchive.removeMainEntry( archiveEntry );
+			combineArchive.addMainEntry( archiveEntry );
+		else
+			combineArchive.removeMainEntry( archiveEntry );
 
 		combineArchive.pack();
 		combineArchive.close();

@@ -900,10 +900,13 @@ var ArchiveView = Backbone.View.extend({
 				console.log("error uploading file.");
 				if( data !== undefined && data.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not move file", text );
+					messageView.error( "Can not upload file", text );
 				}
 				else
 					messageView.error( "Unknown Error", "Can not upload file.", data );
+				
+				this.$el.find(".dropbox .icon").hide();
+				this.$el.find(".dropbox a").show();
 			}
 		});
 	},
@@ -925,6 +928,18 @@ var ArchiveView = Backbone.View.extend({
 		var folderName = prompt("Please input new folder name", "new_folder");
 		
 		if( folderName == null )
+			return false;
+		
+		// check if folder already exists
+		var exists = _.find( jstree.get_children_dom(dirNode), function (element) {
+			var elem = jstree.get_node(element);
+			if( jstree.get_text(elem) == folderName )
+				return true;
+			return false;
+		});
+		
+		// found element
+		if( exists != undefined )
 			return false;
 		
 		var nodeData = {

@@ -252,9 +252,15 @@ public class UserManager {
 		workspace.getArchives().remove(archiveId);
 	}
 
-	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException, IOException, TransformerException {
+	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException {
 		
-		Archive archive = getArchive(archiveId);
+		Archive archive;
+		try {
+			archive = getArchive(archiveId);
+		} catch (FileNotFoundException e) {
+			LOGGER.error(e, "Can not open archive with id: ", archiveId);
+			throw new CombineArchiveWebException("Can not open archive with id: " + archiveId, e);
+		}
 		CombineArchive combineArchive = archive.getArchive();
 		ArchiveEntry archiveEntry = null;
 		
@@ -268,7 +274,11 @@ public class UserManager {
 		
 		if( archiveEntry == null ) {
 			// was not able to find the old entry
-			combineArchive.close();
+			try {
+				combineArchive.close();
+			} catch (IOException e1) {
+				LOGGER.error(e1, "Can not close archive");
+			}
 			throw new CombineArchiveWebException("Can not find old version of archive entry");
 		}
 		
@@ -318,7 +328,19 @@ public class UserManager {
 			}
 			
 			// move it!
-			combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
+			try {
+				combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
+			} catch (IOException e) {
+				LOGGER.error(e, "Can not move file from ", oldEntryDataholder.getFilePath(), " to ", newFilePath);
+				
+				try {
+					combineArchive.close();
+				} catch (IOException e1) {
+					LOGGER.error(e1, "Can not close archive");
+				}
+				
+				throw new CombineArchiveWebException("Can not move file", e);
+			}
 			
 			// add modified date to all omex descriptions for the root element
 			for( MetaDataObject metaObject : combineArchive.getDescriptions() ) {
@@ -334,8 +356,14 @@ public class UserManager {
 		else
 			combineArchive.removeMainEntry( archiveEntry );
 
-		combineArchive.pack();
-		combineArchive.close();
+		
+		try {
+			combineArchive.pack();
+			combineArchive.close();
+		} catch (IOException | TransformerException e) {
+			LOGGER.error(e, "Can not pack and close archive ", archiveId);
+			throw new CombineArchiveWebException("Can not pack and close archive", e);
+		}
 	}
 	
 

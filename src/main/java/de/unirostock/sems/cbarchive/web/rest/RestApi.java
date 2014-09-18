@@ -528,7 +528,7 @@ public class RestApi extends RestHelper {
 			else
 				return buildErrorResponse(404, user, "No such entry found");
 			
-		} catch (CombineArchiveWebException | IOException | TransformerException e) {
+		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Can not update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, MessageFormat.format("Can not update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()), e.getMessage() );
 		}

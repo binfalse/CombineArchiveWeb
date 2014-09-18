@@ -867,6 +867,31 @@ var ArchiveView = Backbone.View.extend({
 	},
 	uploadFiles: function(files) {
 		
+		// get current location
+		var jstree = this.$treeEl.jstree(true);
+		var currentNode = jstree.get_selected(true)[0];
+		
+		var path = "/";
+		if( currentNode != undefined && currentNode.original.type != "root" ) {
+			// there is a selected node and it is not the root node
+			
+			if( currentNode.original.type == "dir" )
+				path = currentNode.original.text + "/";
+			
+			var par = jstree.get_node( "#" + jstree.get_parent(currentNode) );
+			while( par != null && par != undefined && par != false && par.id != "#" ) {
+				var npath = par.text;
+				if( npath.indexOf("/", npath.length - 1) === -1 )
+					npath = npath + "/";
+				
+				path = npath + path;
+				//path = par.text + ( par.text.indexOf("/", par.text.length-1) === -1 ? "/" : "") + path;
+				par = jstree.get_node( jstree.get_parent(par) );
+			}
+		}
+		
+		console.log(path);
+		
 		// form data object to push to server
 		var formData = new FormData();
 		var self = this;
@@ -876,6 +901,8 @@ var ArchiveView = Backbone.View.extend({
 			console.log(file);
 			formData.append("files[]", file);
 		});
+		// add current path to formData, to upload files in the current directory
+		formData.append("path", path);
 		
 		// show waiting stuff
 		this.$el.find(".dropbox .icon").show();

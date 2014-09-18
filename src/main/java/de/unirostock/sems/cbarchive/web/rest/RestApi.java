@@ -539,7 +539,7 @@ public class RestApi extends RestHelper {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
 	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files,
-			@CookieParam(Fields.COOKIE_USER) String userJson ) {
+			@FormDataParam("path") String path ,@CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -555,11 +555,18 @@ public class RestApi extends RestHelper {
 			Archive archive = user.getArchive(archiveId);
 			List<ArchiveEntryDataholder> result = new LinkedList<ArchiveEntryDataholder>();
 			
+			// adds ending slash
+			if( path == null || path.isEmpty() )
+				path = "/";
+			else if( !path.endsWith("/") )
+				path = path + "/";
+			
 			for( FormDataBodyPart file : files ) {
 				try {
 					String fileName = file.getFormDataContentDisposition().getFileName();
-//					if( !fileName.startsWith("/") )
-//						fileName = "/" + fileName;
+					// remove leading slash
+					if( fileName.startsWith("/") )
+						fileName = fileName.substring(1);
 						
 					// copy the stream to a temp file
 					java.nio.file.Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, file.getFormDataContentDisposition().getFileName() );
@@ -572,8 +579,8 @@ public class RestApi extends RestHelper {
 					output.close();
 					input.close();
 					
-					// add the file
-					ArchiveEntry entry = archive.addArchiveEntry(fileName, temp);
+					// add the file in the currently selected path
+					ArchiveEntry entry = archive.addArchiveEntry(path + fileName, temp);
 					
 					// add default meta information
 					if( user.getData() != null && user.getData().hasInformation() == true ) {

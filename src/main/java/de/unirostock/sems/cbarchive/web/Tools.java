@@ -49,7 +49,7 @@ public class Tools
 			}
 		}
 		catch (IOException e) {
-			throw new CombineArchiveWebCriticalException("Can not find and/or obtain working directory", e);
+			throw new CombineArchiveWebCriticalException("Cannot find and/or obtain working directory", e);
 		}
 		
 		return user;
@@ -91,7 +91,7 @@ public class Tools
 			try {
 				cookies.setCookie(new Cookie( Fields.COOKIE_USER, userData.toJson() ));
 			} catch (JsonProcessingException e) {
-				LOGGER.error(e, "Can not store cookies, due to json errors");
+				LOGGER.error(e, "Cannot store cookies, due to json errors");
 			}
 		}
 		

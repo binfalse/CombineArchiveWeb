@@ -56,8 +56,8 @@ public class WorkspaceManager {
 	public synchronized Workspace createWorkspace() throws IOException {
 		
 		if( Fields.STORAGE.exists() == false && Fields.STORAGE.mkdirs() == false ) {
-			LOGGER.error( "Can not create storage directory", Fields.STORAGE );
-			throw new IOException( "Can not create storage directory" );
+			LOGGER.error( "Cannot create storage directory", Fields.STORAGE );
+			throw new IOException( "Cannot create storage directory" );
 		}
 
 		String uuid = null;
@@ -72,8 +72,8 @@ public class WorkspaceManager {
 		
 		// create working dir
 		if( workingDir.mkdirs() == false ) {
-			LOGGER.error( "Can not create working directory ", workingDir );
-			throw new IOException( "Can not create working directory" );
+			LOGGER.error( "Cannot create working directory ", workingDir );
+			throw new IOException( "Cannot create working directory" );
 		}
 		
 		workspace.updateLastseen();
@@ -99,8 +99,8 @@ public class WorkspaceManager {
 	private synchronized void reloadSettings() {
 		
 		if( !Fields.SETTINGS_FILE.exists() || !Fields.SETTINGS_FILE.canRead() ) {
-			// in case the file can not be read
-			LOGGER.error( "Can not read central settings file. No existing Workspace will be available" );
+			// in case the file cannot be read
+			LOGGER.error( "Cannot read central settings file. No existing Workspace will be available" );
 			return;
 		}
 		
@@ -135,7 +135,7 @@ public class WorkspaceManager {
 				try {
 					workspace.setLastseen( Tools.DATE_FORMATTER.parse(properties.getProperty(key)) );
 				} catch (ParseException e) {
-					LOGGER.warn(e, "Can not parse date", properties.getProperty(key));
+					LOGGER.warn(e, "Cannot parse date", properties.getProperty(key));
 				}
 				
 			}
@@ -211,7 +211,7 @@ public class WorkspaceManager {
 			// set time of last store to now
 			lastSaved = new Date();
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not write central properties file");
+			LOGGER.error(e, "Cannot write central properties file");
 		}
 		
 	}

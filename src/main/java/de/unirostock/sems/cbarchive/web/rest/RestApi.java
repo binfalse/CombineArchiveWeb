@@ -70,7 +70,7 @@ public class RestApi extends RestHelper {
 			if( userJson != null && !userJson.isEmpty() )
 				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
@@ -87,7 +87,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
@@ -106,7 +106,7 @@ public class RestApi extends RestHelper {
 			if( userJson != null && !userJson.isEmpty() )
 				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -126,7 +126,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -170,7 +170,7 @@ public class RestApi extends RestHelper {
 			if( userJson != null && !userJson.isEmpty() )
 				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -190,7 +190,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -214,7 +214,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
@@ -241,7 +241,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
@@ -251,8 +251,8 @@ public class RestApi extends RestHelper {
 			// build response
 			return buildResponse(200, user).entity(response).build();
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} in WorkingDir {1}", id, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive!", e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} in WorkingDir {1}", id, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive!", e.getMessage() );
 		}
 	}
 
@@ -266,7 +266,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -281,8 +281,8 @@ public class RestApi extends RestHelper {
 			archive = user.getArchive(id, false);
 			return buildResponse(200, user).entity(archive).build();
 		} catch (IllegalArgumentException | IOException | CombineArchiveWebException e) {
-			LOGGER.error(e, MessageFormat.format("Can not rename archive {0} to {3} in WorkingDir {1}", id, user.getWorkingDir(), archive.getName()) );
-			return buildErrorResponse( 500, user, "Can not rename archive!", e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot rename archive {0} to {3} in WorkingDir {1}", id, user.getWorkingDir(), archive.getName()) );
+			return buildErrorResponse( 500, user, "Cannot rename archive!", e.getMessage() );
 		}
 	}
 
@@ -298,7 +298,7 @@ public class RestApi extends RestHelper {
 			if( userJson != null && !userJson.isEmpty() )
 				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -322,15 +322,15 @@ public class RestApi extends RestHelper {
 				catch (CombineArchiveWebException e)
 				{
 					LOGGER.error (e, "cannot create archive");
-					return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
+					return buildErrorResponse( 500, user, "Cannot create archive!", e.getMessage() );
 				}
 			}
 			
 			return buildResponse(200, user).entity(archive).build();
 			
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {
-			LOGGER.error(e, MessageFormat.format("Can not create archive in WorkingDir {0}", user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot create archive in WorkingDir {0}", user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot create archive!", e.getMessage() );
 		}
 			
 	}
@@ -347,7 +347,7 @@ public class RestApi extends RestHelper {
 			if( userJson != null && !userJson.isEmpty() )
 				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -362,8 +362,8 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(400, null, "no archive was transmitted" );
 			}
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not parse archive information!");
-			return buildErrorResponse(500, user, "Can not parse archive information!");
+			LOGGER.error(e, "Cannot parse archive information!");
+			return buildErrorResponse(500, user, "Cannot parse archive information!");
 		}
 		
 		if( archive instanceof ArchiveFromExisting == false ) {
@@ -398,8 +398,8 @@ public class RestApi extends RestHelper {
 			return buildResponse(200, user).entity(archive).build();
 			
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {
-			LOGGER.error(e, MessageFormat.format("Can not create archive in WorkingDir {0}", user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not create archive!", e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot create archive in WorkingDir {0}", user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot create archive!", e.getMessage() );
 		}
 			
 	}
@@ -413,15 +413,15 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
 		try {
 			user.deleteArchive(id);
 		} catch (IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not delete archive {1} in WorkingDir {0}", user.getWorkingDir(), id) );
-			return buildErrorResponse( 500, user, "Can not delete archive!", e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot delete archive {1} in WorkingDir {0}", user.getWorkingDir(), id) );
+			return buildErrorResponse( 500, user, "Cannot delete archive!", e.getMessage() );
 		}	
 		
 		// just return a HTTP ok
@@ -440,7 +440,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
@@ -459,8 +459,8 @@ public class RestApi extends RestHelper {
 			
 			return buildResponse(200, user).entity(result).build();
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 
 	}
@@ -474,7 +474,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
@@ -496,8 +496,8 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(404, user, "No such entry found");
 			
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 
@@ -511,7 +511,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 
@@ -529,8 +529,8 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(404, user, "No such entry found");
 			
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, MessageFormat.format("Can not update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, MessageFormat.format("Cannot update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()), e.getMessage() );
 		}
 	}
 
@@ -547,7 +547,7 @@ public class RestApi extends RestHelper {
 			if( userJson != null && !userJson.isEmpty() )
 				user.setData( UserData.fromJson(userJson) );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -625,7 +625,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -644,7 +644,7 @@ public class RestApi extends RestHelper {
 			}
 			
 			if( archiveEntry == null ) {
-				return buildErrorResponse(404, user, "Can not find archive entry"); 
+				return buildErrorResponse(404, user, "Cannot find archive entry"); 
 			}
 			
 			// removes the entry and pack/closes the archive
@@ -655,20 +655,20 @@ public class RestApi extends RestHelper {
 				if( result )
 					return buildResponse(200, user).entity("ok").build();
 				else
-					return buildErrorResponse(500, user, "Can not remove meta description");
+					return buildErrorResponse(500, user, "Cannot remove meta description");
 			} catch (TransformerException e) {
-				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Cannot delete meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				combineArchive.close();
 			}
 			
 		} catch (FileNotFoundException | CombineArchiveWebException e) {
-			LOGGER.warn(e, "Can not find archive to delete an entry");
-			return buildErrorResponse(404, user, "Can not find archive", e.getMessage());
+			LOGGER.warn(e, "Cannot find archive to delete an entry");
+			return buildErrorResponse(404, user, "Cannot find archive", e.getMessage());
 		} catch (IOException e) {
-			LOGGER.warn(e, "Can not delete archive entry");
-			return buildErrorResponse(404, user, "Can not delete archive entry", e.getMessage());
+			LOGGER.warn(e, "Cannot delete archive entry");
+			return buildErrorResponse(404, user, "Cannot delete archive entry", e.getMessage());
 		}
 	}
 	
@@ -684,7 +684,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -706,8 +706,8 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(404, user, "No such entry found");
 			
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -720,7 +720,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 				
@@ -757,8 +757,8 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(404, user, "No such meta entry found");
 				
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -772,7 +772,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -819,8 +819,8 @@ public class RestApi extends RestHelper {
 				// force to re-generate the id, after the pack
 				oldMetaObject.generateId();
 			} catch( IOException | TransformerException e ) {
-				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				archive.getArchive().close();
 			}
@@ -828,8 +828,8 @@ public class RestApi extends RestHelper {
 			return buildResponse(200, user).entity( oldMetaObject ).build();
 				
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -843,7 +843,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 				
@@ -872,8 +872,8 @@ public class RestApi extends RestHelper {
 				// force to re-generate the id, after the pack
 				metaObject.generateId();
 			} catch( IOException | TransformerException e ) {
-				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not create meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Cannot create meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				archive.getArchive().close();
 			}
@@ -881,8 +881,8 @@ public class RestApi extends RestHelper {
 			return buildResponse(200, user).entity( metaObject ).build();
 				
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive ", archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive ", archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	
@@ -895,7 +895,7 @@ public class RestApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -941,17 +941,17 @@ public class RestApi extends RestHelper {
 				if( result )
 					return buildResponse(200, user).entity("ok").build();
 				else
-					return buildErrorResponse(500, user, "Can not remove meta description");
+					return buildErrorResponse(500, user, "Cannot remove meta description");
 			} catch (TransformerException e) {
-				LOGGER.error(e, MessageFormat.format("Can not pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-				return buildErrorResponse( 500, user, "Can not delete meta info", "Can not pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+				return buildErrorResponse( 500, user, "Cannot delete meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
 				combineArchive.close();
 			}
 			
 		} catch (CombineArchiveWebException | IOException e) {
-			LOGGER.error(e, MessageFormat.format("Can not read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
-			return buildErrorResponse( 500, user, "Can not read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, "Cannot read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 		}
 	}
 	

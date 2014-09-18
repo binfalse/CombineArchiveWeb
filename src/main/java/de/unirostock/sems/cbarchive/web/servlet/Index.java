@@ -87,8 +87,8 @@ public class Index extends HttpServlet {
 			user = Tools.doLogin(request, response);
 		}
 		catch (CombineArchiveWebException | CombineArchiveWebCriticalException e) {
-			LOGGER.error(e, "Can not find and/or obtain working directory");
-			response.sendError(500, "Can not find and/or obtain working directory");
+			LOGGER.error(e, "Cannot find and/or obtain working directory");
+			response.sendError(500, "Cannot find and/or obtain working directory");
 			return;
 		}
 

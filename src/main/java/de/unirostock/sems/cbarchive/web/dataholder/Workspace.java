@@ -57,8 +57,8 @@ public class Workspace {
 				// maybe deleted or not existing
 				if( workspaceDir.mkdirs() == false ) {
 					// not able to create the working directory
-					LOGGER.error( "Can not create working directory.", workspaceDir );
-					throw new IOException ("Can not create working directory!");
+					LOGGER.error( "Cannot create working directory.", workspaceDir );
+					throw new IOException ("Cannot create working directory!");
 				}
 			}
 			

@@ -147,7 +147,7 @@ public class UserManager {
 				return new Archive(archiveId, archiveName, deepScan == true ? archive : null);
 			}
 			else
-				throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
+				throw new FileNotFoundException("Cannot find/read combine archive file for " + archiveId);
 		}
 	}
 
@@ -165,14 +165,14 @@ public class UserManager {
 			if( archive.isFile() && archive.exists() && archive.canRead() )
 				return archive;
 			else
-				throw new FileNotFoundException("Can not find/read combine archive file for " + archiveId);
+				throw new FileNotFoundException("Cannot find/read combine archive file for " + archiveId);
 		}
 	}
 
 	public void renameArchive( String archiveId, String newName ) throws IllegalArgumentException, FileNotFoundException, IOException {
 
 		if( newName == null || newName.isEmpty() ) {
-			throw new IllegalArgumentException("The new name can not be empty!");
+			throw new IllegalArgumentException("The new name cannot be empty!");
 		}
 
 		// gets the properties Key for this archive
@@ -246,7 +246,7 @@ public class UserManager {
 		File archiveFile = getArchiveFile(archiveId);
 		// deletes the archive file
 		if( !archiveFile.delete() )
-			throw new IOException("Can not delete archive file");
+			throw new IOException("Cannot delete archive file");
 		
 		// removes the internal reference from the settings
 		workspace.getArchives().remove(archiveId);
@@ -258,8 +258,8 @@ public class UserManager {
 		try {
 			archive = getArchive(archiveId);
 		} catch (FileNotFoundException e) {
-			LOGGER.error(e, "Can not open archive with id: ", archiveId);
-			throw new CombineArchiveWebException("Can not open archive with id: " + archiveId, e);
+			LOGGER.error(e, "Cannot open archive with id: ", archiveId);
+			throw new CombineArchiveWebException("Cannot open archive with id: " + archiveId, e);
 		}
 		CombineArchive combineArchive = archive.getArchive();
 		ArchiveEntry archiveEntry = null;
@@ -277,9 +277,9 @@ public class UserManager {
 			try {
 				combineArchive.close();
 			} catch (IOException e1) {
-				LOGGER.error(e1, "Can not close archive");
+				LOGGER.error(e1, "Cannot close archive");
 			}
-			throw new CombineArchiveWebException("Can not find old version of archive entry");
+			throw new CombineArchiveWebException("Cannot find old version of archive entry");
 		}
 		
 		ArchiveEntryDataholder oldEntryDataholder = new ArchiveEntryDataholder(archiveEntry);
@@ -304,7 +304,7 @@ public class UserManager {
 				}
 
 				if( oldMetaObject == null ) {
-					LOGGER.warn( MessageFormat.format("Can not find old representation of a MetaObject about file {0} in {1} with id {2}", newEntryDataholder.getFilePath(), archiveId, newMetaObject.getId()) );
+					LOGGER.warn( MessageFormat.format("Cannot find old representation of a MetaObject about file {0} in {1} with id {2}", newEntryDataholder.getFilePath(), archiveId, newMetaObject.getId()) );
 					continue;
 				}
 
@@ -331,15 +331,15 @@ public class UserManager {
 			try {
 				combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
 			} catch (IOException e) {
-				LOGGER.error(e, "Can not move file from ", oldEntryDataholder.getFilePath(), " to ", newFilePath);
+				LOGGER.error(e, "Cannot move file from ", oldEntryDataholder.getFilePath(), " to ", newFilePath);
 				
 				try {
 					combineArchive.close();
 				} catch (IOException e1) {
-					LOGGER.error(e1, "Can not close archive");
+					LOGGER.error(e1, "Cannot close archive");
 				}
 				
-				throw new CombineArchiveWebException("Can not move file", e);
+				throw new CombineArchiveWebException("Cannot move file", e);
 			}
 			
 			// add modified date to all omex descriptions for the root element
@@ -361,8 +361,8 @@ public class UserManager {
 			combineArchive.pack();
 			combineArchive.close();
 		} catch (IOException | TransformerException e) {
-			LOGGER.error(e, "Can not pack and close archive ", archiveId);
-			throw new CombineArchiveWebException("Can not pack and close archive", e);
+			LOGGER.error(e, "Cannot pack and close archive ", archiveId);
+			throw new CombineArchiveWebException("Cannot pack and close archive", e);
 		}
 	}
 	

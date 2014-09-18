@@ -42,7 +42,7 @@ public class ArchiveEntryDataholder {
 		try {
 			fileSize	= Files.size( archiveEntry.getPath() );
 		} catch (IOException e) {
-			LOGGER.warn(e, "Can not determine file size for ", filePath);
+			LOGGER.warn(e, "Cannot determine file size for ", filePath);
 			fileSize	= 0;
 		}
 		

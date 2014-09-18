@@ -159,10 +159,10 @@ var NavigationView = Backbone.View.extend({
 				self.render();
 			},
 			error: function(collection, response, options) {
-				console.log("error: can not get archives");
+				console.log("error: Cannot get archives");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					text.unshift( "Can not get archives!" );
+					text.unshift( "Cannot get archives!" );
 					messageView.error( "Unable to receive archives", text );
 				}
 				else
@@ -273,10 +273,10 @@ var MetaEntryView = Backbone.View.extend({
 				console.log("error while saving meta entry");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not save meta data", text );
+					messageView.error( "Cannot save meta data", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not save meta data" );
+					messageView.error( "Unknown Error", "Cannot save meta data" );
 			}
 		});
 	},
@@ -491,10 +491,10 @@ var ArchiveEntryView = Backbone.View.extend({
 			error: function(model, response, options) {
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not fetch archive entry information", text );
+					messageView.error( "Cannot fetch archive entry information", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not fetch archive entry information." );
+					messageView.error( "Unknown Error", "Cannot fetch archive entry information." );
 			}
 		});
 	},
@@ -728,10 +728,10 @@ var ArchiveView = Backbone.View.extend({
 			error: function(collection, response, options) {
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not fetch archive entries", text );
+					messageView.error( "Cannot fetch archive entries", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not fetch archive entries." );
+					messageView.error( "Unknown Error", "Cannot fetch archive entries." );
 			}
 		});
 		
@@ -787,10 +787,10 @@ var ArchiveView = Backbone.View.extend({
 				console.log("error while update");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not save archive", text );
+					messageView.error( "Cannot save archive", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not save archive." );
+					messageView.error( "Unknown Error", "Cannot save archive." );
 			}
 		});
 		
@@ -817,10 +817,10 @@ var ArchiveView = Backbone.View.extend({
 					console.log("error while deleting archive");
 					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 						var text = response.responseJSON.errors;
-						messageView.error( "Can not delete archive", text );
+						messageView.error( "Cannot delete archive", text );
 					}
 					else
-						messageView.error( "Unknown Error", "Can not delete archive." );
+						messageView.error( "Unknown Error", "Cannot delete archive." );
 				}
 			});
 		}
@@ -927,10 +927,10 @@ var ArchiveView = Backbone.View.extend({
 				console.log("error uploading file.");
 				if( data !== undefined && data.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not upload file", text );
+					messageView.error( "Cannot upload file", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not upload file.", data );
+					messageView.error( "Unknown Error", "Cannot upload file.", data );
 				
 				this.$el.find(".dropbox .icon").hide();
 				this.$el.find(".dropbox a").show();
@@ -1035,10 +1035,10 @@ var ArchiveView = Backbone.View.extend({
 					console.log("error moving file.");
 					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 						var text = response.responseJSON.errors;
-						messageView.error( "Can not move file", text );
+						messageView.error( "Cannot move file", text );
 					}
 					else
-						messageView.error( "Unknown Error", "Can not move file." );
+						messageView.error( "Unknown Error", "Cannot move file." );
 				}
 				
 			});
@@ -1259,10 +1259,10 @@ var CreateView = Backbone.View.extend({
 				console.log("error saving own VCard");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not save meta data", text );
+					messageView.error( "Cannot save meta data", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not save meta data." );
+					messageView.error( "Unknown Error", "Cannot save meta data." );
 			}
 		});
 		
@@ -1363,10 +1363,10 @@ var CreateView = Backbone.View.extend({
 					console.log("error while uploading new archive");
 					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 						var text = response.responseJSON.errors;
-						messageView.error( "Can not create new archive", text );
+						messageView.error( "Cannot create new archive", text );
 					}
 					else
-						messageView.error( "Unknown Error", "Can not create new archive." );
+						messageView.error( "Unknown Error", "Cannot create new archive." );
 				}
 			});
 			
@@ -1418,10 +1418,10 @@ var CreateView = Backbone.View.extend({
 				
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not create new archive", text );
+					messageView.error( "Cannot create new archive", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not create new archive." );
+					messageView.error( "Unknown Error", "Cannot create new archive." );
 			}
 		});
 		
@@ -1528,10 +1528,10 @@ var StartView = Backbone.View.extend({
 			error: function(model, response, options) {
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Can not fetch workspace history", text );
+					messageView.error( "Cannot fetch workspace history", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Can not fetch workspace history." );
+					messageView.error( "Unknown Error", "Cannot fetch workspace history." );
 			}
 		});
 		

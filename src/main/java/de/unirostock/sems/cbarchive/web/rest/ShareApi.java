@@ -32,7 +32,7 @@ public class ShareApi extends RestHelper {
 		try {
 			user = new UserManager( userPath );
 		} catch (IOException e) {
-			LOGGER.error(e, "Can not create user");
+			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
@@ -67,7 +67,7 @@ public class ShareApi extends RestHelper {
 		try {
 			newLocation = new URI("../");
 		} catch (URISyntaxException e) {
-			LOGGER.error(e, "Can not generate relative URL to main app");
+			LOGGER.error(e, "Cannot generate relative URL to main app");
 			return null;
 		}
 		

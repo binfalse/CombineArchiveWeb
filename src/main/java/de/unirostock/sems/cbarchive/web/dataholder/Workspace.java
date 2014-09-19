@@ -91,4 +91,59 @@ public class Workspace {
 		return archives;
 	}
 	
+	/**
+	 * Returns the size in bytes of all archives together in this workspace or {@code 0L} if it fails. 
+	 * @return
+	 */
+	public long getWorkspaceSize() {
+		
+		long size = 0L;
+		File workspaceDir = null;
+		
+		// get workspace dir
+		try {
+			workspaceDir = getWorkspaceDir();
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot calc Workspace size!");
+			return 0L;
+		}
+		
+		// iterates over all archives and adds their file size
+		for( String archiveId : archives.keySet() ) {
+			File archiveFile = new File(workspaceDir, archiveId);
+			if( archiveFile.exists() )
+				size += archiveFile.length();
+			else
+				LOGGER.warn("archive ", archiveId, " in workspace ", workspaceId, " does not exists.");
+		}
+		
+		return size;
+	}
+	
+	/**
+	 * Returns the size in bytes of one archive in this workspace or {@code 0L} if it fails.
+	 * @param archiveId
+	 * @return
+	 */
+	public long getArchiveSize( String archiveId ) {
+		
+		long size = 0L;
+		File workspaceDir = null;
+		
+		// get workspace dir
+		try {
+			workspaceDir = getWorkspaceDir();
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot calc Archive size!");
+			return 0L;
+		}
+		
+		File archiveFile = new File(workspaceDir, archiveId);
+		if( archiveFile.exists() )
+			size += archiveFile.length();
+		else
+			LOGGER.warn("archive ", archiveId, " in workspace ", workspaceId, " does not exists.");
+		
+		return size;
+	}
 }

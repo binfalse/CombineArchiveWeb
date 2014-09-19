@@ -53,7 +53,7 @@ public class Fields {
 	// Quotas
 	
 	/** Value for unlimited quota. Not a quota by itself */
-	public static final long QUOTA_UNLIMITED = 0;
+	public static final long QUOTA_UNLIMITED = 0L;
 	
 	/** Maximum size in bytes of all workspaces together. 0 means unlimited */
 	public static long QUOTA_TOTAL_SIZE = QUOTA_UNLIMITED;

@@ -76,23 +76,4 @@ public class Fields {
 	/** Maximum file size for uploads. 0 means unlimited */
 	public static long QUOTA_UPLOAD_SIZE = QUOTA_UNLIMITED;
 	
-	/**
-	 * Returns false, if a quota is exceeded. Otherwise true
-	 * 
-	 * @param currentValue
-	 * @param quota
-	 * @return
-	 */
-	public static boolean checkQuota( long currentValue, long quota ) {
-		
-		// Quota is set to unlimited
-		if( quota == QUOTA_UNLIMITED )
-			return true;
-		
-		// check if quota is exceeded
-		if( currentValue >= quota )
-			return false;
-		else
-			return true;
-	}
 }

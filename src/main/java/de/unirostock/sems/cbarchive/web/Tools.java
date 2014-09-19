@@ -33,7 +33,7 @@ public class Tools
 
 	/** The Constant DATE_FORMATTER. */
 	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS");
-	
+
 	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
 		// find Cookies
 		HttpSession session = request.getSession (true);
@@ -51,7 +51,7 @@ public class Tools
 		catch (IOException e) {
 			throw new CombineArchiveWebCriticalException("Cannot find and/or obtain working directory", e);
 		}
-		
+
 		return user;
 	}
 
@@ -69,23 +69,23 @@ public class Tools
 			return null;
 
 		cookies.setCookie (pathCookie);
-		
+
 		Cookie userInfo		= cookies.getCookie( Fields.COOKIE_USER );
-		
+
 		UserManager user = new UserManager(pathCookie.getValue());
 		if( userInfo != null && !userInfo.getValue().isEmpty() )
 			user.setData( UserData.fromJson( userInfo.getValue() ) ); 
-		
+
 		storeUserCookies(cookies, user);
-		
+
 		return user;
 
 	}
-	
+
 	public static void storeUserCookies(CookieManager cookies, UserManager user) {
-		
+
 		cookies.setCookie( new Cookie(Fields.COOKIE_PATH, user.getWorkspaceId()) );
-		
+
 		if( user.getData() != null && user.getData().hasInformation() ) {
 			UserData userData = user.getData();
 			try {
@@ -94,9 +94,8 @@ public class Tools
 				LOGGER.error(e, "Cannot store cookies, due to json errors");
 			}
 		}
-		
-	}
 
+	}
 
 	/**
 	 * Extract file name.
@@ -125,7 +124,7 @@ public class Tools
 			LOGGER.debug ("file part seems to be null -> cannot extract file name.");
 		return "UploadedFile-" + DATE_FORMATTER.format (new Date ());
 	}
-	
+
 	public static String generateHashId( String input ) {
 		try {
 			byte[] hash = MessageDigest.getInstance(Fields.HASH_ALGO).digest( input.getBytes() );
@@ -134,6 +133,26 @@ public class Tools
 			// As fallback send the complete String
 			return input;
 		}
+	}
+	
+	/**
+	 * Returns false, if a quota is exceeded. Otherwise true
+	 * 
+	 * @param currentValue
+	 * @param quota
+	 * @return
+	 */
+	public static boolean checkQuota( long currentValue, long quota ) {
+		
+		// Quota is set to unlimited
+		if( quota == Fields.QUOTA_UNLIMITED )
+			return true;
+		
+		// check if quota is exceeded
+		if( currentValue >= quota )
+			return false;
+		else
+			return true;
 	}
 	
 }

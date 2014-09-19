@@ -53,6 +53,22 @@ public class WorkspaceManager {
 		return workspaces.containsKey(workspaceId);
 	}
 	
+	/**
+	 * Retuns the total size in bytes from all workspaces or 0L if it fails.
+	 * 
+	 * @return
+	 */
+	public long getTotalSize() {
+		long size = 0;
+		
+		for( Workspace workspace : workspaces.values() ) {
+			if( workspace != null )
+				size += workspace.getWorkspaceSize();
+		}
+		
+		return size;
+	}
+	
 	public synchronized Workspace createWorkspace() throws IOException {
 		
 		if( Fields.STORAGE.exists() == false && Fields.STORAGE.mkdirs() == false ) {

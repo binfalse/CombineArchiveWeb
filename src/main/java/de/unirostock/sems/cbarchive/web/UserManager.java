@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -95,7 +96,9 @@ public class UserManager {
 	public List<Archive> getArchives( boolean deepScan ) {
 		List<Archive> result = new LinkedList<Archive>();
 		
-		for( String archiveId : workspace.getArchives().keySet() ) {
+		Iterator<String> iter = workspace.getArchives().keySet().iterator();
+		while( iter.hasNext() ) {
+			String archiveId = iter.next();
 			
 			String name = workspace.getArchives().get(archiveId);
 			File archiveFile = new File( workingDir, archiveId);
@@ -121,7 +124,7 @@ public class UserManager {
 			}
 			else {
 				LOGGER.warn (archiveId, " is supposed to be an archive but it doesn't exist. It will get removed from the archive list.");
-				workspace.getArchives().remove(archiveId);
+				iter.remove();
 			}
 		}
 		

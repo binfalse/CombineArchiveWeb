@@ -1,3 +1,5 @@
 
 For instructions on how to build this tool, please refer to:
 https://sems.uni-rostock.de/trac/combinearchive-web/wiki/WikiStart
+
+A dummy context configuration for Tomcat can be found in the file CombineArchiveWeb-dummyContext.xml

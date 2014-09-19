@@ -1,0 +1,24 @@
+<!--
+	This is a sample context configuration for tomcat.
+	It can be inserted into the context.xml, but it highly recommended to store it in
+	
+	$CATALINA_BASE/conf/[enginename]/[hostname]/CombineArchiveWeb.xml
+-->
+<Context>
+	
+	<!-- sets the log level. available levels: DEBUG, INFO, WARN, ERROR, NONE -->
+	<Parameter name="DEBUGLEVEL" value="ERROR" override="0" />
+	<!-- sets the persistent storage directory -->
+	<Parameter name="STORAGE" value="/tmp/CombineArchiveWeb" override="false" />
+
+	<!-- Quotas -->
+	
+	<Parameter name="QUOTA_TOTAL_SIZE" value="0" override="false" />
+	<Parameter name="QUOTA_WORKSPACE_SIZE" value="0" override="false" />
+	<Parameter name="QUOTA_WORKSPACE_AGE" value="0" override="false" />
+	<Parameter name="QUOTA_ARCHIVE_SIZE" value="0" override="false" />
+	<Parameter name="QUOTA_ARCHIVE_LIMIT" value="0" override="false" />
+	<Parameter name="QUOTA_FILE_LIMIT" value="0" override="false" />
+	<Parameter name="QUOTA_UPLOAD_SIZE" value="0" override="false" />
+
+</Context>

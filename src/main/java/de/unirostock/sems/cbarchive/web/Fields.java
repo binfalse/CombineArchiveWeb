@@ -36,7 +36,7 @@ public class Fields {
 	
 	public static final String PROP_SEPARATOR_REGEX = "\\.";
 	
-	/** minimum time after that the settings should be stored */
+	/** minimum time after that the settings should be stored in ms */
 	// 5 min.
 	public static final long STORAGE_AGE = 60*5*1000;
 	
@@ -52,11 +52,47 @@ public class Fields {
 	// ------------------------------------------------------------------------
 	// Quotas
 	
+	/** Value for unlimited quota. Not a quota by itself */
+	public static final long QUOTA_UNLIMITED = 0;
+	
 	/** Maximum size in bytes of all workspaces together. 0 means unlimited */
-	public static long QUOTA_TOTAL_SIZE = 0;
+	public static long QUOTA_TOTAL_SIZE = QUOTA_UNLIMITED;
 	
 	/** Maximum size in bytes of all archives in one workspaces together. 0 means unlimited */
-	public static long QUOTA_WORKSPACE_SIZE = 0;
+	public static long QUOTA_WORKSPACE_SIZE = QUOTA_UNLIMITED;
 	
-	//TODO Quota: archive, *count, max upload size etc
+	/** Maximum time in seconds a workspace can be left unused, before deletion. 0 means unlimited */ 
+	public static long QUOTA_WORKSPACE_AGE = QUOTA_UNLIMITED;
+	
+	/** Maximum size of one archive in bytes. 0 means unlimited */ 
+	public static long QUOTA_ARCHIVE_SIZE = QUOTA_UNLIMITED;
+	
+	/** Maximum number of archives in a workspace. 0 means unlimited */
+	public static long QUOTA_ARCHIVE_LIMIT = QUOTA_UNLIMITED;
+	
+	/** Maximum number of files in an archive. 0 means unlimited */
+	public static long QUOTA_FILE_LIMIT = QUOTA_UNLIMITED;
+	
+	/** Maximum file size for uploads. 0 means unlimited */
+	public static long QUOTA_UPLOAD_SIZE = QUOTA_UNLIMITED;
+	
+	/**
+	 * Returns false, if a quota is exceeded. Otherwise true
+	 * 
+	 * @param currentValue
+	 * @param quota
+	 * @return
+	 */
+	public static boolean checkQuota( long currentValue, long quota ) {
+		
+		// Quota is set to unlimited
+		if( quota == QUOTA_UNLIMITED )
+			return true;
+		
+		// check if quota is exceeded
+		if( currentValue >= quota )
+			return false;
+		else
+			return true;
+	}
 }

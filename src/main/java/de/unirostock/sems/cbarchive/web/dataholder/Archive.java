@@ -169,6 +169,11 @@ public class Archive {
 	}
 	
 	@JsonIgnore
+	public long countArchiveEntries() {
+		return (long) archive.getEntries().size();
+	}
+	
+	@JsonIgnore
 	public ArchiveEntry addArchiveEntry(String fileName, Path file) throws CombineArchiveWebException, IOException {
 		
 		if( archive == null ) {
@@ -189,8 +194,17 @@ public class Archive {
 		}
 		fileName = altFileName;
 		
-		// add the entry
-		return archive.addEntry(file.toFile(), fileName, Files.probeContentType(file));
+		// add the entry the archive
+		ArchiveEntry entry = archive.addEntry(file.toFile(), fileName, Files.probeContentType(file));
+		// adds the entry to the dataholder (warning: this is probably inconsistent)
+		if( entry != null ) {
+			// entry information are gathered in the entry dataholder
+			ArchiveEntryDataholder dataholder = new ArchiveEntryDataholder(entry);
+			// put it into the map
+			this.entries.put(dataholder.getFilePath(), dataholder);
+		}
+		
+		return entry;
 	}
 
 

@@ -923,17 +923,17 @@ var ArchiveView = Backbone.View.extend({
 //				this.$el.find(".dropbox a").show();
 			},
 			error: function(data) {
+				self.$el.find(".dropbox .icon").hide();
+				self.$el.find(".dropbox a").show();
+				
 				console.log(data);
 				console.log("error uploading file.");
-				if( data !== undefined && data.status == "error" ) {
-					var text = response.responseJSON.errors;
+				if( data !== undefined && data.responseJSON !== undefined && data.responseJSON.status == "error" ) {
+					var text = data.responseJSON.errors;
 					messageView.error( "Cannot upload file", text );
 				}
 				else
-					messageView.error( "Unknown Error", "Cannot upload file.", data );
-				
-				this.$el.find(".dropbox .icon").hide();
-				this.$el.find(".dropbox a").show();
+					messageView.error( "Unknown Error", "Cannot upload file." );
 			}
 		});
 	},

@@ -148,6 +148,8 @@ public class Tools
 		if( quota == Fields.QUOTA_UNLIMITED )
 			return true;
 		
+		LOGGER.info(currentValue, " vs ", quota);
+		
 		// check if quota is exceeded
 		if( currentValue >= quota )
 			return false;

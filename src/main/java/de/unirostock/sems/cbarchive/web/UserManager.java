@@ -115,14 +115,14 @@ public class UserManager {
 					// adds this archive to the dataholder
 					result.add(dataholder);
 
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					LOGGER.error (e, "couldn't read combine archive: ", archiveFile);
 				}
 			}
-			else
-				LOGGER.warn (archiveId, " is supposed to be an direcetory but it doesn't exist...");
+			else {
+				LOGGER.warn (archiveId, " is supposed to be an archive but it doesn't exist. It will get removed from the archive list.");
+				workspace.getArchives().remove(archiveId);
+			}
 		}
 		
 		return result;

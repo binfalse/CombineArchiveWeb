@@ -102,14 +102,14 @@ public class RestApi extends RestHelper {
 	public Response storeSettings( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
-		try {
-			user = new UserManager( userPath );
-			if( userJson != null && !userJson.isEmpty() )
-				user.setData( UserData.fromJson(userJson) );
-		} catch (IOException e) {
-			LOGGER.error(e, "Cannot create user");
-			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
-		}
+//		try {
+//			user = new UserManager( userPath );
+//			if( userJson != null && !userJson.isEmpty() )
+//				user.setData( UserData.fromJson(userJson) );
+//		} catch (IOException e) {
+//			LOGGER.error(e, "Cannot create user");
+//			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+//		}
 		
 		// store the settings
 		WorkspaceManager.getInstance().storeSettings();
@@ -599,9 +599,9 @@ public class RestApi extends RestHelper {
 			for( FormDataBodyPart file : files ) {
 				
 				// TODO see below
-				// check maximum archives
-				if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
-					LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
+				// check maximum files in archive
+				if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_FILE_LIMIT) == false ) {
+					LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
 					return buildErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
 				}
 				
@@ -629,21 +629,29 @@ public class RestApi extends RestHelper {
 						LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
+						// pack and close the archive
+						archive.getArchive().pack();
+						archive.getArchive().close();
 						return buildErrorResponse(507, user, "The uploaded file is to big.");
 					}
 					// max files in one archive
-					// TODO
-					if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
-						LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
+					if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_FILE_LIMIT) == false ) {
+						LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						return buildErrorResponse(507, user, "The maximum size of one archive is reached.");
+						// pack and close the archive
+						archive.getArchive().pack();
+						archive.getArchive().close();
+						return buildErrorResponse(507, user, "The amount of files in one archive is reached.");
 					}
 					// max archive size
 					if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + uploadedFileSize, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
 						LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
+						// pack and close the archive
+						archive.getArchive().pack();
+						archive.getArchive().close();
 						return buildErrorResponse(507, user, "The maximum size of one archive is reached.");
 					}
 					// max workspace size
@@ -651,6 +659,9 @@ public class RestApi extends RestHelper {
 						LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
+						// pack and close the archive
+						archive.getArchive().pack();
+						archive.getArchive().close();
 						return buildErrorResponse(507, user, "The maximum size of one workspace is reached.");
 					}
 					// max total size
@@ -658,6 +669,9 @@ public class RestApi extends RestHelper {
 						LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
+						// pack and close the archive
+						archive.getArchive().pack();
+						archive.getArchive().close();
 						return buildErrorResponse(507, user, "The maximum size is reached.");
 					}
 					

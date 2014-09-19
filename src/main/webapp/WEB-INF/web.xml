@@ -31,7 +31,36 @@
 		<param-value>/tmp/CombineArchiveWebStorage</param-value>
 		<description>sets the persistent storage directory.</description>
 	</context-param>
-
+	
+	<context-param>
+		<param-name>QUOTA_TOTAL_SIZE</param-name>
+		<param-value>0</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>QUOTA_WORKSPACE_SIZE</param-name>
+		<param-value>0</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>QUOTA_WORKSPACE_AGE</param-name>
+		<param-value>0</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>QUOTA_ARCHIVE_SIZE</param-name>
+		<param-value>0</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>QUOTA_FILE_LIMIT</param-name>
+		<param-value>0</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>QUOTA_UPLOAD_SIZE</param-name>
+		<param-value>0</param-value>
+	</context-param>
 
 	<!-- known servlets -->
 

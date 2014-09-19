@@ -33,41 +33,9 @@ public class Index extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
+		// load settings form servlet context
 		ServletContext context = config.getServletContext();
-		
-		// Log Level
-		LOGGER.setMinLevel (LOGGER.WARN);
-		String desiredLogLevel = context.getInitParameter("LOGLEVEL");
-		
-		if (desiredLogLevel != null)
-		{
-			LOGGER.warn("Try to set log level to ", desiredLogLevel);
-			
-			if (desiredLogLevel.equals ("DEBUG"))
-			{
-				LOGGER.setMinLevel (LOGGER.DEBUG);
-				LOGGER.setLogStackTrace (true);
-			}
-			else if (desiredLogLevel.equals ("INFO")) {
-				LOGGER.setMinLevel (LOGGER.INFO);
-			}
-			else if (desiredLogLevel.equals ("WARN"))
-				LOGGER.setMinLevel (LOGGER.WARN);
-			else if (desiredLogLevel.equals ("ERROR"))
-				LOGGER.setMinLevel (LOGGER.ERROR);
-			else if (desiredLogLevel.equals ("NONE"))
-				LOGGER.setLogToStdErr (false);
-		}
-		
-		// Storage
-		String storage = context.getInitParameter("STORAGE");
-		LOGGER.error(storage);
-		if( storage != null ) {
-			Fields.STORAGE = new File( storage );
-			Fields.SETTINGS_FILE = new File( Fields.STORAGE, Fields.SETTINGS_FILE_NAME );
-			
-			LOGGER.info("Setted storage to ", Fields.STORAGE);
-		}
+		Fields.loadSettingsFromContext(context);
 	}
 
 

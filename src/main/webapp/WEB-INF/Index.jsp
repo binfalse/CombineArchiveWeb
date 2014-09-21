@@ -186,14 +186,21 @@
 			
 			<div class="archive-contentarea">
 				<div class="archive-fileexplorer">
+<<<<<<< HEAD
 					<div class="archive-explorerexpand">f f s</div>
+=======
+>>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web
 					<div class="archive-filetree">
 						<div class="edit-link">
 							<a class="archive-folder-add" href="#">[New folder]</a>
 						</div>
 						<div class="archive-jstree"></div>
 					</div>
+<<<<<<< HEAD
 					
+=======
+					<div class="archive-explorerexpand">f f s</div>
+>>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web
 					<div style="clear: both;"></div>
 				</div>
 				

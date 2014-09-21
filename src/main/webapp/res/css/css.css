@@ -265,9 +265,15 @@ div.edit-link > a:hover {
 	border-radius: 3px;
 }
 .archive-fileexplorer {
+<<<<<<< HEAD
 	height: 100%;
 	z-index: 800;
 	position: relative;
+=======
+/* 	width: 35px; */
+	height: 100%;
+	z-index: 800;
+>>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web
 	float: left;
 	overflow: hidden;
 	padding: 0;
@@ -275,9 +281,17 @@ div.edit-link > a:hover {
 .archive-fileexplorer > div.archive-filetree {
 	margin: 0;
 	width: 0;
+<<<<<<< HEAD
 	height: 100%;
 	overflow: auto;
 	float: left;
+=======
+/* 	display: none; */
+	overflow: hidden auto;
+	float: left;
+/* 	border-right: 3px dashed #bbb; */
+/* 	border-radius: 3px; */
+>>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web
 }
 .archive-fileexplorer div.archive-jstree {
 	padding: 5px 5px 5px 10px;
@@ -291,9 +305,15 @@ div.edit-link > a:hover {
 /* 	border-radius: 3px; */
 }
 .archive-fileinfo {
+<<<<<<< HEAD
 	height: 100%;
 	padding-left: 10px;
 	overflow: auto;
+=======
+/* 	width: 100%; */
+	padding: 0;
+/* 	overflow: auto; */
+>>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web
 }
 .archive-fileinfo > div {
 	margin: 10px 0;

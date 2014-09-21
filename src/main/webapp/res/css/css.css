@@ -48,7 +48,13 @@ h4 {
 	font-size: 16px;
 	text-shadow: 0.5px 0.5px 0.5px #aaa;
 }
-
+footer {
+	color: #bbb;
+}
+footer > a {
+	color: #aaa !important;
+	text-decoration: underline;
+}
 
 nav
 {
@@ -262,6 +268,7 @@ div.edit-link > a:hover {
 /* 	width: 35px; */
 	height: 100%;
 	z-index: 800;
+	position: relative;
 	float: left;
 	overflow: hidden;
 	padding: 0;

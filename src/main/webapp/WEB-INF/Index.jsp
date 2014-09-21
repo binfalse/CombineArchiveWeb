@@ -60,7 +60,6 @@
 				See <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">our website</a> for further information.
 			</p>
 			
-			
 			<h2>Disclaimer</h2>
 			<p>
 				This is a web based interface to read, create, modify, and share CombineArchives. <br />

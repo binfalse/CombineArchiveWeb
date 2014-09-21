@@ -265,7 +265,6 @@ div.edit-link > a:hover {
 	border-radius: 3px;
 }
 .archive-fileexplorer {
-/* 	width: 35px; */
 	height: 100%;
 	z-index: 800;
 	position: relative;
@@ -276,11 +275,9 @@ div.edit-link > a:hover {
 .archive-fileexplorer > div.archive-filetree {
 	margin: 0;
 	width: 0;
-/* 	display: none; */
-	overflow: hidden auto;
+	height: 100%;
+	overflow: auto;
 	float: left;
-/* 	border-right: 3px dashed #bbb; */
-/* 	border-radius: 3px; */
 }
 .archive-fileexplorer div.archive-jstree {
 	padding: 5px 5px 5px 10px;
@@ -294,9 +291,9 @@ div.edit-link > a:hover {
 /* 	border-radius: 3px; */
 }
 .archive-fileinfo {
-/* 	width: 100%; */
-	padding: 0;
-/* 	overflow: auto; */
+	height: 100%;
+	padding-left: 10px;
+	overflow: auto;
 }
 .archive-fileinfo > div {
 	margin: 10px 0;

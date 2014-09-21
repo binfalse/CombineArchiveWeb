@@ -200,6 +200,7 @@
 						<div class="archive-jstree"></div>
 					</div>
 					
+					<div class="archive-explorerexpand">f f s</div>
 					<div style="clear: both;"></div>
 				</div>
 				

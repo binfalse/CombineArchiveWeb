@@ -256,33 +256,49 @@ div.edit-link > a:hover {
 
 .archive-contentarea {
 	width: 100%;
-/* 	max-height: 75%; */
+	height: 500px;
 	padding: 0;
 	margin: 0;
 	margin-bottom: 15px;
-	border: 1px dashed #000000;
+	border: 3px dashed #bbb;
+	border-radius: 3px;
 }
-.archive-filetree {
-	width: 33%;
-/* 	height: 75%; */
+.archive-fileexplorer {
+/* 	width: 35px; */
+	height: 100%;
+	z-index: 800;
 	float: left;
-	overflow: auto;
+	overflow: hidden;
 	padding: 0;
-	border-right: 1px dashed #000000;
 }
-.archive-filetree > div {
-	margin: 0 10px;
-	overflow: auto;
+.archive-fileexplorer > div.archive-filetree {
+	margin: 0;
+	width: 0;
+/* 	display: none; */
+	overflow: hidden auto;
+	float: left;
+/* 	border-right: 3px dashed #bbb; */
+/* 	border-radius: 3px; */
+}
+.archive-fileexplorer div.archive-jstree {
+	padding: 5px 5px 5px 10px;
+}
+.archive-fileexplorer > div.archive-explorerexpand {
+	width: 32px;
+	height: 100%;
+	float: right;
+	background-color: #c00;
+	border-right: 1px solid #bbb;
+/* 	border-radius: 3px; */
 }
 .archive-fileinfo {
-	width: 66%;
-/* 	height: 75%; */
-	float: left;
+/* 	width: 100%; */
 	padding: 0;
-	overflow: auto;
+/* 	overflow: auto; */
 }
 .archive-fileinfo > div {
-	margin: 10px 5px;
+	margin: 10px 0;
+	padding: 0 10px;
 	word-wrap: break-word;
 	overflow: overlay;
 }

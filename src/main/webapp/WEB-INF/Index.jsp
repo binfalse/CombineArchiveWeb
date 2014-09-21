@@ -186,13 +186,14 @@
 			
 			<div class="archive-contentarea">
 				<div class="archive-fileexplorer">
+					<div class="archive-explorerexpand">f f s</div>
 					<div class="archive-filetree">
 						<div class="edit-link">
 							<a class="archive-folder-add" href="#">[New folder]</a>
 						</div>
 						<div class="archive-jstree"></div>
 					</div>
-					<div class="archive-explorerexpand">f f s</div>
+					
 					<div style="clear: both;"></div>
 				</div>
 				

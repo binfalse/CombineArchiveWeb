@@ -186,20 +186,20 @@
 			
 			<div class="archive-contentarea">
 				<div class="archive-fileexplorer">
-					<div class="archive-explorerexpand">f f s</div>
 					<div class="archive-filetree">
 						<div class="edit-link">
 							<a class="archive-folder-add" href="#">[New folder]</a>
 						</div>
 						<div class="archive-jstree"></div>
 					</div>
+					
 					<div class="archive-explorerexpand">f f s</div>
 					<div style="clear: both;"></div>
 				</div>
 				
 				<div class="archive-fileinfo">
 					<div>
-						Select a file to display the associated meta information.
+						To select a file and show it annotated meta data move your mouse on the left red bar or tap on it.
 					</div>
 				</div>
 				<div style="clear: left;"></div>

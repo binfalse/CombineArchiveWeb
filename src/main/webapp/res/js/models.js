@@ -751,6 +751,7 @@ var ArchiveView = Backbone.View.extend({
 		"click .archive-folder-add": "addFolder",
 		
 		"mouseenter .archive-fileexplorer": "showExplorer",
+		"click .archive-explorerexpand": "showExplorer",
 		"mouseleave .archive-fileexplorer": "hideExplorer"
 	},
 	startArchiveEdit: function(event) {

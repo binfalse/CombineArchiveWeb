@@ -25,6 +25,13 @@ header, h1, h2, h3, h4
 	color: #c00;
 	text-shadow: 1px 1px 1px #000;
 }
+header {
+/* 	background-image: url('combinearchive_box.png'); */
+/* 	background-repeat: no-repeat; */
+/* 	background-position: right center; */
+/* 	background-size: auto 60px; */
+/* 	padding-left: 80px; */
+}
 h1, h2
 {
 	text-shadow: 1px 1px 1px #aaa;
@@ -210,6 +217,17 @@ div.edit-link > a:hover {
 }
 .edit .on-not-edit {
 	display: none;
+}
+
+/* -------- Start View -------- */
+
+.about-logo {
+	padding-left: 100px;
+		
+	background-image: url('combinearchive_box.png');
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: contain;
 }
 
 /* -------- Archive View -------- */

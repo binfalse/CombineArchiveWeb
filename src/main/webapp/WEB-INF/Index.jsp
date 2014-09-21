@@ -30,7 +30,7 @@
 	<link rel="stylesheet" href="res/css/jstree/style.css" type="text/css" />
 </head>
 <body>
-	<header> CombineArchiveWeb </header>
+	<header>CombineArchiveWeb</header>
 	<div id="noCookie">No cookies? No content.</div>
 	<div id="noJs">No JavaScript? No content.</div>
 	<div id="noBrowser">Unfortunately, we're not able to support
@@ -49,6 +49,14 @@
 		</div>
 		<!-- **** -->
 		<div id="template-start">
+			<h2>About</h2>
+			<p class="about-logo">
+				This project was developed within the <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a>
+				group at the University of Rostock. <br />It is part of the <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">CombineArchive Toolkit</a>.
+				For more information and other tools, have a look at our <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">website</a>.
+			</p>
+			
+			
 			<h2>Disclaimer</h2>
 			<p>
 				This is a web based interface to read, created, and modify CombineArchives. <br />

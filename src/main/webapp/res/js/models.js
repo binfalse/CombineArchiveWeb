@@ -743,11 +743,15 @@ var ArchiveView = Backbone.View.extend({
 		"click .archive-info-save": "saveArchive",
 		"click .archive-info-cancel": "cancelEdit",
 		"click .archive-info-delete": "deleteArchive",
+		
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
 		"click .dropbox a": "dropboxClick",
 		"change .dropbox input": "dropboxManual",
-		"click .archive-folder-add": "addFolder"
+		"click .archive-folder-add": "addFolder",
+		
+		"mouseenter .archive-fileexplorer": "showExplorer",
+		"mouseleave .archive-fileexplorer": "hideExplorer"
 	},
 	startArchiveEdit: function(event) {
 		
@@ -982,6 +986,12 @@ var ArchiveView = Backbone.View.extend({
 		jstree.create_node(dirNode, nodeData, "last", false, false);
 		
 		return false;
+	},
+	showExplorer: function(event) {
+		this.$el.find(".archive-filetree").animate({width: "90%"}, 500);
+	},
+	hideExplorer: function(event) {
+		this.$el.find(".archive-filetree").animate({width: "0"}, 500);
 	},
 	
 	jstreeClick: function(event, data) {

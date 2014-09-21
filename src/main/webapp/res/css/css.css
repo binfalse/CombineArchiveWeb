@@ -266,8 +266,6 @@ div.edit-link > a:hover {
 }
 .archive-fileexplorer {
 	height: 100%;
-	z-index: 800;
-	position: relative;
 	float: left;
 	overflow: hidden;
 	padding: 0;
@@ -293,7 +291,7 @@ div.edit-link > a:hover {
 .archive-fileinfo {
 	height: 100%;
 	padding-left: 10px;
-	overflow: auto;
+/* 	overflow: auto; */
 }
 .archive-fileinfo > div {
 	margin: 10px 0;

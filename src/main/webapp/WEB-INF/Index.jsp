@@ -43,11 +43,14 @@
 				<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
 				<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
 			</ul>
-			<ul id="nav-workspace">
-				{{#	_.each(entries, function(entry) { }}
-				<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(entry.name); }} in current Workspace">{{# print(entry.name); }}</a></li>
-				{{# }); }}
-			</ul>
+			<div class="workspace-nav">
+				<small>The current workspace contains the following archives:</small>
+				<ul id="nav-workspace">
+					{{#	_.each(entries, function(entry) { }}
+					<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(entry.name); }} in current Workspace">{{# print(entry.name); }}</a></li>
+					{{# }); }}
+				</ul>
+			</div>
 		</div>
 		<!-- **** -->
 		<div id="template-start">
@@ -79,7 +82,8 @@
 			<h2>Workspace History</h2>
 			<p>
 				{{# if( _.size(history.recentWorkspaces) == 1 ) { }}
-					There are no Workspaces, you had visited in the past.
+					So far, you do not have a workspace history.
+					As soon as you have shared workspaces with other people you will see this history growing.
 				{{# } else { }}
 					<ul>
 					{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 

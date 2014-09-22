@@ -344,3 +344,10 @@ footer a
 {
         color: #aaa;
 }
+
+.workspace-nav
+{
+        background-color: #fafafa;
+        padding: 10px;
+        color: #999;
+}

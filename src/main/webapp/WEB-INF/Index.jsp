@@ -42,8 +42,10 @@
 			<ul id="nav">
 				<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
 				<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
+			</ul>
+			<ul id="nav-workspace">
 				{{#	_.each(entries, function(entry) { }}
-				<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" >{{# print(entry.name); }}</a></li>
+				<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(entry.name); }} in current Workspace">{{# print(entry.name); }}</a></li>
 				{{# }); }}
 			</ul>
 		</div>
@@ -51,23 +53,27 @@
 		<div id="template-start">
 			<h2>About</h2>
 			<p class="about-logo">
-				This project was developed within the <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a>
-				group at the University of Rostock. <br />It is part of the <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">CombineArchive Toolkit</a>.
-				For more information and other tools, have a look at our <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">website</a>.
+				The CombineArchiveWeb is an interface for creating and exploring <a href="http://arxiv-web3.library.cornell.edu/abs/1407.4992">COMBINE archives</a>.
+				It is part of the <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">CombineArchive Toolkit</a>.
+				This project was developed in the scope of <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a>
+				at the <a href="http://www.uni-rostock.de/">University of Rostock</a>.
+				See <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">our website</a> for further information.
 			</p>
 			
 			
 			<h2>Disclaimer</h2>
 			<p>
-				This is a web based interface to read, created, and modify CombineArchives. <br />
+				This is a web based interface to read, create, modify, and share CombineArchives. <br />
 				<strong>We are not responsible for any loss of data.</strong>
 			</p>
 			
 			<h2>Share Workspace</h2>
 			<p>
-				To share this workspace, just spread this link into the world: <br />
+				We offer basic support for collaborative working.
+				All the archives that 
+				To share this workspace, just distribute the following link: <br />
 				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(history.currentWorkspace); }}" /> 
-				<br /><br />But keep in mind: This software is not made for heavily collaboration!
+				<br />However, you should not work on the same workspace from different locations at the same time!
 			</p>
 			
 			<h2>Workspace History</h2>
@@ -388,7 +394,7 @@
 
 	</div>
 	<footer>
-		built and maintained by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ University of Rostock
+		built and maintained by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ <a href="http://www.uni-rostock.de/">University of Rostock</a>
 	</footer>
 </body>
 </html>

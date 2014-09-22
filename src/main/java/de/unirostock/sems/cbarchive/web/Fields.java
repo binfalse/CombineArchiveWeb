@@ -1,6 +1,7 @@
 package de.unirostock.sems.cbarchive.web;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
@@ -90,7 +91,7 @@ public class Fields {
 		String desiredLogLevel = context.getInitParameter("LOGLEVEL");
 
 		if (desiredLogLevel != null) {
-			LOGGER.warn("Try to set log level to ", desiredLogLevel);
+			LOGGER.warn("Setting log level to ", desiredLogLevel);
 
 			if (desiredLogLevel.equals ("DEBUG")) {
 				LOGGER.setMinLevel (LOGGER.DEBUG);
@@ -112,7 +113,21 @@ public class Fields {
 			Fields.STORAGE = new File( storage );
 			Fields.SETTINGS_FILE = new File( Fields.STORAGE, Fields.SETTINGS_FILE_NAME );
 
-			LOGGER.info("Setted storage to ", Fields.STORAGE);
+			LOGGER.info("Set storage to ", Fields.STORAGE);
+		}
+		
+		// try to create settings file
+		if (!Fields.SETTINGS_FILE.exists () || !Fields.SETTINGS_FILE.canRead ())
+		{
+			try
+			{
+				if (!Fields.SETTINGS_FILE.createNewFile ())
+					throw new IOException ("creating settings file returned false");
+			}
+			catch (IOException e)
+			{
+				LOGGER.error (e, "cannot create settings file ", Fields.SETTINGS_FILE);
+			}
 		}
 		
 		// Quotas
@@ -124,6 +139,19 @@ public class Fields {
 		QUOTA_ARCHIVE_LIMIT		= parseQuotaFromString( context.getInitParameter("QUOTA_ARCHIVE_LIMIT") );
 		QUOTA_FILE_LIMIT		= parseQuotaFromString( context.getInitParameter("QUOTA_FILE_LIMIT") );
 		QUOTA_UPLOAD_SIZE		= parseQuotaFromString( context.getInitParameter("QUOTA_UPLOAD_SIZE") );
+		
+		
+		LOGGER.info ("configured: ",
+			"\nLoglevel: ", desiredLogLevel,
+			"\nFields.STORAGE: ", Fields.STORAGE,
+			"\nFields.SETTINGS_FILE: ", Fields.SETTINGS_FILE,
+			"\nQUOTA_TOTAL_SIZE: ", QUOTA_TOTAL_SIZE,
+			"\nQUOTA_WORKSPACE_SIZE: ", QUOTA_WORKSPACE_SIZE,
+			"\nQUOTA_WORKSPACE_AGE: ", QUOTA_WORKSPACE_AGE,
+			"\nQUOTA_ARCHIVE_SIZE: ", QUOTA_ARCHIVE_SIZE,
+			"\nQUOTA_ARCHIVE_LIMIT: ", QUOTA_ARCHIVE_LIMIT,
+			"\nQUOTA_UPLOAD_SIZE: ", QUOTA_UPLOAD_SIZE
+			);
 		
 	}
 	

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,11 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import org.apache.http.client.utils.URIBuilder;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.Fields;
@@ -31,7 +28,7 @@ public class ShareApi extends RestHelper {
 	@GET
 	@Path("/{user_path}")
 	@Produces( MediaType.TEXT_PLAIN )
-	public Response setUserPath( @CookieParam(Fields.COOKIE_PATH) String oldUserPath, @PathParam("user_path") String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @Context UriInfo uriInfo ) {
+	public Response setUserPath( @CookieParam(Fields.COOKIE_PATH) String oldUserPath, @PathParam("user_path") String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @Context HttpServletRequest requestContext) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -70,10 +67,11 @@ public class ShareApi extends RestHelper {
 		String result = "setted " + user.getWorkspaceId();
 		URI newLocation = null;
 		try {
-			if( uriInfo != null ) {
-				String uri = uriInfo.getBaseUri().toString();
+			if( requestContext != null ) {
+				String uri = requestContext.getRequestURI();
 				uri = uri.substring(0, uri.indexOf("rest/"));
-				newLocation = new URI(uri);
+				newLocation = new URI(requestContext.getScheme(), null, requestContext.getServerName(),
+						requestContext.getServerPort(), uri, requestContext.getQueryString(), null);
 			}
 			else
 				newLocation = new URI("../");

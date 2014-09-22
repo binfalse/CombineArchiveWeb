@@ -3,6 +3,7 @@ package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -13,9 +14,8 @@ import java.util.UUID;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FileUtils;
 import org.jdom2.JDOMException;
-
-import com.google.common.io.Files;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -223,7 +223,7 @@ public class UserManager {
 			combineArchive.close();
 			
 			// copy files
-			Files.copy(existingArchive, archiveFile);
+			FileUtils.copyFile(existingArchive, archiveFile);
 		}
 		else {
 			// creates and packs the new empty archive

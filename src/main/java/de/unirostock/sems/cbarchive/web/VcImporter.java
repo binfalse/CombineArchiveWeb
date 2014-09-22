@@ -1,6 +1,8 @@
 package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,12 +11,12 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FileUtils;
 import org.jdom2.JDOMException;
 
 import com.aragost.javahg.Changeset;
 import com.aragost.javahg.Repository;
 import com.aragost.javahg.commands.LogCommand;
-import com.google.common.io.Files;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -64,7 +66,7 @@ public class VcImporter
 		CombineArchive ca = archive.getArchive ();
 		// archive.getArchive ();
 		
-		File tempDir = Files.createTempDir ();
+		File tempDir = FileUtils.getTempDirectory();
 		Repository repo = Repository.clone(tempDir, link);
 		if( repo == null )
 		{

@@ -116,7 +116,9 @@ public class WorkspaceManager {
 		
 		if( !Fields.SETTINGS_FILE.exists() || !Fields.SETTINGS_FILE.canRead() ) {
 			// in case the file cannot be read
-			LOGGER.error( "Cannot read central settings file ", Fields.SETTINGS_FILE, ". No existing Workspace will be available" );
+			LOGGER.warn( "Cannot read central settings file ", Fields.SETTINGS_FILE, ". No existing Workspace will be available" );
+			LOGGER.warn( "Create empty central settings file.");
+			storeSettings();
 			return;
 		}
 		

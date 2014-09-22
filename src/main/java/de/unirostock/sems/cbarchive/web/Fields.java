@@ -116,20 +116,6 @@ public class Fields {
 			LOGGER.info("Set storage to ", Fields.STORAGE);
 		}
 		
-		// try to create settings file
-		if (!Fields.SETTINGS_FILE.exists () || !Fields.SETTINGS_FILE.canRead ())
-		{
-			try
-			{
-				if (!Fields.SETTINGS_FILE.createNewFile ())
-					throw new IOException ("creating settings file returned false");
-			}
-			catch (IOException e)
-			{
-				LOGGER.error (e, "cannot create settings file ", Fields.SETTINGS_FILE);
-			}
-		}
-		
 		// Quotas
 		
 		QUOTA_TOTAL_SIZE		= parseQuotaFromString( context.getInitParameter("QUOTA_TOTAL_SIZE") );

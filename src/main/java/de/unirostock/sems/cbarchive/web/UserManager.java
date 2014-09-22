@@ -187,6 +187,9 @@ public class UserManager {
 		else {
 			workspace.getArchives().put(archiveId, newName);
 		}
+		
+		// save the settings
+		workspaceManager.storeSettings();
 
 	}
 
@@ -240,7 +243,10 @@ public class UserManager {
 		workspace.getArchives().put(uuid, name);
 		
 		LOGGER.info( MessageFormat.format("Created new archive with id {0} in workspace {1}", uuid, getWorkingDir()) );
-
+		
+		// save the settings
+		workspaceManager.storeSettings();
+		
 		return uuid;
 	}
 	
@@ -253,6 +259,9 @@ public class UserManager {
 		
 		// removes the internal reference from the settings
 		workspace.getArchives().remove(archiveId);
+		
+		// save the settings
+		workspaceManager.storeSettings();
 	}
 
 	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException {

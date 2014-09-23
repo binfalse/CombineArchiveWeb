@@ -377,7 +377,6 @@ div.loading-indicator .icon {
 	width: 31px;
 	height: 31px;
 }
-<<<<<<< HEAD
 
 footer {
         text-align: right;
@@ -387,5 +386,9 @@ footer {
 footer a:visited, footer a {
         color: #aaa;
 }
-=======
->>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web
+.workspace-nav
+{
+        background-color: #fafafa;
+        padding: 10px;
+        color: #999;
+}

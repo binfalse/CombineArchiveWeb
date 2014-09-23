@@ -1,6 +1,6 @@
 body
 {
-	font-family:sans-serif;
+	font-family: sans-serif,sans,serif;
 	/*font-family: 'Quicksand', sans-serif;*/
 	width: 800px;
 	margin:auto;
@@ -19,8 +19,8 @@ a, a:hover, a:visited, a:active
 header, h1, h2, h3, h4
 {
 	font-size: 64px;
-	/*font-weight:bold;
-	font-variant: small-caps;*/
+/* 	font-weight:bold; */
+/* 	font-variant: small-caps; */
 	font-family: 'Antic', sans-serif;
 	color: #c00;
 	text-shadow: 1px 1px 1px #000;
@@ -49,11 +49,12 @@ h4 {
 	text-shadow: 0.5px 0.5px 0.5px #aaa;
 }
 footer {
-	color: #bbb;
+        text-align: right;
+        font-size: .7em;
+        color: #aaa;
 }
-footer > a {
-	color: #aaa !important;
-	text-decoration: underline;
+footer a:visited, footer a {
+        color: #aaa;
 }
 
 nav
@@ -88,11 +89,19 @@ nav ul li a.command-link:after {
 nav ul li a.archive-link:before {
 	content: "::";
 }
-
 nav .highlight
 {
 	font-weight: bold;
 }
+
+div.nav-container
+{
+	background-color: #fafafa;
+	padding: 5px;
+	color: #999;
+}
+
+
 .clearer
 {
 	clear: both;
@@ -378,17 +387,3 @@ div.loading-indicator .icon {
 	height: 31px;
 }
 
-footer {
-        text-align: right;
-        font-size: .7em;
-        color: #aaa;
-}
-footer a:visited, footer a {
-        color: #aaa;
-}
-.workspace-nav
-{
-        background-color: #fafafa;
-        padding: 10px;
-        color: #999;
-}

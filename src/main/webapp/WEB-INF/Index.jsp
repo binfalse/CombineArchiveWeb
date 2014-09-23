@@ -39,17 +39,20 @@
 		software that is nothing but a big bug.</div>
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
-			<ul id="nav">
-				<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
-				<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
-			</ul>
-			<div class="workspace-nav">
+			
+			<div class="nav-container">
 				<small>The current workspace contains the following archives:</small>
-				<ul id="nav-workspace">
+				<div style="clear: both;"></div>
+				<ul id="nav-workspace" style="float: left;">
 					{{#	_.each(entries, function(entry) { }}
 					<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(entry.name); }} in current Workspace">{{# print(entry.name); }}</a></li>
 					{{# }); }}
 				</ul>
+				<ul id="nav-main" style="float: right;">
+					<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
+					<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
+				</ul>
+				<div style="clear: both;"></div>
 			</div>
 		</div>
 		<!-- **** -->

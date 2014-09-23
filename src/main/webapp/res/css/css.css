@@ -265,9 +265,7 @@ div.edit-link > a:hover {
 	border-radius: 3px;
 }
 .archive-fileexplorer {
-/* 	width: 35px; */
 	height: 100%;
-	z-index: 800;
 	float: left;
 	overflow: hidden;
 	padding: 0;
@@ -275,8 +273,7 @@ div.edit-link > a:hover {
 .archive-fileexplorer > div.archive-filetree {
 	margin: 0;
 	width: 0;
-/* 	display: none; */
-	overflow: hidden auto;
+	overflow: auto;
 	float: left;
 /* 	border-right: 3px dashed #bbb; */
 /* 	border-radius: 3px; */
@@ -288,20 +285,36 @@ div.edit-link > a:hover {
 	width: 32px;
 	height: 100%;
 	float: right;
-	background-color: #c00;
-	border-right: 1px solid #bbb;
+	
+/* 	border-right: 1px solid #bbb; */
 /* 	border-radius: 3px; */
+	
+	color: #eee;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 1.2em;
+	font-weight: bold;
 }
-.archive-fileinfo {
-<<<<<<< HEAD
+div.archive-explorerexpand-text {
+	width: 100%;
 	height: 100%;
-	padding-left: 10px;
-	overflow: auto;
-=======
+	padding-top: 250px;
+}
+div.archive-explorerexpand-text div.archive-explorerexpand-text-files {
+	transform: rotate(270deg);
+	margin-bottom: -100%;
+}
+div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
+	transform: rotate(90deg);
+	margin-top: -50%;
+	display: none;
+}
+
+.archive-fileinfo {
 /* 	width: 100%; */
+	height: 100%;
 	padding: 0;
-/* 	overflow: auto; */
->>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web
+	overflow: auto;
 }
 .archive-fileinfo > div {
 	margin: 10px 0;

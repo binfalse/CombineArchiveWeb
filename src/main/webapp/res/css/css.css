@@ -283,9 +283,6 @@ div.edit-link > a:hover {
 /* 	border-right: 3px dashed #bbb; */
 /* 	border-radius: 3px; */
 }
-.archive-fileexplorer div.archive-jstree {
-	padding: 5px 5px 5px 10px;
-}
 .archive-fileexplorer > div.archive-explorerexpand {
 	width: 32px;
 	height: 100%;
@@ -332,7 +329,7 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	margin: 10px 0;
 	padding: 0 10px;
 	word-wrap: break-word;
-	overflow: overlay;
+/* 	overflow: overlay; */
 }
 .archive-entry-frame {
 	padding-left: 10px;
@@ -380,6 +377,7 @@ div.loading-indicator .icon {
 	width: 31px;
 	height: 31px;
 }
+<<<<<<< HEAD
 
 footer {
         text-align: right;
@@ -389,3 +387,5 @@ footer {
 footer a:visited, footer a {
         color: #aaa;
 }
+=======
+>>>>>>> branch 'feature_newdesgin' of ssh://git.sems.uni-rostock.de/combinearchive-web

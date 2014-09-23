@@ -68,10 +68,13 @@ public class ShareApi extends RestHelper {
 		URI newLocation = null;
 		try {
 			if( requestContext != null ) {
-				String uri = requestContext.getRequestURI();
+				String uri = requestContext.getRequestURL().toString();
+//				String uri = requestContext.getRequestURI();
 				uri = uri.substring(0, uri.indexOf("rest/"));
-				newLocation = new URI(requestContext.getScheme(), null, requestContext.getServerName(),
-						requestContext.getServerPort(), uri, requestContext.getQueryString(), null);
+				LOGGER.info("redirect sharing link ", requestContext.getRequestURL(), " to ", uri);
+				newLocation = new URI( uri );
+//				newLocation = new URI(requestContext.getScheme(), null, requestContext.getServerName(),
+//						requestContext.getServerPort(), uri, requestContext.getQueryString(), null);
 			}
 			else
 				newLocation = new URI("../");

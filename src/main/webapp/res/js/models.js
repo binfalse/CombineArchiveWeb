@@ -989,31 +989,47 @@ var ArchiveView = Backbone.View.extend({
 		return false;
 	},
 	showExplorer: function(event) {
+		if( this.explorerHideTimeout != undefined )
+			clearTimeout( this.explorerHideTimeout );
+		
 		var self = this;
-		this.explorerTimeout = setTimeout(function() {
+		this.explorerShowTimeout = setTimeout(function() {
 			var el = self.$el.find(".archive-fileinfo").parent();
 			var width = el.width();
 			width = width - (1 + self.$el.find(".archive-explorerexpand").width());
 			
 			self.$el.find(".archive-fileinfo").fadeOut(200);
+			self.$el.find(".archive-explorerexpand-text-files").fadeOut(200, function() {
+				self.$el.find(".archive-explorerexpand-text-meta").fadeIn(200);
+			});
+			
+			
 			self.$el.find(".archive-filetree").animate({"width": width + "px"}, 500);
-			self.explorerTimeout = undefined;
+			self.explorerShowTimeout = undefined;
 		}, 187);
 	},
-	hideExplorer: function(event) {
-		if( this.explorerTimeout != undefined )
-			clearTimeout( this.explorerTimeout );
+	hideExplorer: function(event, force) {
+		if( this.explorerShowTimeout != undefined )
+			clearTimeout( this.explorerShowTimeout );
 		
 		var self = this;
-		this.$el.find(".archive-filetree").animate({"width": "0"}, 300, "linear", function() {
-			self.$el.find(".archive-fileinfo").fadeIn(100);
-		});
+		this.explorerHideTimeout = setTimeout(function() {
+			self.$el.find(".archive-explorerexpand-text-meta").fadeOut(150, function() {
+				self.$el.find(".archive-explorerexpand-text-files").fadeIn(150);
+			});
+			
+			self.$el.find(".archive-filetree").animate({"width": "0"}, 300, "linear", function() {
+				self.$el.find(".archive-fileinfo").fadeIn(100);
+			});
+			self.explorerHideTimeout = undefined;
+		}, force == true ? 0 : 387);
+		
 	},
 	
 	jstreeClick: function(event, data) {
 		
 		console.log(data);
-		this.hideExplorer();
+		this.hideExplorer(null, true);
 		
 		// directories are not yet handled
 		if( data.node.original.type != 'file' && data.node.original.type != 'root' )

@@ -199,7 +199,12 @@
 						<div class="archive-jstree"></div>
 					</div>
 					
-					<div class="archive-explorerexpand">f f s</div>
+					<div class="archive-explorerexpand">
+						<div class="archive-explorerexpand-text">
+							<div class="archive-explorerexpand-text-files">files</div>
+							<div class="archive-explorerexpand-text-meta">meta</div>
+						</div>
+					</div>
 					<div style="clear: both;"></div>
 				</div>
 				

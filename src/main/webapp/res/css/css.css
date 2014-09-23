@@ -273,12 +273,15 @@ div.edit-link > a:hover {
 .archive-fileexplorer > div.archive-filetree {
 	margin: 0;
 	width: 0;
-<<<<<<< Upstream, based on master
 	height: 100%;
-=======
->>>>>>> ef569fa made bar a little bit fencier
 	overflow: auto;
 	float: left;
+}
+.archive-fileexplorer div.archive-jstree {
+	padding: 5px 5px 5px 10px;
+	float: left;
+/* 	border-right: 3px dashed #bbb; */
+/* 	border-radius: 3px; */
 }
 .archive-fileexplorer div.archive-jstree {
 	padding: 5px 5px 5px 10px;
@@ -297,17 +300,9 @@ div.edit-link > a:hover {
 	font-size: 1.2em;
 	font-weight: bold;
 }
-<<<<<<< Upstream, based on master
-.archive-fileinfo {
-=======
 div.archive-explorerexpand-text {
 	width: 100%;
->>>>>>> ef569fa made bar a little bit fencier
 	height: 100%;
-<<<<<<< Upstream, based on master
-	padding-left: 10px;
-/* 	overflow: auto; */
-=======
 	padding-top: 250px;
 }
 div.archive-explorerexpand-text div.archive-explorerexpand-text-files {
@@ -320,12 +315,18 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	display: none;
 }
 
-.archive-fileinfo {
-/* 	width: 100%; */
+.archive-fileexplorer > div.archive-explorerexpand {
+	width: 32px;
 	height: 100%;
-	padding: 0;
+	float: right;
+	background-color: #c00;
+	border-right: 1px solid #bbb;
+/* 	border-radius: 3px; */
+}
+.archive-fileinfo {
+	height: 100%;
+	padding-left: 10px;
 	overflow: auto;
->>>>>>> ef569fa made bar a little bit fencier
 }
 .archive-fileinfo > div {
 	margin: 10px 0;
@@ -380,14 +381,11 @@ div.loading-indicator .icon {
 	height: 31px;
 }
 
-footer
-{
+footer {
         text-align: right;
         font-size: .7em;
         color: #aaa;
 }
-footer a:visited,
-footer a
-{
+footer a:visited, footer a {
         color: #aaa;
 }

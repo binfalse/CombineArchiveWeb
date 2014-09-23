@@ -1,20 +1,15 @@
+body
+{
+	font-family:sans-serif;
+	/*font-family: 'Quicksand', sans-serif;*/
+	width: 800px;
+	margin:auto;
+}
+
 @font-face {
 	font-family: Antic;
 	src: url(Antic/Antic-Regular.ttf);
 	font-weight:400;
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400; 
-  src: local('Open Sans'), local('OpenSans'), url(Open_Sans/OpenSans-Regular.ttf) format('truetype');
-}
-body
-{
-	font-family: 'Open Sans', sans-serif;
-	width: 800px;
-	margin:auto;
-	font-size: 14px;
 }
 a, a:hover, a:visited, a:active
 {

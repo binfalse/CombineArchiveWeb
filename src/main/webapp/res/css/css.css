@@ -247,6 +247,10 @@ div.edit-link > a:hover {
 
 /* -------- Archive View -------- */
 
+a.jstree-anchor > i.jstree-icon {
+	background-size: cover !important;
+}
+
 .archive-headarea {
 	width: 100%;
 	padding: 0;

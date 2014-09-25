@@ -79,6 +79,11 @@
 		<servlet-name>Download</servlet-name>
 		<servlet-class>de.unirostock.sems.cbarchive.web.servlet.DownloadServlet</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>Icon</servlet-name>
+		<servlet-class>de.unirostock.sems.cbarchive.web.servlet.IconServlet</servlet-class>
+	</servlet>
 
 	<servlet>
 		<servlet-name>rest-api</servlet-name>
@@ -103,6 +108,11 @@
 	<servlet-mapping>
 		<servlet-name>Index</servlet-name>
 		<url-pattern>/index.sems</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>Icon</servlet-name>
+		<url-pattern>/res/icon/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

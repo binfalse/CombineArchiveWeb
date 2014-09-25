@@ -131,7 +131,7 @@ public class ArchiveEntryDataholder {
 	public String getFileName() {
 		return fileName;
 	}
-
+	
 	public URI getFormat() {
 		return format;
 	}

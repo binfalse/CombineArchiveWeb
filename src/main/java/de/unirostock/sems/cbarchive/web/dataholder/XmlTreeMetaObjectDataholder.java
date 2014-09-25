@@ -1,9 +1,16 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
+import java.io.IOException;
+
+import javax.xml.transform.TransformerException;
+
+import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.DefaultMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 
@@ -24,13 +31,29 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 	public XmlTreeMetaObjectDataholder() {
 		super(null, null, false);
 	}
-
+	
+	@JsonIgnore
 	public Element getXmltree() {
 		return xmltree;
 	}
-
+	
+	@JsonIgnore
 	public void setXmltree(Element xmltree) {
 		this.xmltree = xmltree;
+	}
+	
+	public String getXmlString() {
+		try {
+			Document doc = new Document().setRootElement(xmltree.clone());
+			return Utils.prettyPrintDocument( doc );
+		} catch (IOException | TransformerException e) {
+			LOGGER.error(e, "Cannot transform Xml Element to String.");
+			return "";
+		}
+	}
+	
+	public void setXmlString() {
+		// TODO
 	}
 
 	@JsonIgnore

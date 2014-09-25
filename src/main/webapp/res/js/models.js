@@ -443,10 +443,12 @@ var ArchiveEntryView = Backbone.View.extend({
 		this.metaViews = {};
 		_.each(this.model.get("meta"), function(metaEntry) {
 			var view = createMetaViews.call(self, metaEntry);
-			view.el = $("<div></div>");
-			view.render();
-			var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
-			$metaArea.append(content);
+			if( view != null ) {
+				view.el = $("<div></div>");
+				view.render();
+				var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
+				$metaArea.append(content);
+			}
 		});
 		
 		function createMetaViews(entry, context) {

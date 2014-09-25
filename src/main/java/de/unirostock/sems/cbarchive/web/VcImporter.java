@@ -1,6 +1,8 @@
 package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.text.ParseException;
@@ -8,10 +10,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.jdom2.JDOMException;
 
 import com.aragost.javahg.Changeset;
@@ -77,7 +82,31 @@ public class VcImporter
 		 * http://models.cellml.org/workspace/aguda_b_1999
 		 * http://models.cellml.org/workspace/goldbeter_1991
 		 */
-
+		
+		if (link.toLowerCase().contains("cellml.org/e") && link.toLowerCase().contains("/view"))
+		{
+			LOGGER.debug ("apparently got an exposure url: ", link);
+			InputStream in = new URL (link).openStream();
+			try
+			{
+				String source = IOUtils.toString (in);
+				Pattern hgClonePattern = Pattern.compile ("<input [^>]*value=.hg clone ([^'\"]*). ");
+				Matcher matcher = hgClonePattern.matcher (source);
+				if (matcher.find())
+				{
+			    link = matcher.group (1);
+					LOGGER.debug ("resolved exposure url to: ", link);
+				}
+			}
+			catch (IOException e)
+			{
+				LOGGER.warn (e, "failed to retrieve cellml exposure source code");
+			}
+			finally
+			{
+				IOUtils.closeQuietly(in);
+			}
+		}
 		
 		/*
 		 * 
@@ -88,9 +117,16 @@ public class VcImporter
 		 * is
 		 * http://models.cellml.org/workspace/aguda_b_1999
 		 */
+		if (link.toLowerCase().contains("cellml.org/workspace/") && link.toLowerCase().contains("/file/"))
+		{
+			LOGGER.debug ("apparently got an cellml file url: ", link);
+			int pos = link.indexOf ("/file/");
+			link = link.substring (0, pos);
+			LOGGER.debug ("resolved file url to: ", link);
+		}
 		
 		
-		// otherwise we assume it is a link to a workspace, which can be hg-cloned.
+		// now we assume it is a link to a workspace, which can be hg-cloned.
 		
 		
 		// create new temp dir

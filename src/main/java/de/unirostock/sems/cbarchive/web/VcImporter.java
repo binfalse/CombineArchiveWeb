@@ -1,6 +1,8 @@
 package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,11 +63,7 @@ public class VcImporter
 			link = link.substring(9);
 		
 		// create new temp dir
-		File tempDir = null;
-		while( tempDir == null || (tempDir.exists() && tempDir.isDirectory()) ) {
-			String tempUid = UUID.randomUUID().toString();
-			tempDir = new File(FileUtils.getTempDirectory(), tempUid);
-		}
+		File tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();
 		if( !tempDir.mkdirs() )
 			throw new CombineArchiveWebException("The temporary directories could not created");
 		

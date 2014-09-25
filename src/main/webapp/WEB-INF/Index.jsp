@@ -39,17 +39,20 @@
 		software that is nothing but a big bug.</div>
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
-			<ul id="nav">
-				<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
-				<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
-			</ul>
-			<div class="workspace-nav">
+			
+			<div class="nav-container">
 				<small>The current workspace contains the following archives:</small>
-				<ul id="nav-workspace">
+				<div style="clear: both;"></div>
+				<ul id="nav-workspace" style="float: left;">
 					{{#	_.each(entries, function(entry) { }}
 					<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(entry.name); }} in current Workspace">{{# print(entry.name); }}</a></li>
 					{{# }); }}
 				</ul>
+				<ul id="nav-main" style="float: right;">
+					<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
+					<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
+				</ul>
+				<div style="clear: both;"></div>
 			</div>
 		</div>
 		<!-- **** -->
@@ -62,7 +65,6 @@
 				at the <a href="http://www.uni-rostock.de/">University of Rostock</a>.
 				See <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">our website</a> for further information.
 			</p>
-			
 			
 			<h2>Disclaimer</h2>
 			<p>
@@ -196,18 +198,26 @@
 			<h2>Archive Content</h2>
 			
 			<div class="archive-contentarea">
-				<div class="archive-filetree">
-					<div>
+				<div class="archive-fileexplorer">
+					<div class="archive-filetree">
 						<div class="edit-link">
 							<a class="archive-folder-add" href="#">[New folder]</a>
 						</div>
 						<div class="archive-jstree"></div>
 					</div>
+					
+					<div class="archive-explorerexpand">
+						<div class="archive-explorerexpand-text">
+							<div class="archive-explorerexpand-text-files">files</div>
+							<div class="archive-explorerexpand-text-meta">meta</div>
+						</div>
+					</div>
+					<div style="clear: both;"></div>
 				</div>
 				
 				<div class="archive-fileinfo">
 					<div>
-						Select a file to display the associated meta information.
+						To select a file and show it annotated meta data move your mouse on the left red bar or tap on it.
 					</div>
 				</div>
 				<div style="clear: left;"></div>

@@ -743,11 +743,16 @@ var ArchiveView = Backbone.View.extend({
 		"click .archive-info-save": "saveArchive",
 		"click .archive-info-cancel": "cancelEdit",
 		"click .archive-info-delete": "deleteArchive",
+		
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
 		"click .dropbox a": "dropboxClick",
 		"change .dropbox input": "dropboxManual",
-		"click .archive-folder-add": "addFolder"
+		"click .archive-folder-add": "addFolder",
+		
+		"mouseenter .archive-fileexplorer": "showExplorer",
+		"click .archive-explorerexpand": "showExplorer",
+		"mouseleave .archive-fileexplorer": "hideExplorer"
 	},
 	startArchiveEdit: function(event) {
 		
@@ -983,10 +988,48 @@ var ArchiveView = Backbone.View.extend({
 		
 		return false;
 	},
+	showExplorer: function(event) {
+		if( this.explorerHideTimeout != undefined )
+			clearTimeout( this.explorerHideTimeout );
+		
+		var self = this;
+		this.explorerShowTimeout = setTimeout(function() {
+			var el = self.$el.find(".archive-fileinfo").parent();
+			var width = el.width();
+			width = width - (1 + self.$el.find(".archive-explorerexpand").width());
+			
+			self.$el.find(".archive-fileinfo").fadeOut(200);
+			self.$el.find(".archive-explorerexpand-text-files").fadeOut(200, function() {
+				self.$el.find(".archive-explorerexpand-text-meta").fadeIn(200);
+			});
+			
+			
+			self.$el.find(".archive-filetree").animate({"width": width + "px"}, 500);
+			self.explorerShowTimeout = undefined;
+		}, 187);
+	},
+	hideExplorer: function(event, force) {
+		if( this.explorerShowTimeout != undefined )
+			clearTimeout( this.explorerShowTimeout );
+		
+		var self = this;
+		this.explorerHideTimeout = setTimeout(function() {
+			self.$el.find(".archive-explorerexpand-text-meta").fadeOut(150, function() {
+				self.$el.find(".archive-explorerexpand-text-files").fadeIn(150);
+			});
+			
+			self.$el.find(".archive-filetree").animate({"width": "0"}, 300, "linear", function() {
+				self.$el.find(".archive-fileinfo").fadeIn(100);
+			});
+			self.explorerHideTimeout = undefined;
+		}, force == true ? 0 : 387);
+		
+	},
 	
 	jstreeClick: function(event, data) {
 		
 		console.log(data);
+		this.hideExplorer(null, true);
 		
 		// directories are not yet handled
 		if( data.node.original.type != 'file' && data.node.original.type != 'root' )

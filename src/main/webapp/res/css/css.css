@@ -1,20 +1,15 @@
+body
+{
+	font-family: sans-serif,sans,serif;
+	/*font-family: 'Quicksand', sans-serif;*/
+	width: 800px;
+	margin:auto;
+}
+
 @font-face {
 	font-family: Antic;
 	src: url(Antic/Antic-Regular.ttf);
 	font-weight:400;
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400; 
-  src: local('Open Sans'), local('OpenSans'), url(Open_Sans/OpenSans-Regular.ttf) format('truetype');
-}
-body
-{
-	font-family: 'Open Sans', sans-serif;
-	width: 800px;
-	margin:auto;
-	font-size: 14px;
 }
 a, a:hover, a:visited, a:active
 {
@@ -24,8 +19,8 @@ a, a:hover, a:visited, a:active
 header, h1, h2, h3, h4
 {
 	font-size: 64px;
-	/*font-weight:bold;
-	font-variant: small-caps;*/
+/* 	font-weight:bold; */
+/* 	font-variant: small-caps; */
 	font-family: 'Antic', sans-serif;
 	color: #c00;
 	text-shadow: 1px 1px 1px #000;
@@ -53,7 +48,14 @@ h4 {
 	font-size: 16px;
 	text-shadow: 0.5px 0.5px 0.5px #aaa;
 }
-
+footer {
+        text-align: right;
+        font-size: .7em;
+        color: #aaa;
+}
+footer a:visited, footer a {
+        color: #aaa;
+}
 
 nav
 {
@@ -87,11 +89,19 @@ nav ul li a.command-link:after {
 nav ul li a.archive-link:before {
 	content: "::";
 }
-
 nav .highlight
 {
 	font-weight: bold;
 }
+
+div.nav-container
+{
+	background-color: #fafafa;
+	padding: 5px;
+	color: #999;
+}
+
+
 .clearer
 {
 	clear: both;
@@ -256,35 +266,79 @@ div.edit-link > a:hover {
 
 .archive-contentarea {
 	width: 100%;
-/* 	max-height: 75%; */
+	height: 500px;
 	padding: 0;
 	margin: 0;
 	margin-bottom: 15px;
-	border: 1px dashed #000000;
+	border: 3px dashed #bbb;
+	border-radius: 3px;
 }
-.archive-filetree {
-	width: 33%;
-/* 	height: 75%; */
+.archive-fileexplorer {
+	height: 100%;
 	float: left;
-	overflow: auto;
+	overflow: hidden;
 	padding: 0;
-	border-right: 1px dashed #000000;
 }
-.archive-filetree > div {
-	margin: 0 10px;
+.archive-fileexplorer > div.archive-filetree {
+	margin: 0;
+	width: 0;
+	height: 100%;
 	overflow: auto;
+	float: left;
+}
+.archive-fileexplorer div.archive-jstree {
+	padding: 5px 5px 5px 10px;
+	float: left;
+/* 	border-right: 3px dashed #bbb; */
+/* 	border-radius: 3px; */
+}
+.archive-fileexplorer > div.archive-explorerexpand {
+	width: 32px;
+	height: 100%;
+	float: right;
+	
+/* 	border-right: 1px solid #bbb; */
+/* 	border-radius: 3px; */
+	
+	color: #eee;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+div.archive-explorerexpand-text {
+	width: 100%;
+	height: 100%;
+	padding-top: 250px;
+}
+div.archive-explorerexpand-text div.archive-explorerexpand-text-files {
+	transform: rotate(270deg);
+	margin-bottom: -100%;
+}
+div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
+	transform: rotate(90deg);
+	margin-top: -50%;
+	display: none;
+}
+
+.archive-fileexplorer > div.archive-explorerexpand {
+	width: 32px;
+	height: 100%;
+	float: right;
+	background-color: #c00;
+	border-right: 1px solid #bbb;
+/* 	border-radius: 3px; */
 }
 .archive-fileinfo {
-	width: 66%;
-/* 	height: 75%; */
-	float: left;
-	padding: 0;
+	height: 100%;
+	padding-left: 10px;
 	overflow: auto;
 }
 .archive-fileinfo > div {
-	margin: 10px 5px;
+	margin: 10px 0;
+	padding: 0 10px;
 	word-wrap: break-word;
-	overflow: overlay;
+/* 	overflow: overlay; */
 }
 .archive-entry-frame {
 	padding-left: 10px;
@@ -333,21 +387,3 @@ div.loading-indicator .icon {
 	height: 31px;
 }
 
-footer
-{
-        text-align: right;
-        font-size: .7em;
-        color: #aaa;
-}
-footer a:visited,
-footer a
-{
-        color: #aaa;
-}
-
-.workspace-nav
-{
-        background-color: #fafafa;
-        padding: 10px;
-        color: #999;
-}

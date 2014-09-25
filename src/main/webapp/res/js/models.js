@@ -334,7 +334,7 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		"click .archive-meta-omex-creator-add": "addCreator",
 		"click .archive-meta-omex-creator-delete": "removeCreator"
 	},
-	startEdit: function(event) {
+	startEdit: function(event, isnew) {
 		this.$el.find(".archive-meta-omex-creator-box").each( function(index, boxElement) {
 			$(boxElement).find("input").each( function(index, inputElement) {
 				var field = $(inputElement).attr("data-field");
@@ -348,11 +348,16 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		return false;
 	},
 	cancelEdit: function(event) {
-		this.$el.removeClass("edit");
-		this.render();
-		
-		var messageId = "vcard-" + this.model.get("id");
-		messageView.removeMessages( messageId );
+		if( this.model.get("id") == undefined ) {
+			this.$el.parent().remove();
+		}
+		else {
+			this.$el.removeClass("edit");
+			this.render();
+			
+			var messageId = "vcard-" + this.model.get("id");
+			messageView.removeMessages( messageId );
+		}
 		
 		return false;
 	},

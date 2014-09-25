@@ -370,6 +370,13 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	background-color: #eee;
 }
 
+.archive-meta-omex-creator-orga {
+	font-style: italic;
+}
+.archive-meta-omex-creator-orga:before {
+	content: ', ';
+}
+
 /* -------- Create View -------- */
 
 .on-archive-cellml, .on-archive-upload {

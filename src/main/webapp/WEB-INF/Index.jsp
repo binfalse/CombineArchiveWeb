@@ -242,7 +242,7 @@
 						<span class="text-archive-entry-filepath">{{# print(entry.filePath); }}</span><br />
 						
 					{{# if( entry.filePath != "/" ) { }}
-					<strong>format:</strong> {{# print(entry.format); }}<br />
+					<strong>format:</strong> <a href="{{# print(entry.format); }}" target="_blank">{{# print(entry.format); }}</a><br />
 					<strong>size:</strong> {{# print( bytesToSize(entry.fileSize) ); }}<br />
 					{{# } }}
 					
@@ -254,7 +254,7 @@
 					<div class="edit-link">
 						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>
 						{{# if( entry.filePath != "/" ) { }}
-						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}">[Download]</a>
+						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}" target="_blank">[Download]</a>
 						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-file-delete on-not-edit" href="#">[Delete]</a>
 						<a class="archive-file-save on-edit" href="#">[Save]</a>

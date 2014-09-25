@@ -1,7 +1,6 @@
 package de.unirostock.sems.cbarchive.web;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.servlet.ServletContext;
 

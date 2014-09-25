@@ -36,7 +36,7 @@ public class Tools
 
 	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
 		// find Cookies
-		HttpSession session = request.getSession (true);
+//		HttpSession session = request.getSession (true);
 		CookieManager cookieManagement = new CookieManager (request, response);
 
 		// gets the user class

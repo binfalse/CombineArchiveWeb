@@ -1,6 +1,9 @@
 package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.text.ParseException;
@@ -8,10 +11,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.jdom2.JDOMException;
 
 import com.aragost.javahg.Changeset;
@@ -26,6 +32,7 @@ import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
+import de.unirostock.sems.cbext.Formatizer;
 
 
 /**
@@ -55,10 +62,88 @@ public class VcImporter
 		if( link == null || link.isEmpty() )
 			throw new CombineArchiveWebException("The link should not be empty");
 		
-		// if link starts with "hg clone", remove it
+		
+		// is it a link to nz!? (models.cellml or physiome)
+		if (link.contains ("cellml.org/") || link.contains ("physiomeproject.org/"))
+			link = processNzRepoLink (link);
+		
+		return cloneHg (link, archive);
+	}
+	
+	
+	private static String processNzRepoLink (String link) throws MalformedURLException, IOException
+	{
+		/*
+		 * 
+		 * cellml feature 1:
+		 * 
+		 * if link starts with "hg clone", remove it.
+		 * 
+		 */
 		if( link.toLowerCase().startsWith("hg clone ") )
 			link = link.substring(9);
 		
+		/*
+		 * 
+		 * cellml feature 2:
+		 * 
+		 * hg path for exposures such as 
+		 * http://models.cellml.org/exposure/2d0da70d5253291015a892326fa27b7b/aguda_b_1999.cellml/view
+		 * http://models.cellml.org/e/4c/goldbeter_1991.cellml/view
+		 * is
+		 * http://models.cellml.org/workspace/aguda_b_1999
+		 * http://models.cellml.org/workspace/goldbeter_1991
+		 */
+		
+		if ((link.toLowerCase().contains("cellml.org/e") || link.toLowerCase().contains("physiomeproject.org/e")))
+		{
+			LOGGER.debug ("apparently got an exposure url: ", link);
+			InputStream in = new URL (link).openStream();
+			try
+			{
+				String source = IOUtils.toString (in);
+				Pattern hgClonePattern = Pattern.compile ("<input [^>]*value=.hg clone ([^'\"]*). ");
+				Matcher matcher = hgClonePattern.matcher (source);
+				if (matcher.find())
+				{
+			    link = matcher.group (1);
+					LOGGER.debug ("resolved exposure url to: ", link);
+				}
+			}
+			catch (IOException e)
+			{
+				LOGGER.warn (e, "failed to retrieve cellml exposure source code");
+			}
+			finally
+			{
+				IOUtils.closeQuietly(in);
+			}
+		}
+		
+		/*
+		 * 
+		 * cellml feature 3:
+		 * 
+		 * hg path for files such as 
+		 * http://models.cellml.org/workspace/aguda_b_1999/file/56788658c953e1d0a6bc745b81bdb0c0c20e9821/aguda_1999_bb.ai
+		 * is
+		 * http://models.cellml.org/workspace/aguda_b_1999
+		 */
+		if ((link.toLowerCase().contains("cellml.org/workspace/") || link.toLowerCase().contains("physiomeproject.org/workspace/")) && link.toLowerCase().contains("/file/"))
+		{
+			LOGGER.debug ("apparently got an cellml/physiome file url: ", link);
+			int pos = link.indexOf ("/file/");
+			link = link.substring (0, pos);
+			LOGGER.debug ("resolved file url to: ", link);
+		}
+		
+		
+		// now we assume it is a link to a workspace, which can be hg-cloned.
+		return link;
+	}
+	
+	private static File cloneHg (String link, ArchiveFromCellMl archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
+	{
 		// create new temp dir
 		File tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();
 		if( !tempDir.isDirectory () && !tempDir.mkdirs() )
@@ -86,9 +171,8 @@ public class VcImporter
 			
 			ArchiveEntry caFile = ca.addEntry (
 			   tempDir,
-			   cur, 
-			   // TODO
-			   "stuff");
+			   cur,
+			   Formatizer.guessFormat (cur));
 			
 			// lets create meta!
 			List<Date> modified = new ArrayList<Date> ();

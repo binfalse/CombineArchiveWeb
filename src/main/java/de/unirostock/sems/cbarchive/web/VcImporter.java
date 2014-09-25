@@ -26,6 +26,7 @@ import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
+import de.unirostock.sems.cbext.Formatizer;
 
 
 /**
@@ -88,9 +89,8 @@ public class VcImporter
 			
 			ArchiveEntry caFile = ca.addEntry (
 			   tempDir,
-			   cur, 
-			   // TODO
-			   "stuff");
+			   cur,
+			   Formatizer.guessFormat (cur));
 			
 			// lets create meta!
 			List<Date> modified = new ArrayList<Date> ();

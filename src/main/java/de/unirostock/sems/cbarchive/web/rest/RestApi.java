@@ -1,5 +1,6 @@
 package de.unirostock.sems.cbarchive.web.rest;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -315,22 +316,42 @@ public class RestApi extends RestHelper {
 		}
 		
 		try {
-			String id = user.createArchive( archive.getName(), user.getData().getVCard() );
-			archive.setId(id);
-			
 			if( archive instanceof ArchiveFromCellMl ) {
+				// import from CellMl
 				LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
-				try
-				{
-					//Archive arch = user.getArchive (id);
-					if (!VcImporter.importRepo ((ArchiveFromCellMl) archive, id, user))
-						throw new CombineArchiveWebException ("importing cellml repo failed");
+				try {
+					File archiveFile = VcImporter.importRepo( (ArchiveFromCellMl) archive );
+					
+					long repoFileSize = archiveFile.length();
+					// max workspace size
+					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getWorkspaceSize() + repoFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+						LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
+						// remove temp file
+						archiveFile.delete();
+						return buildErrorResponse(507, user, "The maximum size of one workspace is reached.");
+					}
+					// max total size
+					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(WorkspaceManager.getInstance().getTotalSize() + repoFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
+						LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
+						// remove temp file
+						archiveFile.delete();
+						return buildErrorResponse(507, user, "The maximum size is reached.");
+					}
+					
+					String id = user.createArchive( archive.getName(), archiveFile );
+					archive.setId(id);
+					
+					archiveFile.delete();
 				}
-				catch (CombineArchiveWebException e)
-				{
+				catch (CombineArchiveWebException e) {
 					LOGGER.error (e, "cannot create archive");
 					return buildErrorResponse( 500, user, "Cannot create archive!", e.getMessage() );
 				}
+			}
+			else {
+				// Ordinary creation
+				String id = user.createArchive( archive.getName(), user.getData().getVCard() );
+				archive.setId(id);
 			}
 			
 			return buildResponse(200, user).entity(archive).build();

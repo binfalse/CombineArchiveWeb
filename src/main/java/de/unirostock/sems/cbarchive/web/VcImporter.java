@@ -1,13 +1,12 @@
 package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.transform.TransformerException;
 
@@ -50,7 +49,7 @@ public class VcImporter
 	 * @throws JDOMException 
 	 * @throws CombineArchiveWebException 
 	 */
-	public static boolean importRepo (ArchiveFromCellMl archive, String id, UserManager user) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
+	public static File importRepo (ArchiveFromCellMl archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
 	{
 		String link = archive.getCellmlLink ();
 		
@@ -61,25 +60,33 @@ public class VcImporter
 		if( link.toLowerCase().startsWith("hg clone ") )
 			link = link.substring(9);
 		
-		File archiveFile = user.getArchiveFile (id);
-		archive.setArchiveFile (archiveFile);
-		CombineArchive ca = archive.getArchive ();
-		// archive.getArchive ();
+		// create new temp dir
+		File tempDir = null;
+		while( tempDir == null || (tempDir.exists() && tempDir.isDirectory()) ) {
+			String tempUid = UUID.randomUUID().toString();
+			tempDir = new File(FileUtils.getTempDirectory(), tempUid);
+		}
+		if( !tempDir.mkdirs() )
+			throw new CombineArchiveWebException("The temporary directories could not created");
 		
-		File tempDir = FileUtils.getTempDirectory();
+		// temp file for CombineArchive
+		File archiveFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, "ca-imported");
+		archiveFile.delete(); // delete the tmp file, so the CombineArchive Lib will create a new file
+		// create the archive
+		CombineArchive ca = new CombineArchive(archiveFile);
+		
 		Repository repo = Repository.clone(tempDir, link);
-		if( repo == null )
-		{
-			LOGGER.error ("Cannot clone Mercurial Repository " + link + " into " + tempDir);
-			return false;
+		if( repo == null ) {	
+			ca.close();
+			LOGGER.error ("Cannot clone Mercurial Repository ", link, " into ", tempDir);
+			throw new CombineArchiveWebException("Cannot clone Mercurial Repository " + link + " into " + tempDir);
 		}
 		
 		List<File> relevantFiles = scanRepository(tempDir, repo);
 		System.out.println ("before LogCommand");
 		LogCommand logCmd = new LogCommand(repo);
 		System.out.println ("after LogCommand");
-		for (File cur : relevantFiles)
-		{
+		for (File cur : relevantFiles) {
 			List<Changeset> relevantVersions = logCmd.execute(cur.getAbsolutePath ());
 			
 			ArchiveEntry caFile = ca.addEntry (
@@ -93,8 +100,7 @@ public class VcImporter
 			List<VCard> creators = new ArrayList<VCard> ();
 			
 			HashMap<String, VCard> users = new HashMap<String, VCard> ();
-			for (Changeset cs : relevantVersions)
-			{
+			for (Changeset cs : relevantVersions) {
 				LOGGER.debug ("cs: " + cs.getTimestamp ().getDate () + " -- " + cs.getUser ());
 				modified.add (cs.getTimestamp ().getDate ());
 			
@@ -106,8 +112,7 @@ public class VcImporter
 				String[] tokens = vcuser.split (" ");
 				int lastNameToken = tokens.length - 1;
 				// is there a mail address?
-				if (tokens[lastNameToken].contains ("@"))
-				{
+				if (tokens[lastNameToken].contains ("@")) {
 					mail = tokens[lastNameToken];
 					if (mail.startsWith ("<") && mail.endsWith (">"))
 						mail = mail.substring (1, mail.length () - 1);
@@ -115,10 +120,8 @@ public class VcImporter
 				}
 				
 				// search for a non-empty last name
-				while (lastNameToken >= 0)
-				{
-					if (tokens[lastNameToken].length () > 0)
-					{
+				while (lastNameToken >= 0) {
+					if (tokens[lastNameToken].length () > 0) {
 						lastName = tokens[lastNameToken];
 						break;
 					}
@@ -126,15 +129,15 @@ public class VcImporter
 				}
 				
 				// and first name of course...
-				for (int i = 0; i < lastNameToken; i++)
+				for (int i = 0; i < lastNameToken; i++) {
 					if (tokens[i].length () > 0)
 						firstName += tokens[i] + " ";
+				}
 				firstName = firstName.trim ();
 				
 				String userid = "[" + firstName + "] -- [" + lastName + "] -- [" + mail + "]";
 				LOGGER.debug ("this is user: " + userid);
-				if (users.get (userid) == null)
-				{
+				if (users.get (userid) == null) {
 					users.put (userid, new VCard (lastName, firstName, mail, null));
 				}
 			}
@@ -142,14 +145,24 @@ public class VcImporter
 			for (VCard vc : users.values ())
 				creators.add (vc);
 
-			caFile.addDescription (new OmexMetaDataObject (new OmexDescription (
-        creators, modified, modified.get (modified.size () - 1))));
+			caFile.addDescription( new OmexMetaDataObject(
+						new OmexDescription(creators, modified, modified.get(modified.size() - 1) )
+					));
 			
 		}
+		
 		ca.pack ();
 		ca.close ();
 		repo.close ();
-		return true;
+		
+		// clean up the directory
+		FileUtils.deleteDirectory(tempDir);
+		
+		// add the combine archive to the dataholder
+		archive.setArchiveFile(archiveFile);
+		archive.getArchive().close();
+		
+		return archiveFile;
 	}
 	
 	

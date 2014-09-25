@@ -55,10 +55,43 @@ public class VcImporter
 		
 		if( link == null || link.isEmpty() )
 			throw new CombineArchiveWebException("The link should not be empty");
-		
-		// if link starts with "hg clone", remove it
+
+		/*
+		 * 
+		 * cellml feature 1:
+		 * 
+		 * if link starts with "hg clone", remove it.
+		 * 
+		 */
 		if( link.toLowerCase().startsWith("hg clone ") )
 			link = link.substring(9);
+		
+		/*
+		 * 
+		 * cellml feature 2:
+		 * 
+		 * hg path for exposures such as 
+		 * http://models.cellml.org/exposure/2d0da70d5253291015a892326fa27b7b/aguda_b_1999.cellml/view
+		 * http://models.cellml.org/e/4c/goldbeter_1991.cellml/view
+		 * is
+		 * http://models.cellml.org/workspace/aguda_b_1999
+		 * http://models.cellml.org/workspace/goldbeter_1991
+		 */
+
+		
+		/*
+		 * 
+		 * cellml feature 3:
+		 * 
+		 * hg path for files such as 
+		 * http://models.cellml.org/workspace/aguda_b_1999/file/56788658c953e1d0a6bc745b81bdb0c0c20e9821/aguda_1999_bb.ai
+		 * is
+		 * http://models.cellml.org/workspace/aguda_b_1999
+		 */
+		
+		
+		// otherwise we assume it is a link to a workspace, which can be hg-cloned.
+		
 		
 		// create new temp dir
 		File tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();

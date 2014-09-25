@@ -40,8 +40,6 @@ public class VcImporter
 {
 	/**
 	 * @param archive
-	 * @param id 
-	 * @param user 
 	 * @return true or false.
 	 * @throws IOException 
 	 * @throws TransformerException 

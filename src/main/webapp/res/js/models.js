@@ -663,6 +663,7 @@ var ArchiveView = Backbone.View.extend({
 				"text": "/",
 				"data": this.collection.findWhere( {"filePath": "/"} ),
 				"state": {opened: true},
+				"icon": "res/css/folder.png",
 				"type": "root",
 				"children": this.generateJsTreeJson()
 			};
@@ -977,6 +978,7 @@ var ArchiveView = Backbone.View.extend({
 		var nodeData = {
 				text: folderName,
 				type: "dir",
+				icon: "res/css/folder.png",
 				data: null,
 				state: {
 					"opened": true,
@@ -1169,7 +1171,7 @@ var ArchiveView = Backbone.View.extend({
 					newBranch = {
 							"text": pathSegment[pathIndex],
 							"type": "dir",
-//							"icon": "icon-folder",
+							"icon": "res/css/folder.png",
 							"state": {
 								"opened": true,
 								"disabled": false,

@@ -2,6 +2,7 @@ package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -60,7 +61,18 @@ public class VcImporter
 		
 		if( link == null || link.isEmpty() )
 			throw new CombineArchiveWebException("The link should not be empty");
-
+		
+		
+		// is it a link to nz!? (models.cellml or physiome)
+		if (link.contains ("cellml.org/") || link.contains ("physiomeproject.org/"))
+			link = processNzRepoLink (link);
+		
+		return cloneHg (link, archive);
+	}
+	
+	
+	private static String processNzRepoLink (String link) throws MalformedURLException, IOException
+	{
 		/*
 		 * 
 		 * cellml feature 1:
@@ -83,7 +95,7 @@ public class VcImporter
 		 * http://models.cellml.org/workspace/goldbeter_1991
 		 */
 		
-		if (link.toLowerCase().contains("cellml.org/e") && link.toLowerCase().contains("/view"))
+		if ((link.toLowerCase().contains("cellml.org/e") || link.toLowerCase().contains("physiomeproject.org/e")))
 		{
 			LOGGER.debug ("apparently got an exposure url: ", link);
 			InputStream in = new URL (link).openStream();
@@ -117,9 +129,9 @@ public class VcImporter
 		 * is
 		 * http://models.cellml.org/workspace/aguda_b_1999
 		 */
-		if (link.toLowerCase().contains("cellml.org/workspace/") && link.toLowerCase().contains("/file/"))
+		if ((link.toLowerCase().contains("cellml.org/workspace/") || link.toLowerCase().contains("physiomeproject.org/workspace/")) && link.toLowerCase().contains("/file/"))
 		{
-			LOGGER.debug ("apparently got an cellml file url: ", link);
+			LOGGER.debug ("apparently got an cellml/physiome file url: ", link);
 			int pos = link.indexOf ("/file/");
 			link = link.substring (0, pos);
 			LOGGER.debug ("resolved file url to: ", link);
@@ -127,8 +139,11 @@ public class VcImporter
 		
 		
 		// now we assume it is a link to a workspace, which can be hg-cloned.
-		
-		
+		return link;
+	}
+	
+	private static File cloneHg (String link, ArchiveFromCellMl archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
+	{
 		// create new temp dir
 		File tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();
 		if( !tempDir.isDirectory () && !tempDir.mkdirs() )

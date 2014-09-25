@@ -1,6 +1,7 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class ArchiveEntryDataholder {
 	protected String filePath;
 	protected String fileName;
 	protected long fileSize;
-	protected String format;
+	protected URI format;
 	protected List<MetaObjectDataholder> meta = new ArrayList<MetaObjectDataholder>();
 
 	public ArchiveEntryDataholder( ArchiveEntry archiveEntry ) {
@@ -49,7 +50,7 @@ public class ArchiveEntryDataholder {
 		copyMetaData(archiveEntry);
 	}
 
-	public ArchiveEntryDataholder( MetaDataHolder metaDataHolder, boolean master, String filePath, String fileName, String format) {
+	public ArchiveEntryDataholder( MetaDataHolder metaDataHolder, boolean master, String filePath, String fileName, URI format) {
 
 		this.archiveEntry	= null;
 		this.metaDataHolder	= metaDataHolder;
@@ -62,7 +63,7 @@ public class ArchiveEntryDataholder {
 		copyMetaData(metaDataHolder);
 	}
 
-	public ArchiveEntryDataholder(boolean master, String id, String filePath, String fileName, String format, List<MetaObjectDataholder> meta) {
+	public ArchiveEntryDataholder(boolean master, String id, String filePath, String fileName, URI format, List<MetaObjectDataholder> meta) {
 		super();
 		this.master = master;
 		this.id = id;
@@ -131,7 +132,7 @@ public class ArchiveEntryDataholder {
 		return fileName;
 	}
 
-	public String getFormat() {
+	public URI getFormat() {
 		return format;
 	}
 	
@@ -149,7 +150,7 @@ public class ArchiveEntryDataholder {
 			this.fileName = fileName;
 	}
 
-	public void setFormat(String format) {
+	public void setFormat(URI format) {
 		if( archiveEntry == null )
 			this.format = format;
 	}

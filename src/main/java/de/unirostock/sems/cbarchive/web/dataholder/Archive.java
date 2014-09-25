@@ -2,6 +2,7 @@ package de.unirostock.sems.cbarchive.web.dataholder;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -28,6 +29,7 @@ import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
+import de.unirostock.sems.cbext.Formatizer;
 
 /**
  * Dataholder/Model class for CombineArchives
@@ -152,7 +154,7 @@ public class Archive {
 		}
 		
 		// add the archive meta information as root entry
-		ArchiveEntryDataholder rootDataholder = new ArchiveEntryDataholder(archive, false, "/", "", "");
+		ArchiveEntryDataholder rootDataholder = new ArchiveEntryDataholder(archive, false, "/", "", null);
 		rootDataholder.updateId();
 		this.entries.put("/", rootDataholder );
 		
@@ -195,7 +197,8 @@ public class Archive {
 		fileName = altFileName;
 		
 		// add the entry the archive
-		ArchiveEntry entry = archive.addEntry(file.toFile(), fileName, Files.probeContentType(file));
+		ArchiveEntry entry = null;
+		entry = archive.addEntry( file.toFile(), fileName, Formatizer.guessFormat(file.toFile()) );
 		// adds the entry to the dataholder (warning: this is probably inconsistent)
 		if( entry != null ) {
 			// entry information are gathered in the entry dataholder

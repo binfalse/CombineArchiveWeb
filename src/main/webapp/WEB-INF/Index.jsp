@@ -277,18 +277,24 @@
 			<strong>creators:</strong>
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
-						<strong>given name: </strong>
-							<span class="on-not-edit" data-field="givenName">{{# print(vcard.givenName); }}</span>
-							<input type="text" class="on-edit" data-field="givenName" /> <br />
-						<strong>family name: </strong>
-							<span class="on-not-edit" data-field="familyName">{{# print(vcard.familyName); }}</span>
-							<input type="text" class="on-edit" data-field="familyName" /> <br />
-						<strong>E-Mail: </strong>
-							<span class="on-not-edit" data-field="email">{{# print(vcard.email); }}</span>
-							<input type="text" class="on-edit" data-field="email" /> <br />
-						<strong>organization: </strong>
-							<span class="on-not-edit" data-field="organization">{{# print(vcard.organization); }}</span>
-							<input type="text" class="on-edit" data-field="organization" /> <br />
+						<strong class="on-not-edit">
+							<span data-field="givenName">{{# print(vcard.givenName); }}</span>
+							<span data-field="familyName">{{# print(vcard.familyName); }}</span>
+						</strong>
+						<span class="on-not-edit archive-meta-omex-creator-orga" data-field="organization">{{# print(vcard.organization); }}</span>
+						<br class="on-not-edit" />
+						<span class="on-not-edit" data-field="email">{{# print(vcard.email); }}</span>
+						
+						<div class="on-edit">
+							<strong>given name: </strong>
+								<input type="text" class="on-edit" data-field="givenName" /> <br />
+							<strong>family name: </strong>
+								<input type="text" class="on-edit" data-field="familyName" /> <br />
+							<strong>E-Mail: </strong>
+								<input type="text" class="on-edit" data-field="email" /> <br />
+							<strong>organization: </strong>
+								<input type="text" class="on-edit" data-field="organization" /> <br />
+						</div>
 						
 						<div class="edit-link">
 							<a class="archive-meta-omex-creator-delete on-edit" href="#">[-]</a>

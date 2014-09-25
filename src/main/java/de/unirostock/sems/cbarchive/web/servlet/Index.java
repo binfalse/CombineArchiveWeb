@@ -37,8 +37,6 @@ public class Index extends HttpServlet {
 		Fields.loadSettingsFromContext(context);
 	}
 
-
-
 	private void run (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		response.setContentType ("text/html");

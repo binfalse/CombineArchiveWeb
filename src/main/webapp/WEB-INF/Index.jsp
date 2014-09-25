@@ -226,7 +226,7 @@
 		<!-- **** -->
 		<div id="template-archive-entry">
 			{{# if( entry.filePath != "/" ) { }}
-			<h3>{{# print(entry.fileName); }}</h3>
+			<h3><i class="file-icon" style="background-image: url('res/icon/{{# print(entry.format) }}');"></i>{{# print(entry.fileName); }}</h3>
 			{{# } else { }}
 			<h3>Archive Meta Information</h3>
 			{{# } }}

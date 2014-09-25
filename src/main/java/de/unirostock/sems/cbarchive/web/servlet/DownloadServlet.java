@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 
 import javax.servlet.ServletException;
@@ -34,10 +35,6 @@ public class DownloadServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// init logger
-		LOGGER.setMinLevel (LOGGER.DEBUG);
-		LOGGER.setLogStackTrace (true);
-		
 		// set charset
 		response.setCharacterEncoding (Fields.CHARSET);
 		request.setCharacterEncoding (Fields.CHARSET);
@@ -167,9 +164,6 @@ public class DownloadServlet extends HttpServlet {
 			return;
 		}
 		
-		// set the mime type of the response
-		response.setContentType( entry.getFormat() );
-		
 		// set the filename of the response
 		response.addHeader("Content-Disposition", 
 				MessageFormat.format("inline; filename=\"{0}\"", entry.getFileName()) );
@@ -178,6 +172,9 @@ public class DownloadServlet extends HttpServlet {
 		try {
 			File tempFile = File.createTempFile( Fields.TEMP_FILE_PREFIX, entry.getFileName() );
 			entry.extractFile(tempFile);
+			
+			// set the mime type of the response
+			response.setContentType( Files.probeContentType(tempFile.toPath()) );
 			
 			OutputStream output = response.getOutputStream();
 			InputStream input = new FileInputStream(tempFile);

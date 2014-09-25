@@ -105,7 +105,10 @@ public class Fields {
 			else if (desiredLogLevel.equals ("NONE"))
 				LOGGER.setLogToStdErr (false);
 		}
-
+		
+		LOGGER.setLogFile("/tmp/CaWeb.log");
+		LOGGER.setLogToFile(true);
+		
 		// Storage
 		String storage = context.getInitParameter("STORAGE");
 		if( storage != null ) {

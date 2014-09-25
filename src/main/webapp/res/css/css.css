@@ -247,6 +247,22 @@ div.edit-link > a:hover {
 
 /* -------- Archive View -------- */
 
+a.jstree-anchor > i.jstree-icon {
+	background-size: cover !important;
+}
+i.file-icon {
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+	line-height: 32px;
+	white-space: nowrap;
+	margin-right: 3px;
+	
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
 .archive-headarea {
 	width: 100%;
 	padding: 0;

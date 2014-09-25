@@ -7,34 +7,34 @@ _.templateSettings =  {
 };
 
 var ArchiveEntryModel = Backbone.Model.extend({
-	urlRoot: RestRoot + 'archives/0/entries',
+	urlRoot: RestRoot + "archives/0/entries",
 	defaults: {
-		'filePath': '',
-		'fileName': '',
-		'format': '',
-		'meta': {}
+		"filePath": "",
+		"fileName": "",
+		"format": "",
+		"meta": {}
 	},
 	setArchiveId: function( archiveId ) {
-		this.urlRoot = RestRoot + 'archives/' + archiveId + '/entries';
+		this.urlRoot = RestRoot + "archives/" + archiveId + "/entries";
 	}
 });
 
 var ArchiveModel = Backbone.Model.extend({
-	urlRoot: RestRoot + 'archives',
+	urlRoot: RestRoot + "archives",
 	defaults: {
-		'template': 'plain',
-		'name': 'n/a'
+		"template": "plain",
+		"name": "n/a"
 	}
 	
 });
 
 var VCardModel = Backbone.Model.extend({
-	urlRoot: RestRoot + 'vcard',
+	urlRoot: RestRoot + "vcard",
 	defaults: {
-		'givenName': '',
-		'familyName': '',
-		'email': '',
-		'organization': ''
+		"givenName": "",
+		"familyName": "",
+		"email": "",
+		"organization": ""
 	},
 	validate: function( attrs, options ) {
 		if( attrs.givenName == undefined || attrs.givenName == "" )
@@ -86,7 +86,7 @@ var VCardModel = Backbone.Model.extend({
 });
 
 var OmexMetaModel = Backbone.Model.extend({
-	urlRoot: RestRoot + 'archives/0/entries/0/meta',
+	urlRoot: RestRoot + "archives/0/entries/0/meta",
 	defaults: {
 		"creators": [],
 		"created": "",
@@ -108,14 +108,14 @@ var WorkspaceHistoryModel = Backbone.Model.extend({
 
 var ArchiveCollection = Backbone.Collection.extend({
 	model: ArchiveModel,
-	url: RestRoot + 'archives'
+	url: RestRoot + "archives"
 });
 
 var ArchiveEntryCollection = Backbone.Collection.extend({
 	model: ArchiveEntryModel,
-	url: RestRoot + 'archives/0/entries',
+	url: RestRoot + "archives/0/entries",
 	setArchiveId: function( archiveId ) {
-		this.url = RestRoot + 'archives/' + archiveId + '/entries';
+		this.url = RestRoot + "archives/" + archiveId + "/entries";
 	}
 });
 
@@ -123,13 +123,13 @@ var ArchiveEntryCollection = Backbone.Collection.extend({
 var NavigationView = Backbone.View.extend({
 	
 	collection: null,
-	el: '#navigation',
+	el: "#navigation",
 	
 	initialize: function () {
 		this.template = templateCache["template-navigation"];
 	},
 	render: function() {
-		var json = { 'entries': this.collection.toJSON() };
+		var json = { "entries": this.collection.toJSON() };
 		
 		// in case of re-render, store the selected main-button
 		var $highlighted = this.$el.find(".highlight");
@@ -192,12 +192,12 @@ var NavigationView = Backbone.View.extend({
 	},
 	
 	events: {
-		'click .mainLinks': 'doNavigation' 
+		"click .mainLinks": "doNavigation" 
 	},
 	doNavigation: function (event) {
 		
 		// hide current page
-		$('.subPage').hide();
+		$(".subPage").hide();
 		// do highlighting
 		var $target = $(event.currentTarget);
 		this.$el.find(".mainLinks").removeClass("highlight");
@@ -443,10 +443,12 @@ var ArchiveEntryView = Backbone.View.extend({
 		this.metaViews = {};
 		_.each(this.model.get("meta"), function(metaEntry) {
 			var view = createMetaViews.call(self, metaEntry);
-			view.el = $('<div></div>');
-			view.render();
-			var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
-			$metaArea.append(content);
+			if( view != null ) {
+				view.el = $("<div></div>");
+				view.render();
+				var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
+				$metaArea.append(content);
+			}
 		});
 		
 		function createMetaViews(entry, context) {
@@ -620,7 +622,7 @@ var ArchiveEntryView = Backbone.View.extend({
 		model.setUrl( this.archiveId, this.entryId );
 		view = new OmexMetaEntryView({ "model": model });
 		
-		view.el = $('<div></div>');
+		view.el = $("<div></div>");
 		view.render();
 		var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
 		this.$el.find(".archive-meta-area").append(content);
@@ -640,7 +642,7 @@ var ArchiveView = Backbone.View.extend({
 	collection: null,
 	entryView: null,
 	
-	el: '#archivePage',
+	el: "#archivePage",
 	
 	initialize: function () {
 		this.template = templateCache["template-archive"];
@@ -652,8 +654,8 @@ var ArchiveView = Backbone.View.extend({
 			return;
 		
 		var json = {
-				'archive': this.model.toJSON(),
-				'entries': this.collection.toJSON()
+				"archive": this.model.toJSON(),
+				"entries": this.collection.toJSON()
 			};
 		
 		this.$el.html( this.template(json) );
@@ -663,12 +665,13 @@ var ArchiveView = Backbone.View.extend({
 				"text": "/",
 				"data": this.collection.findWhere( {"filePath": "/"} ),
 				"state": {opened: true},
+				"icon": "res/css/folder.png",
 				"type": "root",
 				"children": this.generateJsTreeJson()
 			};
 		
 		// init file tree
-		this.$treeEl = this.$el.find('.archive-jstree');
+		this.$treeEl = this.$el.find(".archive-jstree");
 		this.$treeEl.jstree({
 			"core": {
 				"data": data,
@@ -689,7 +692,7 @@ var ArchiveView = Backbone.View.extend({
 		});
 		// work-around for these strange jstree event names
 		var self = this;
-		this.$treeEl.on('changed.jstree', function(event, data) { self.jstreeClick.call(self, event, data); } );
+		this.$treeEl.on("changed.jstree", function(event, data) { self.jstreeClick.call(self, event, data); } );
 		this.$treeEl.on("move_node.jstree", function(event, data) { self.jstreeMove.call(self, event, data); } );
 		
 		this.$el.show();
@@ -710,7 +713,7 @@ var ArchiveView = Backbone.View.extend({
 		if( this.collection == null )
 			this.collection = new ArchiveEntryCollection();
 		
-		var archiveId = this.model.get('id');
+		var archiveId = this.model.get("id");
 		var self = this;
 		
 		this.collection.setArchiveId( archiveId );
@@ -763,7 +766,7 @@ var ArchiveView = Backbone.View.extend({
 		this.$el.find("input[name='archiveName']").val( this.model.get("name") );
 		
 		// show all edit-fields
-		this.$el.find('.archive-info').addClass('edit');
+		this.$el.find("archive-info").addClass("edit");
 		
 		return false;
 	},
@@ -802,7 +805,7 @@ var ArchiveView = Backbone.View.extend({
 		return false;
 	},
 	cancelEdit: function(event) {
-		this.$el.find('.archive-info').removeClass('edit');
+		this.$el.find(".archive-info").removeClass("edit");
 		return false;
 	},
 	deleteArchive: function(event) {
@@ -838,7 +841,7 @@ var ArchiveView = Backbone.View.extend({
 		event.preventDefault();
 		
 		// shows nice copy icon
-		event.originalEvent.dataTransfer.dropEffect = 'copy';
+		event.originalEvent.dataTransfer.dropEffect = "copy";
 	},
 	dropboxDrop: function(event) {
 		// disables default drag'n'drop behavior
@@ -977,11 +980,12 @@ var ArchiveView = Backbone.View.extend({
 		var nodeData = {
 				text: folderName,
 				type: "dir",
+				icon: "res/css/folder.png",
 				data: null,
 				state: {
-					'opened': true,
-					'disabled': false,
-					'selected': false
+					"opened": true,
+					"disabled": false,
+					"selected": false
 				}
 		};
 		jstree.create_node(dirNode, nodeData, "last", false, false);
@@ -1032,7 +1036,7 @@ var ArchiveView = Backbone.View.extend({
 		this.hideExplorer(null, true);
 		
 		// directories are not yet handled
-		if( data.node.original.type != 'file' && data.node.original.type != 'root' )
+		if( data.node.original.type != "file" && data.node.original.type != "root" )
 			return false;
 		
 		if( this.entryView != null )
@@ -1042,7 +1046,7 @@ var ArchiveView = Backbone.View.extend({
 		this.entryView = new ArchiveEntryView({
 			el: this.$el.find(".archive-fileinfo")
 		});
-		this.entryView.fetch( this.model.get('id'), data.node.data.id );
+		this.entryView.fetch( this.model.get("id"), data.node.data.id );
 		
 	},
 	jstreeMove: function(event, data) {
@@ -1095,29 +1099,30 @@ var ArchiveView = Backbone.View.extend({
 		
 		this.collection.each( function(entry) {
 			
-			if( entry.get('fileName') == null || entry.get('fileName') == '' || entry.get('fileName').length == 0 )
+			if( entry.get("fileName") == null || entry.get("fileName") == "" || entry.get("fileName").length == 0 )
 				// root element -> skip this (handled in render routine)
 				return;
 			
-			var path = entry.get('filePath').substring( 0, entry.get('filePath').length - entry.get('fileName').length );
-			if( path == '/' || path == '' ) {
+			var path = entry.get("filePath").substring( 0, entry.get("filePath").length - entry.get("fileName").length );
+			if( path == "/" || path == "" ) {
 				// file in root, just push it into the array
 				jstreeJson.push({
-					'text': entry.get('fileName'),
-					'data': entry,
-					'type': 'file',
-//					'icon': 'icon-file',
-					'state': {
-						'opened': false,
-						'disabled': false,
-						'selected': false
+					"text": entry.get("fileName"),
+					"data": entry,
+					"type": "file",
+					"icon": "res/icon/" + entry.get("format"),
+					"state": {
+						"opened": false,
+						"disabled": false,
+						"selected": false
 					}
 				});
+				console.log(entry.get("format"));
 			}
 			else {
 				// elment is non root, lets search for the branch it belongs to
 				// split path and filter the empty parts out
-				var pathSegment = _.filter( path.split('/'), function(seg) { return seg != "" && seg != " "; } );
+				var pathSegment = _.filter( path.split("/"), function(seg) { return seg != "" && seg != " "; } );
 				jstreeJson = deepInject(entry, jstreeJson, pathSegment, 0);
 			}
 			
@@ -1133,14 +1138,14 @@ var ArchiveView = Backbone.View.extend({
 				if( pathIndex == pathSegment.length) {
 					// is it the last piece? -> yes -> push file and leave
 					currentBranch.push({
-						'text': entry.get('fileName'),
-						'data': entry,
-						'type': 'file',
-//						'icon': 'icon-file',
-						'state': {
-							'opened': false,
-							'disabled': false,
-							'selected': false
+						"text": entry.get("fileName"),
+						"data": entry,
+						"type": "file",
+						"icon": "res/icon/" + entry.get("format"),
+						"state": {
+							"opened": false,
+							"disabled": false,
+							"selected": false
 						}
 					});
 					found = true;
@@ -1153,7 +1158,7 @@ var ArchiveView = Backbone.View.extend({
 					for( var index = 0; index < currentBranch.length; index++ ) {
 						currentBranchEntry = currentBranch[index];
 						
-						if( currentBranchEntry.type == 'dir' && currentBranchEntry.text == pathSegment[pathIndex] ) {
+						if( currentBranchEntry.type == "dir" && currentBranchEntry.text == pathSegment[pathIndex] ) {
 							// found another piece of the path
 							pathIndex++;
 							newBranch = currentBranchEntry;
@@ -1166,15 +1171,15 @@ var ArchiveView = Backbone.View.extend({
 				if( found == false ) {
 					// branch does not exist -> create it
 					newBranch = {
-							'text': pathSegment[pathIndex],
-							'type': 'dir',
-//							'icon': 'icon-dir',
-							'state': {
-								'opened': true,
-								'disabled': false,
-								'selected': false
+							"text": pathSegment[pathIndex],
+							"type": "dir",
+							"icon": "res/css/folder.png",
+							"state": {
+								"opened": true,
+								"disabled": false,
+								"selected": false
 							},
-							'children': []
+							"children": []
 						};
 					console.log("new branch");
 					currentBranch.push(newBranch);
@@ -1199,7 +1204,7 @@ var CreateView = Backbone.View.extend({
 	model: null,
 	file: null,
 	
-	el: '#create-page',
+	el: "#create-page",
 	
 	initialize: function() {
 		this.template = templateCache["template-create"];
@@ -1225,17 +1230,17 @@ var CreateView = Backbone.View.extend({
 			return;
 		
 		var json = {
-				'vcard': this.model.toJSON()
+				"vcard": this.model.toJSON()
 		};
 		this.$el.html( this.template(json) );
 		
 	},
 	
 	events: {
-		'click .save-vcard': 'saveVCard',
-		'click .create-archive': 'createArchive',
-		'keydown #newArchiveName': 'createArchive',
-		"click input[name='newArchiveTemplate']": 'updateArchiveTemplate',
+		"click .save-vcard": "saveVCard",
+		"click .create-archive": "createArchive",
+		"keydown #newArchiveName": "createArchive",
+		"click input[name='newArchiveTemplate']": "updateArchiveTemplate",
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
 		"click .dropbox a": "dropboxClick",
@@ -1246,7 +1251,7 @@ var CreateView = Backbone.View.extend({
 	addMsg: function(event) {
 //		this.$el.find(".create-archive").attr("disabled", "disabled");
 //		this.$el.find("#newArchiveName").attr("disabled", "disabled");
-//		this.$el.find("input[name='newArchiveTemplate']").attr("disabled", "disabled");
+//		this.$el.find("input[name="newArchiveTemplate"]").attr("disabled", "disabled");
 		messageView.warning("Hello", "World", "test");
 		messageView.error("World", "Hello", "test");
 		return false;
@@ -1280,10 +1285,10 @@ var CreateView = Backbone.View.extend({
 		}
 	},
 	saveVCard: function(event) {
-		this.model.set('givenName', this.$el.find("input[name='userGivenName']").val() );
-		this.model.set('familyName', this.$el.find("input[name='userFamilyName']").val() );
-		this.model.set('email', this.$el.find("input[name='userMail']").val() );
-		this.model.set('organization', this.$el.find("input[name='userOrganization']").val() );
+		this.model.set("givenName", this.$el.find("input[name='userGivenName']").val() );
+		this.model.set("familyName", this.$el.find("input[name='userFamilyName']").val() );
+		this.model.set("email", this.$el.find("input[name='userMail']").val() );
+		this.model.set("organization", this.$el.find("input[name='userOrganization']").val() );
 		
 		// remove old error messages
 		messageView.removeMessages("ownvcard");
@@ -1332,7 +1337,7 @@ var CreateView = Backbone.View.extend({
 			return false;
 		}
 		
-		var archiveModel = new ArchiveModel({'name': archiveName}, {'collection': workspaceArchives});
+		var archiveModel = new ArchiveModel({"name": archiveName}, {"collection": workspaceArchives});
 		
 		if( !archiveModel.isValid() ) {
 			// model is not valid
@@ -1492,7 +1497,7 @@ var CreateView = Backbone.View.extend({
 		event.preventDefault();
 		
 		// shows nice copy icon
-		event.originalEvent.dataTransfer.dropEffect = 'copy';
+		event.originalEvent.dataTransfer.dropEffect = "copy";
 	},
 	dropboxDrop: function(event) {
 		// disables default drag'n'drop behavior
@@ -1554,7 +1559,7 @@ var StartView = Backbone.View.extend({
 		this.fetch();
 	},
 	render: function() {
-		var json = { "history": this.model.toJSON(), "baseUrl": location.protocol+'//'+location.host+location.pathname+(location.search?location.search:"") };
+		var json = { "history": this.model.toJSON(), "baseUrl": location.protocol+"//"+location.host+location.pathname+(location.search?location.search:"") };
 		this.$el.html( this.template(json) );
 	},
 	fetch: function() {

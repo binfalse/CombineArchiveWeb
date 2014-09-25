@@ -63,8 +63,8 @@ public class VcImporter
 		
 		// create new temp dir
 		File tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();
-		if( !tempDir.mkdirs() )
-			throw new CombineArchiveWebException("The temporary directories could not created");
+		if( !tempDir.isDirectory () && !tempDir.mkdirs() )
+			throw new CombineArchiveWebException("The temporary directories could not be created: " + tempDir.getAbsolutePath ());
 		
 		// temp file for CombineArchive
 		File archiveFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, "ca-imported");

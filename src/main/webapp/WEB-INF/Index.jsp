@@ -87,6 +87,7 @@
 					So far, you do not have a workspace history.
 					As soon as you have shared workspaces with other people you will see this history growing.
 				{{# } else { }}
+					<a href="{{# print(baseUrl); }}rest/share/new-workspace">create new workspace</a>
 					<ul>
 					{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
 						{{# if( key != history.currentWorkspace ) { }}

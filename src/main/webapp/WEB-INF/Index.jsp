@@ -85,7 +85,8 @@
 			<p>
 				{{# if( _.size(history.recentWorkspaces) == 1 ) { }}
 					So far, you do not have a workspace history.
-					As soon as you have shared workspaces with other people you will see this history growing.
+					As soon as you have shared workspaces with other people you will see this history growing.<br/>
+					<a href="{{# print(baseUrl); }}rest/share/new-workspace">create new workspace</a>
 				{{# } else { }}
 					<a href="{{# print(baseUrl); }}rest/share/new-workspace">create new workspace</a>
 					<ul>

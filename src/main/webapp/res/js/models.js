@@ -99,6 +99,18 @@ var OmexMetaModel = Backbone.Model.extend({
 	}
 });
 
+var XmlMetaModel = Backbone.Model.extend({
+	urlRoot: RestRoot + "archives/0/entries/0/meta",
+	defaults: {
+		"xmlString": "",
+		"type": "xmltree",
+		"changed": false
+	},
+	setUrl: function( archiveId, entryId )  {
+		this.urlRoot = RestRoot + "archives/" + archiveId + "/entries/" + entryId + "/meta";
+	}
+});
+
 var WorkspaceHistoryModel = Backbone.Model.extend({
 	urlRoot: RestRoot + "workspaces",
 	defaults: {
@@ -418,6 +430,34 @@ var OmexMetaEntryView = MetaEntryView.extend({
 	}
 });
 
+/**
+ * The XML implementation
+ */
+var XmlMetaEntryView = MetaEntryView.extend({
+	
+	initialize: function () {
+		this.template = templateCache["template-xml-meta-entry"]; 
+	},
+	render: function () {
+		
+		if( this.model == null || this.template == null )
+			return;
+		
+		var json = this.model.toJSON();
+		json.xmlString = json.xmlString.replace(new RegExp("<", "g"), "&lt;").replace(new RegExp(">", "g"), "&gt;");
+		var text = this.template(json);
+		this.$el.html( text );
+	},
+	
+	events: {
+//		"click .archive-meta-edit": "startEdit",
+//		"click .archive-meta-save": "saveEdit",
+//		"click .archive-meta-cancel": "cancelEdit",
+		"click .archive-meta-delete": "deleteModel",
+	}
+	
+});
+
 var ArchiveEntryView = Backbone.View.extend({
 	model: null,
 	el: null,
@@ -467,6 +507,14 @@ var ArchiveEntryView = Backbone.View.extend({
 					view = new OmexMetaEntryView({ "model": model });
 					view.archiveEntryView = this;
 					break;
+					
+				case "xmltree":
+					model = new XmlMetaModel( entry );
+					model.setUrl( this.archiveId, this.entryId );
+					view = new XmlMetaEntryView({ "model": model });
+					view.archiveEntryView = this;
+					break;
+					
 				default:
 					break;
 			}

@@ -8,7 +8,6 @@
 		var RestRoot = 'rest/v1/';
 	</script>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
-<!-- 	<script type="text/javascript" src="res/js/3rd/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script> -->
 	<script type="text/javascript" src="res/js/3rd/jquery-field-selection.js"></script>
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
 	<script type="text/javascript" src="res/js/3rd/jquery.colorbox-min.js"></script>
@@ -330,6 +329,20 @@
 				<div class="edit-link">
 					<a class="archive-meta-omex-creator-delete on-edit" href="#">[-]</a>
 				</div>
+			</div> 
+		</div>
+		<!-- **** -->
+		<div id="template-xml-meta-entry">
+			<div class="archive-meta-xml-code">
+				<code class="prettyprint">
+					{{# print(xmlString); }}
+				</code>
+			</div>
+			<div class="edit-link">
+<!-- 				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a> -->
+				<a class="archive-meta-delete on-not-edit" href="#">[Delete]</a>
+<!-- 				<a class="archive-meta-save on-edit" href="#">[Save]</a> -->
+<!-- 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a> -->
 			</div> 
 		</div>
 		<!-- **** -->

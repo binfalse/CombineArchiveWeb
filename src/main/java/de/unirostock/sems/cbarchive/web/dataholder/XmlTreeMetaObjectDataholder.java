@@ -16,12 +16,12 @@ import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 
 public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 
-	private Element xmltree = null;
+	private Element xmlTree = null;
 	
 	public XmlTreeMetaObjectDataholder(MetaDataObject metaObject) {
 		super(metaObject);
 		type = MetaObjectDataholder.TYPE_XML;
-		xmltree = metaObject.getXmlDescription();
+		xmlTree = metaObject.getXmlDescription();
 	}
 	
 	public XmlTreeMetaObjectDataholder(String id, String type, boolean changed) {
@@ -33,18 +33,18 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 	}
 	
 	@JsonIgnore
-	public Element getXmltree() {
-		return xmltree;
+	public Element getXmlTree() {
+		return xmlTree;
 	}
 	
 	@JsonIgnore
-	public void setXmltree(Element xmltree) {
-		this.xmltree = xmltree;
+	public void setXmlTree(Element xmlTree) {
+		this.xmlTree = xmlTree;
 	}
 	
 	public String getXmlString() {
 		try {
-			Document doc = new Document().setRootElement(xmltree.clone());
+			Document doc = new Document().setRootElement(xmlTree.clone());
 			return Utils.prettyPrintDocument( doc );
 		} catch (IOException | TransformerException e) {
 			LOGGER.error(e, "Cannot transform Xml Element to String.");
@@ -68,15 +68,15 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		}
 		
 		// apply changes
-		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmltree();
+		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmlTree();
 		if( newXmltree != null )
-			xmltree = newXmltree;
+			xmlTree = newXmltree;
 		
 	}
 
 	@Override
 	public MetaDataObject getCombineArchiveMetaObject() {
-		this.metaObject = new DefaultMetaDataObject(xmltree);
+		this.metaObject = new DefaultMetaDataObject(xmlTree);
 		// update the id
 		generateId();
 		return metaObject;

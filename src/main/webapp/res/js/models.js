@@ -1062,12 +1062,11 @@ var ArchiveView = Backbone.View.extend({
 	
 	jstreeClick: function(event, data) {
 		
-		console.log(data);
-		this.hideExplorer(null, true);
-		
 		// directories are not yet handled
 		if( data.node.original.type != "file" && data.node.original.type != "root" )
 			return false;
+		
+		this.hideExplorer(null, true);
 		
 		if( this.entryView != null )
 			this.entryView.leave();

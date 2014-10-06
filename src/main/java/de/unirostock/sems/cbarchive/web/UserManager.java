@@ -295,48 +295,13 @@ public class UserManager {
 		
 		ArchiveEntryDataholder oldEntryDataholder = new ArchiveEntryDataholder(archiveEntry);
 		
-		for( MetaObjectDataholder newMetaObject : newEntryDataholder.getMeta() ) {
-
-			// no changes? skip this one.
-			if( newMetaObject.isChanged() == false )
-				continue;
-
-			if( newMetaObject.getId() != null && !newMetaObject.getId().isEmpty() ) {
-				// check if id is existing -> update of exisiting meta entry
-				
-				// looking for old version
-				MetaObjectDataholder oldMetaObject = null;
-				for( MetaObjectDataholder iteratedMetaObject : oldEntryDataholder.getMeta() ) {
-
-					if( iteratedMetaObject.getId().equals( newMetaObject.getId() ) ) {
-						oldMetaObject = iteratedMetaObject;
-						break;
-					}
-				}
-
-				if( oldMetaObject == null ) {
-					LOGGER.warn( MessageFormat.format("Cannot find old representation of a MetaObject about file {0} in {1} with id {2}", newEntryDataholder.getFilePath(), archiveId, newMetaObject.getId()) );
-					continue;
-				}
-
-				// updates the old dataholder with the new one
-				oldMetaObject.update(newMetaObject);
-			}
-			else {
-				// new meta entry
-				// TODO
-			}
-
-		}
-		
 		// applies changes in the filename/filepath
 		String newFilePath = newEntryDataholder.getFilePath();
 		if( !oldEntryDataholder.getFilePath().equals(newFilePath) && newFilePath != null && !newFilePath.isEmpty() ) {
 			// filePath has changed!
 			
-			if( !newFilePath.startsWith("/") ) {
+			if( !newFilePath.startsWith("/") )
 				newFilePath = "/" + newFilePath;
-			}
 			
 			// move it!
 			try {
@@ -358,7 +323,6 @@ public class UserManager {
 				if( metaObject instanceof OmexMetaDataObject )
 					((OmexMetaDataObject) metaObject).getOmexDescription().getModified().add( new Date() );
 			}
-			
 		}
 		
 		// set the master flag or remove it
@@ -367,7 +331,6 @@ public class UserManager {
 		else
 			combineArchive.removeMainEntry( archiveEntry );
 
-		
 		try {
 			combineArchive.pack();
 			combineArchive.close();

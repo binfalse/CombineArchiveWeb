@@ -210,8 +210,8 @@
 					
 					<div class="archive-explorerexpand">
 						<div class="archive-explorerexpand-text">
-							<div class="archive-explorerexpand-text-files">files</div>
-							<div class="archive-explorerexpand-text-meta">meta</div>
+							<div class="archive-explorerexpand-text-files"><strong>&#8679;</strong>&nbsp;files&nbsp;<strong>&#8679;</strong></div>
+							<div class="archive-explorerexpand-text-meta"><strong>&#8679;</strong>&nbsp;meta&nbsp;<strong>&#8679;</strong></div>
 						</div>
 					</div>
 					<div style="clear: both;"></div>

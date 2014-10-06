@@ -320,20 +320,21 @@ i.file-icon {
 	text-align: center;
 	text-transform: uppercase;
 	font-size: 1.2em;
+	line-height: 1.2em;
 	font-weight: bold;
 }
 div.archive-explorerexpand-text {
-	width: 100%;
-	height: 100%;
+	height: 250px;
 	padding-top: 250px;
+	text-align: center;
 }
 div.archive-explorerexpand-text div.archive-explorerexpand-text-files {
 	transform: rotate(270deg);
-	margin-bottom: -100%;
+	margin-top: 0.7em;
 }
 div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	transform: rotate(90deg);
-	margin-top: -50%;
+	margin-top: -2.7em;
 	display: none;
 }
 

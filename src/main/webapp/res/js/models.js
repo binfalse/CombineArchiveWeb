@@ -758,9 +758,13 @@ var ArchiveView = Backbone.View.extend({
 		"change .dropbox input": "dropboxManual",
 		"click .archive-folder-add": "addFolder",
 		
-		"mouseenter .archive-fileexplorer": "showExplorer",
-		"click .archive-explorerexpand": "showExplorer",
-		"mouseleave .archive-fileexplorer": "hideExplorer"
+//		"mouseenter .archive-fileexplorer": "showExplorer",
+//		"click .archive-explorerexpand": "showExplorer",
+//		"mouseleave .archive-fileexplorer": "hideExplorer"
+		
+		"click .archive-explorerexpand": "toggleExplorer",
+		"mouseenter .archive-explorerexpand": "toggleExplorer",
+		"mouseleave .archive-explorerexpand": "clearToggleTimer"
 	},
 	startArchiveEdit: function(event) {
 		
@@ -1034,6 +1038,27 @@ var ArchiveView = Backbone.View.extend({
 		}, force == true ? 0 : 387);
 		
 	},
+	toggleExplorer: function(event, force) {
+		
+		var force = event.type == "click" ? true : false;
+		if( this.$el.find(".archive-filetree").width() > 0 ) {
+			// explorer is shown -> hide it
+			this.hideExplorer(undefined, force);
+		}
+		else {
+			// explorer is hidden -> show it
+			this.showExplorer(undefined, force);
+		}
+	},
+	clearToggleTimer: function(event) {
+		
+		if( this.explorerHideTimeout != undefined )
+			clearTimeout( this.explorerHideTimeout );
+		
+		if( this.explorerShowTimeout != undefined )
+			clearTimeout( this.explorerShowTimeout );
+		
+	},
 	
 	jstreeClick: function(event, data) {
 		
@@ -1122,7 +1147,6 @@ var ArchiveView = Backbone.View.extend({
 						"selected": false
 					}
 				});
-				console.log(entry.get("format"));
 			}
 			else {
 				// elment is non root, lets search for the branch it belongs to

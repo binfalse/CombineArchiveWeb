@@ -35,6 +35,7 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.binfalse.bflog.LOGGER;
@@ -64,7 +65,7 @@ public class RestApi extends RestHelper {
 	@GET
 	@Path("/heartbeat")
 	@Produces( MediaType.TEXT_PLAIN )
-	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson ) {
+	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -75,9 +76,37 @@ public class RestApi extends RestHelper {
 			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
-
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() )
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+		}
+		
+		// create a new history if necessary
+		if( history == null )
+			history = new WorkspaceHistory();
+		
+		// puts current workspace into history
+		if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
+			history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
+		history.setCurrentWorkspace( user.getWorkspaceId() );
+		
+		try {
+			historyCookie = history.toCookieJson();
+		} catch (JsonProcessingException e) {
+			LOGGER.error(e, "Can not serialize the workspace history cookie to json");
+			historyCookie = "";
+		}
+		
 		String result = "ok " + user.getWorkspaceId();
-		return buildResponse(200, user).entity(result).build();
+		return buildResponse(200, user)
+				.entity(result)
+				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+				.build();
 	}
 
 	@GET

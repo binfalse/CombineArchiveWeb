@@ -435,13 +435,14 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
 		}
 		
+		java.nio.file.Path temp = null;
 		try {
 			// check for mime type
 			// TODO
 			
 			// write uploaded file to temp
 			// copy the stream to a temp file
-			java.nio.file.Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, file.getFormDataContentDisposition().getFileName() );
+			temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, file.getFormDataContentDisposition().getFileName() );
 			// write file to disk
 			OutputStream output = new FileOutputStream( temp.toFile() );
 			InputStream input = file.getEntityAs(InputStream.class);
@@ -477,14 +478,15 @@ public class RestApi extends RestHelper {
 			String id = user.createArchive( archive.getName(), temp.toFile() );
 			archive.setId(id);
 			
-			// remove temp file
-			temp.toFile().delete();
-			
 			return buildResponse(200, user).entity(archive).build();
 			
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException | TransformerException e) {
 			LOGGER.error(e, MessageFormat.format("Cannot create archive in WorkingDir {0}", user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, "Cannot create archive!", e.getMessage() );
+		} finally {
+			// remove temp file
+			if( temp != null )
+				temp.toFile().delete();
 		}
 			
 	}

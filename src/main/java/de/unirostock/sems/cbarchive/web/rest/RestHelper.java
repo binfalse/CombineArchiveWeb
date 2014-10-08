@@ -88,5 +88,28 @@ public abstract class RestHelper extends Application {
 
 		return builder.entity(result).build();
 	}
+	
+	/**
+	 * Generates an error response
+	 * 
+	 * @param status
+	 * @param user
+	 * @param errors
+	 * @return Response
+	 */
+	protected Response buildTextErrorResponse( int status, UserManager user, String... errors ) {
+
+		// ResponseBuilder builder = Response.status(status);
+		ResponseBuilder builder = buildResponse(status, user);
+
+		StringBuilder result = new StringBuilder("An error occured, while processing the request:\n");
+		for( String error : errors ) {
+			result.append("  * ");
+			result.append(error);
+			result.append("\n");
+		}
+
+		return builder.entity(result.toString()).build();
+	}
 
 }

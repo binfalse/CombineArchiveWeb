@@ -53,6 +53,7 @@
 				</ul>
 				<ul id="nav-main" style="float: right;">
 					<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
+					<li><a class="mainLinks command-link" data-linktype="page" data-page="about-page" id="nav-aboutlink">about</a></li>
 					<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
 				</ul>
 				<div style="clear: both;"></div>
@@ -60,20 +61,6 @@
 		</div>
 		<!-- **** -->
 		<div id="template-start">
-			<h2>About</h2>
-			<p class="about-logo">
-				The CombineArchiveWeb is an interface for creating and exploring <a href="http://arxiv-web3.library.cornell.edu/abs/1407.4992">COMBINE archives</a>.
-				It is part of the <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">CombineArchive Toolkit</a>.
-				This project was developed in the scope of <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a>
-				at the <a href="http://www.uni-rostock.de/">University of Rostock</a>.
-				See <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">our website</a> for further information.
-			</p>
-			
-			<h2>Disclaimer</h2>
-			<p>
-				This is a web based interface to read, create, modify, and share CombineArchives. <br />
-				<strong>We are not responsible for any loss of data.</strong>
-			</p>
 			
 			<h2>Share Workspace</h2>
 			<p>
@@ -89,10 +76,14 @@
 				{{# if( _.size(history.recentWorkspaces) == 1 ) { }}
 					So far, you do not have a workspace history.
 					As soon as you have shared workspaces with other people you will see this history growing.<br/>
-					<a href="{{# print(baseUrl); }}rest/share/new-workspace">create new workspace</a>
+					<div class="edit-link">
+						<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
+					</div>
 				{{# } else { }}
-					<a href="{{# print(baseUrl); }}rest/share/new-workspace">create new workspace</a>
-					<ul>
+					<div class="edit-link">
+						<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
+					</div>
+					<ul style="margin-top: 0;">
 					{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
 						{{# if( key != history.currentWorkspace ) { }}
 						<li>
@@ -103,6 +94,12 @@
 					{{# }); }}
 					</ul>
 				{{# } }}
+			</p>
+			
+			<h2>Disclaimer</h2>
+			<p>
+				This is a web based interface to read, create, modify, and share CombineArchives. <br />
+				<strong>We are not responsible for any loss of data.</strong>
 			</p>
 		</div>
 		<!-- **** -->
@@ -141,7 +138,6 @@
 				<input type="radio" id="newArchiveTemplate-File" name="newArchiveTemplate" value="file" />
 				<label for="newArchiveTemplate-File">Upload an existing archive</label><br />
 				<div class="on-archive-upload">
-					<!-- <input type="file" name="newArchiveExisting" size="chars" /> -->
 					<div class="dropbox">
 						<div class="center-button">
 							<a href="#">Upload file</a>
@@ -167,6 +163,19 @@
 			<p>
 				<input type="button" class="create-archive" value="Create Archive" />
 			</p>
+		</div>
+		<!-- **** -->
+		<div id="template-about">
+			
+			<h2>About</h2>
+			<p class="about-logo">
+				The CombineArchiveWeb is an interface for creating and exploring <a href="http://arxiv-web3.library.cornell.edu/abs/1407.4992">COMBINE archives</a>.
+				It is part of the <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">CombineArchive Toolkit</a>.
+				This project was developed in the scope of <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a>
+				at the <a href="http://www.uni-rostock.de/">University of Rostock</a>.
+				See <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">our website</a> for further information.
+			</p>
+			
 		</div>
 		<!-- **** -->
 		<div id="template-archive">
@@ -428,12 +437,13 @@
 		<div id="message-bar"></div>
 		<div id="start-page" class="subPage"></div>
 		
+		<div id="about-page" class="subPage" style="display: none;"></div>
 		<div id="create-page" class="subPage" style="display: none;"></div>	
 		<div id="archivePage" class="subPage" style="display: none;"></div>
-
 	</div>
 	<footer>
 		built by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ <a href="http://www.uni-rostock.de/" title="University of Rostock">University of Rostock</a>
+		&nbsp;|&nbsp;<a id="about-footer-link" href="#" title="About page">About</a>
 	</footer>
 </body>
 </html>

@@ -194,7 +194,10 @@ var NavigationView = Backbone.View.extend({
 		return true;
 	},
 	goToCreate: function() {
-		var $navElem = this.$el.find( "#nav-createlink" );
+		this.goToPage("create-page");
+	},
+	goToPage: function(page) {
+		var $navElem = this.$el.find( "a[data-page='" + page + "']" );
 		
 		if( $navElem.length <= 0 )
 			return false;
@@ -1665,6 +1668,22 @@ var StartView = Backbone.View.extend({
 	events: {
 		
 	}
+});
+
+var AboutView = Backbone.View.extend({
+	
+	el: "#about-page",
+	model: null,
+	
+	initialize: function() {
+		this.template = templateCache["template-about"];
+		this.render();
+	},
+	render: function() {
+		this.$el.html( this.template({}) );
+	},
+	events: {}
+	
 });
 
 var MessageView = Backbone.View.extend({

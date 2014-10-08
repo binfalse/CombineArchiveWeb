@@ -5,6 +5,7 @@ var navigationView = null;
 var archiveView = null;
 var startView = null;
 var createView = null;
+var aboutView = null;
 var messageView = null;
 var templateCache = {};
 
@@ -54,9 +55,15 @@ $(document).ready(function () {
 			archiveView = new ArchiveView();
 			startView = new StartView();
 			createView = new CreateView();
+			aboutView = new AboutView();
 			messageView = new MessageView();
 			
 			navigationView.fetch();
+			
+			$("#about-footer-link").click(function(event) {
+				navigationView.goToPage("about-page");
+				return false;
+			});
 			
 			// show the page
 			$("#page").show();

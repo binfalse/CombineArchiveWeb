@@ -23,9 +23,8 @@
 	<script type="text/javascript" src="res/js/3rd/jstree/jstree.dnd.js"></script>
 	
 	<script type="text/javascript" src="res/js/3rd/rainbow/rainbow.js"></script>
-	<script type="text/javascript" src="res/js/3rd/rainbow/language/generic.js"></script>
 	<script type="text/javascript" src="res/js/3rd/rainbow/language/xml.js"></script>
-	<link rel="stylesheet" href="res/js/3rd/rainbow/themes/github.css" type="text/css">
+	<link rel="stylesheet" href="res/js/3rd/rainbow/themes/pastie.css" type="text/css">
 	
 	<script type="text/javascript" src="res/js/models.js"></script>
 	<script type="text/javascript" src="res/js/js.js"></script>

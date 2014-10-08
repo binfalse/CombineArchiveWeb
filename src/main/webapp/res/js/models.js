@@ -447,6 +447,7 @@ var XmlMetaEntryView = MetaEntryView.extend({
 		json.xmlString = json.xmlString.replace(new RegExp("<", "g"), "&lt;").replace(new RegExp(">", "g"), "&gt;");
 		var text = this.template(json);
 		this.$el.html( text );
+		Rainbow.color( this.$el.get(0) );
 	},
 	
 	events: {

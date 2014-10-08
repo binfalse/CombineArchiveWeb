@@ -22,6 +22,11 @@
 	<script type="text/javascript" src="res/js/3rd/jstree/jstree.search.js"></script>
 	<script type="text/javascript" src="res/js/3rd/jstree/jstree.dnd.js"></script>
 	
+	<script type="text/javascript" src="res/js/3rd/rainbow/rainbow.js"></script>
+	<script type="text/javascript" src="res/js/3rd/rainbow/language/generic.js"></script>
+	<script type="text/javascript" src="res/js/3rd/rainbow/language/html.js"></script>
+	<link rel="stylesheet" href="res/js/3rd/rainbow/themes/github.css" type="text/css">
+	
 	<script type="text/javascript" src="res/js/models.js"></script>
 	<script type="text/javascript" src="res/js/js.js"></script>
 	
@@ -333,10 +338,9 @@
 		</div>
 		<!-- **** -->
 		<div id="template-xml-meta-entry">
+			<h4>XML:RDF entry</h4>
 			<div class="archive-meta-xml-code">
-				<code class="prettyprint">
-					{{# print(xmlString); }}
-				</code>
+ 				<pre><code data-language="html">{{# print(xmlString); }}</code></pre>
 			</div>
 			<div class="edit-link">
 <!-- 				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a> -->
@@ -345,6 +349,7 @@
 <!-- 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a> -->
 			</div> 
 		</div>
+		
 		<!-- **** -->
 		<div id="template-message-success">
 			<div class="message message-success" data-referring="{{# print( message.referring ); }}">

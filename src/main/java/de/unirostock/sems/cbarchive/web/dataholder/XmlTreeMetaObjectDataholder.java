@@ -6,17 +6,23 @@ import javax.xml.transform.TransformerException;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.DefaultMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 
 	private Element xmlTree = null;
+	/** In case the String cannot parsed to a XmlElement */
+	private String exceptionMessage = null; 
 	
 	public XmlTreeMetaObjectDataholder(MetaDataObject metaObject) {
 		super(metaObject);
@@ -52,13 +58,23 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		}
 	}
 	
-	public void setXmlString() {
-		// TODO
+	public void setXmlString(String xmlString) {
+		
+		try {
+			SAXBuilder builder = new SAXBuilder ();
+			Document doc = (Document) builder.build(xmlString);
+			xmlTree = doc.getRootElement().clone();
+			exceptionMessage = null;
+		} catch (JDOMException | IOException e) {
+			LOGGER.error(e, "Cannot transform String to Xml Element");
+			xmlTree = null;
+			exceptionMessage = e.getMessage();
+		}
 	}
 
 	@JsonIgnore
 	@Override
-	public void update(MetaObjectDataholder newMetaObject) {
+	public void update(MetaObjectDataholder newMetaObject) throws CombineArchiveWebException {
 		
 		if( newMetaObject instanceof XmlTreeMetaObjectDataholder == false ) {
 			// not the correct class type, check if data type is valid at least
@@ -71,6 +87,12 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmlTree();
 		if( newXmltree != null )
 			xmlTree = newXmltree;
+		else {
+			if( exceptionMessage == null || exceptionMessage.isEmpty() )
+				exceptionMessage = "Could not parse String to an Xml Element";
+			
+			throw new CombineArchiveWebException(exceptionMessage);
+		}
 		
 	}
 

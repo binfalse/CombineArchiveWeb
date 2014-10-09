@@ -966,6 +966,10 @@ public class RestApi extends RestHelper {
 				archive.getArchive().pack();
 				// force to re-generate the id, after the pack
 				oldMetaObject.generateId();
+			} catch( CombineArchiveWebException e ) {
+				// Something went wrong while the update process
+				LOGGER.error(e, "Not able to update the meta element.");
+				return buildErrorResponse(400, user, "Not able to update the meta element.", e.getMessage());
 			} catch( IOException | TransformerException e ) {
 				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );

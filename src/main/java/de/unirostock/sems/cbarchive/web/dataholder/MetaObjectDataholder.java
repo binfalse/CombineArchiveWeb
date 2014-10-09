@@ -13,10 +13,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.web.Tools;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 // so Jackson can parse json into childs of this abstract class
 @JsonTypeInfo(
@@ -71,9 +73,10 @@ abstract public class MetaObjectDataholder {
 	 * Updates the existing dataholder and the underlaying MetaDataObject with new information from another dataholder
 	 * 
 	 * @param newMetaObject
+	 * @throws CombineArchiveWebException 
 	 */
 	@JsonIgnore
-	public abstract void update( MetaObjectDataholder newMetaObject );
+	public abstract void update( MetaObjectDataholder newMetaObject ) throws CombineArchiveWebException;
 	
 	/**
 	 * Generates a CombineArchive MetaObject, which can be easily added to an ArchvieEntry

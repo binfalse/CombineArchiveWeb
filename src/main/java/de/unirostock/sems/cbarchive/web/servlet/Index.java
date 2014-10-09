@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.cbarchive.web.CombineArchiveWebCriticalException;
-import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 
 /**

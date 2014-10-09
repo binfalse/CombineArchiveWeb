@@ -28,6 +28,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 public class UserManager {
 	

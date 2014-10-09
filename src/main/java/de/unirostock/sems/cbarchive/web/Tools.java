@@ -19,6 +19,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 
 // TODO: Auto-generated Javadoc

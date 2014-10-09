@@ -1,4 +1,4 @@
-package de.unirostock.sems.cbarchive.web;
+package de.unirostock.sems.cbarchive.web.exception;
 
 public class ImporterException extends Exception {
 

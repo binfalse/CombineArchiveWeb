@@ -32,6 +32,7 @@ import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbext.Formatizer;
 
 

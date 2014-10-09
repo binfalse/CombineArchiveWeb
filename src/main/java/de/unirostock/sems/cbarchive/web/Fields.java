@@ -27,9 +27,6 @@ public class Fields {
 	/** The Constant COOKIE_AGE. */
 	public static final int COOKIE_AGE = 60*60*24*365;
 
-	/** The Constant MAX_FILE_SIZE. */
-	public static final int MAX_FILE_SIZE = 1024*1024;
-
 	public static final String PROP_ARCHIVE_PRE = "archive-";
 
 	public static final String PROP_WORKSPACE_PRE ="workspace-";
@@ -105,9 +102,6 @@ public class Fields {
 			else if (desiredLogLevel.equals ("NONE"))
 				LOGGER.setLogToStdErr (false);
 		}
-		
-		LOGGER.setLogFile("/tmp/CaWeb.log");
-		LOGGER.setLogToFile(true);
 		
 		// Storage
 		String storage = context.getInitParameter("STORAGE");

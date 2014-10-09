@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
 public class HttpImporter {
 	

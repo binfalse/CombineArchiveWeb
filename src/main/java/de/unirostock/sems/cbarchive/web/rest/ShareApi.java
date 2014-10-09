@@ -35,12 +35,12 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.HttpImporter;
-import de.unirostock.sems.cbarchive.web.ImporterException;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
+import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
 @Path( "/" )
 public class ShareApi extends RestHelper {

@@ -44,7 +44,6 @@ import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
-import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
@@ -57,6 +56,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
 @Path("v1")

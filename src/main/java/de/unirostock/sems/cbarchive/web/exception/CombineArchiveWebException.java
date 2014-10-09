@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.unirostock.sems.cbarchive.web;
+package de.unirostock.sems.cbarchive.web.exception;
 
 
 /**

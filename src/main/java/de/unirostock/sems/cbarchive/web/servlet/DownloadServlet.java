@@ -20,12 +20,12 @@ import org.apache.commons.io.IOUtils;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
-import de.unirostock.sems.cbarchive.web.CombineArchiveWebCriticalException;
-import de.unirostock.sems.cbarchive.web.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 public class DownloadServlet extends HttpServlet {
 

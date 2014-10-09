@@ -46,12 +46,12 @@
 			<div class="nav-container">
 				<small>The current workspace contains the following archives:</small>
 				<div style="clear: both;"></div>
-				<ul id="nav-workspace" style="float: left;">
+				<ul id="nav-workspace" style="float: left; width: 75%;">
 					{{#	_.each(entries, function(entry) { }}
 					<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(entry.name); }} in current Workspace">{{# print(entry.name); }}</a></li>
 					{{# }); }}
 				</ul>
-				<ul id="nav-main" style="float: right;">
+				<ul id="nav-main" style="float: right; width: 25%;">
 					<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
 					<li><a class="mainLinks command-link" data-linktype="page" data-page="about-page" id="nav-aboutlink">about</a></li>
 					<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 

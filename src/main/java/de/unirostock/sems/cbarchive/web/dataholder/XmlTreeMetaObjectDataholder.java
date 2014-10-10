@@ -1,6 +1,7 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.transform.TransformerException;
 
@@ -12,7 +13,6 @@ import org.jdom2.input.SAXBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.DefaultMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
@@ -62,7 +62,7 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		
 		try {
 			SAXBuilder builder = new SAXBuilder ();
-			Document doc = (Document) builder.build(xmlString);
+			Document doc = (Document) builder.build( new StringReader(xmlString) );
 			xmlTree = doc.getRootElement().clone();
 			exceptionMessage = null;
 		} catch (JDOMException | IOException e) {
@@ -70,6 +70,11 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 			xmlTree = null;
 			exceptionMessage = e.getMessage();
 		}
+	}
+	
+	@JsonIgnore
+	public String getExceptionMessage() {
+		return exceptionMessage;
 	}
 
 	@JsonIgnore
@@ -85,13 +90,16 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		
 		// apply changes
 		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmlTree();
-		if( newXmltree != null )
+		if( newXmltree != null ) {
 			xmlTree = newXmltree;
+			// TODO set something...
+		}
 		else {
-			if( exceptionMessage == null || exceptionMessage.isEmpty() )
-				exceptionMessage = "Could not parse String to an Xml Element";
+			String message = ((XmlTreeMetaObjectDataholder) newMetaObject).exceptionMessage;
+			if( message == null || message.isEmpty() )
+				message = "Could not parse String to an Xml Element";
 			
-			throw new CombineArchiveWebException(exceptionMessage);
+			throw new CombineArchiveWebException(message);
 		}
 		
 	}

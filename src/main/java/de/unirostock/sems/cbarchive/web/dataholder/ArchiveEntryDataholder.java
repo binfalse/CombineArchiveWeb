@@ -158,4 +158,9 @@ public class ArchiveEntryDataholder {
 	public List<MetaObjectDataholder> getMeta() {
 		return meta;
 	}
+
+	public MetaDataHolder getMetaDataHolder() {
+		return metaDataHolder;
+	}
+	
 }

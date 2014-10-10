@@ -253,6 +253,7 @@ var MetaEntryView = Backbone.View.extend({
 	$el: null,
 	
 	template: null,
+	messageId: null,
 	
 	initialize: function () {
 		// 
@@ -274,6 +275,9 @@ var MetaEntryView = Backbone.View.extend({
 		if( this.model == null )
 			return false;
 		
+		if( this.messageId == undefined || this.messageId == null )
+			this.messageId = "genericMetaMsg-" + this.model.get("id");
+		
 		var self = this;
 		var oldId = this.model.get("id");
 		this.model.save({}, {
@@ -282,22 +286,27 @@ var MetaEntryView = Backbone.View.extend({
 				console.log("saved meta entry " + oldId + " >> " + model.get("id") + " successfully.");
 				self.$el.removeClass("edit");
 				self.render();
-				messageView.success("Meta data successfully saved");
+				messageView.success( undefined, "Meta data successfully saved", self.messageId );
 			},
 			error: function(model, response, options) {
 				console.log("error while saving meta entry");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Cannot save meta data", text );
+					messageView.error( "Cannot save meta data", text, self.messageId );
 				}
 				else
-					messageView.error( "Unknown Error", "Cannot save meta data" );
+					messageView.error( "Unknown Error", "Cannot save meta data", self.messageId );
+				
+				self.model.fetch();
 			}
 		});
 	},
 	deleteModel: function() {
 		if( this.model == null )
 			return false;
+		
+		if( this.messageId == undefined || this.messageId == null )
+			this.messageId = "genericMetaMsg-" + this.model.get("id");
 		
 		var dialog = window.confirm("Do you really want to delete this meta entry from the file? This action is final.");
 		if( dialog == true ) {
@@ -307,7 +316,7 @@ var MetaEntryView = Backbone.View.extend({
 				success: function(model, response, options) {
 					// everything ok
 					console.log("delted model successfully");
-					messageView.success( "Deleted meta entry successfully" );
+					messageView.success( undefined, "Deleted meta entry successfully", self.messageId );
 					
 					// complete rerender (quick and dirty)
 					if( self.archiveEntryView !== undefined )
@@ -319,10 +328,10 @@ var MetaEntryView = Backbone.View.extend({
 					console.log("error while update");
 					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 						var text = response.responseJSON.errors;
-						messageView.error( "Error while deleting meta entry", text );
+						messageView.error( "Error while deleting meta entry", text, self.messageId );
 					}
 					else
-						messageView.error( "Unknown Error", "Error while deleting meta entry." );
+						messageView.error( "Unknown Error", "Error while deleting meta entry.", self.messageId );
 				}
 			});
 			
@@ -380,8 +389,8 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		this.$el.find(".error-element").removeClass("error-element");
 		var creators = [];
 		var error = false;
-		var messageId = "vcard-" + this.model.get("id");
-		messageView.removeMessages( messageId );
+		this.messageId = "vcard-" + this.model.get("id");
+		messageView.removeMessages( this.messageId );
 		
 		this.$el.find(".archive-meta-omex-creator-box").each( function(index, boxElement) {
 			var vcard = new VCardModel();
@@ -397,7 +406,7 @@ var OmexMetaEntryView = MetaEntryView.extend({
 				creators.push( vcard.toJSON() );
 			else {
 				error = true;
-				messageView.warning( undefined, vcard.validationError, messageId );
+				messageView.warning( undefined, vcard.validationError, this.messageId );
 				$(boxElement).addClass("error-element");
 			}
 		});
@@ -447,17 +456,53 @@ var XmlMetaEntryView = MetaEntryView.extend({
 			return;
 		
 		var json = this.model.toJSON();
-		json.xmlString = json.xmlString.replace(new RegExp("<", "g"), "&lt;").replace(new RegExp(">", "g"), "&gt;");
+		json.xmlEscapedString = json.xmlString.replace(new RegExp("<", "g"), "&lt;").replace(new RegExp(">", "g"), "&gt;");
 		var text = this.template(json);
 		this.$el.html( text );
 		Rainbow.color( this.$el.get(0) );
 	},
 	
 	events: {
-//		"click .archive-meta-edit": "startEdit",
-//		"click .archive-meta-save": "saveEdit",
-//		"click .archive-meta-cancel": "cancelEdit",
+		"click .archive-meta-edit": "startEdit",
+		"click .archive-meta-save": "saveEdit",
+		"click .archive-meta-cancel": "cancelEdit",
 		"click .archive-meta-delete": "deleteModel",
+	},
+	
+	startEdit: function(event) {
+		this.$el.find("textarea").val( this.model.get("xmlString") );
+		this.$el.addClass("edit");
+		
+		return false;
+	},
+	cancelEdit: function(event) {
+		
+		this.messageId = "xmltree-" + this.model.get("id");
+		messageView.removeMessages( this.messageId );
+		
+		if( this.model.get("id") == undefined ) {
+			this.$el.parent().remove();
+		}
+		else {
+			this.$el.removeClass("edit");
+			this.render();
+		}
+		
+		return false;
+	},
+	saveEdit: function(event) {
+		
+		this.messageId = "xmltree-" + this.model.get("id");
+		messageView.removeMessages( this.messageId );
+		
+		this.model.set("xmlString", this.$el.find("textarea").val() );
+		this.saveModel();
+	},
+	deleteModel: function(event) {
+		
+		this.messageId = "xmltree-" + this.model.get("id");
+		messageView.removeMessages( this.messageId );
+		
 	}
 	
 });
@@ -827,7 +872,7 @@ var ArchiveView = Backbone.View.extend({
 		this.$el.find("input[name='archiveName']").val( this.model.get("name") );
 		
 		// show all edit-fields
-		this.$el.find("archive-info").addClass("edit");
+		this.$el.find(".archive-info").addClass("edit");
 		
 		return false;
 	},
@@ -1703,6 +1748,8 @@ var MessageView = Backbone.View.extend({
 			text = title;
 			title = undefined;
 		}
+		
+		console.log(referring);
 		
 		if( referring == undefined || referring == null )
 			referring == "";

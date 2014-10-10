@@ -348,13 +348,14 @@
 		<div id="template-xml-meta-entry">
 			<h4>XML:RDF entry</h4>
 			<div class="archive-meta-xml-code">
- 				<pre><code data-language="xml">{{# print(xmlString); }}</code></pre>
+ 				<pre class="on-not-edit"><code data-language="xml">{{# print(xmlEscapedString); }}</code></pre>
+ 				<textarea class="on-edit archive-meta-xml-text" >{{# print(xmlEscapedString); }}</textarea>
 			</div>
 			<div class="edit-link">
-<!-- 				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a> -->
+				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a>
 				<a class="archive-meta-delete on-not-edit" href="#">[Delete]</a>
-<!-- 				<a class="archive-meta-save on-edit" href="#">[Save]</a> -->
-<!-- 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a> -->
+				<a class="archive-meta-save on-edit" href="#">[Save]</a>
+				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a>
 			</div> 
 		</div>
 		

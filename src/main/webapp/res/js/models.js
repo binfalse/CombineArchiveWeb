@@ -827,7 +827,7 @@ var ArchiveView = Backbone.View.extend({
 		this.$el.find("input[name='archiveName']").val( this.model.get("name") );
 		
 		// show all edit-fields
-		this.$el.find("archive-info").addClass("edit");
+		this.$el.find(".archive-info").addClass("edit");
 		
 		return false;
 	},

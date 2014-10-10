@@ -297,7 +297,8 @@ i.file-icon {
 }
 .archive-fileexplorer > div.archive-filetree {
 	margin: 0;
-	width: 0;
+/* 	width: 0; */
+	width: calc(800px - 33px);
 	height: 100%;
 	overflow: auto;
 	float: left;
@@ -331,11 +332,12 @@ div.archive-explorerexpand-text {
 div.archive-explorerexpand-text div.archive-explorerexpand-text-files {
 	transform: rotate(270deg);
 	margin-top: 0.7em;
+	display: none;
 }
 div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	transform: rotate(90deg);
 	margin-top: -2.7em;
-	display: none;
+/* 	display: none; */
 }
 
 .archive-fileexplorer > div.archive-explorerexpand {
@@ -350,6 +352,7 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	height: 100%;
 	padding-left: 10px;
 	overflow: auto;
+	display: none;
 }
 .archive-fileinfo > div {
 	margin: 10px 0;

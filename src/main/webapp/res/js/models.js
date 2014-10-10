@@ -1087,7 +1087,7 @@ var ArchiveView = Backbone.View.extend({
 				self.$el.find(".archive-fileinfo").fadeIn(100);
 			});
 			self.explorerHideTimeout = undefined;
-		}, force == true ? 0 : 387);
+		}, force == true ? 0 : 187);
 		
 	},
 	toggleExplorer: function(event, force) {

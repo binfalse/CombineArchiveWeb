@@ -224,7 +224,7 @@ div.edit-link > a:hover {
 	display: none;
 }
 .on-not-edit {
-/* 	display: inline; */
+	display: inline;
 }
 
 .edit .on-edit {
@@ -402,6 +402,9 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	margin: 5px;
 	padding: 5px;
 	min-height: 150px;
+}
+.archive-meta-xml-code > pre {
+	display: block;
 }
 
 /* -------- Create View -------- */

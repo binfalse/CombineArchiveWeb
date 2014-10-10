@@ -1087,7 +1087,9 @@ public class RestApi extends RestHelper {
 			
 			// removes the meta entry and pack/closes the archive
 			try {
-				boolean result = entry.getArchiveEntry().removeDescription( metaObject.getMetaObject() );
+				boolean result = false;
+				result = entry.getMetaDataHolder().removeDescription( metaObject.getMetaObject() );
+					
 				combineArchive.pack();
 				
 				if( result )

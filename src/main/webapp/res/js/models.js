@@ -311,6 +311,8 @@ var MetaEntryView = Backbone.View.extend({
 		var dialog = window.confirm("Do you really want to delete this meta entry from the file? This action is final.");
 		if( dialog == true ) {
 			
+			messageView.removeMessages( this.messageId );
+			
 			var self = this;
 			this.model.destroy({ dataType: "text",
 				success: function(model, response, options) {
@@ -497,12 +499,6 @@ var XmlMetaEntryView = MetaEntryView.extend({
 		
 		this.model.set("xmlString", this.$el.find("textarea").val() );
 		this.saveModel();
-	},
-	deleteModel: function(event) {
-		
-		this.messageId = "xmltree-" + this.model.get("id");
-		messageView.removeMessages( this.messageId );
-		
 	}
 	
 });

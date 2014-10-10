@@ -18,7 +18,7 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 	private List<Date> modified = null;
 	
 	public OmexMetaObjectDataholder(OmexMetaDataObject metaObject) {
-		super(metaObject);
+		super(metaObject, null);
 		
 		OmexDescription omex = metaObject.getOmexDescription();
 		

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.DefaultMetaDataObject;
+import de.unirostock.sems.cbarchive.meta.MetaDataHolder;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
@@ -24,8 +25,8 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 	/** In case the String cannot parsed to a XmlElement */
 	private String exceptionMessage = null; 
 	
-	public XmlTreeMetaObjectDataholder(MetaDataObject metaObject) {
-		super(metaObject);
+	public XmlTreeMetaObjectDataholder(MetaDataObject metaObject, ArchiveEntryDataholder parent) {
+		super(metaObject, parent);
 		type = MetaObjectDataholder.TYPE_XML;
 		xmlTree = metaObject.getXmlDescription();
 	}
@@ -91,8 +92,22 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		// apply changes
 		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmlTree();
 		if( newXmltree != null ) {
+			MetaDataHolder parentMeta = parent.getArchiveEntry();
+			
+			// remove the old meta object
+			parentMeta.removeDescription(metaObject);
+			
+			// generates the new one
 			xmlTree = newXmltree;
-			// TODO set something...
+			try {
+				LOGGER.warn( Utils.prettyPrintDocument(new Document(xmlTree.clone())));
+			} catch (IOException | TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			metaObject = getCombineArchiveMetaObject();
+			// add it
+			parentMeta.addDescription(metaObject);
 		}
 		else {
 			String message = ((XmlTreeMetaObjectDataholder) newMetaObject).exceptionMessage;

@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
@@ -36,13 +35,17 @@ abstract public class MetaObjectDataholder {
 	public final static String TYPE_XML = "xmltree";
 	
 	public static MetaObjectDataholder construct( MetaDataObject metaObject ) {
+		return construct(metaObject, null);
+	}
+	
+	public static MetaObjectDataholder construct( MetaDataObject metaObject, ArchiveEntryDataholder parent ) {
 		MetaObjectDataholder dataholder = null;
 		
 		if( metaObject instanceof OmexMetaDataObject ) {
 			dataholder = new OmexMetaObjectDataholder((OmexMetaDataObject) metaObject);
 		}
 		else {
-			dataholder = new XmlTreeMetaObjectDataholder(metaObject);
+			dataholder = new XmlTreeMetaObjectDataholder(metaObject, parent);
 		}
 		
 		return dataholder;
@@ -56,9 +59,12 @@ abstract public class MetaObjectDataholder {
 	protected String type = TYPE_NOTSET;
 	/** setted from the client side, if anything changed. */
 	protected boolean changed = false;
+	/** Archive which contains this meta data */
+	protected ArchiveEntryDataholder parent = null;
 	
-	public MetaObjectDataholder( MetaDataObject metaObject ) {
+	public MetaObjectDataholder( MetaDataObject metaObject, ArchiveEntryDataholder parent ) {
 		this.metaObject = metaObject;
+		this.parent = parent;
 		generateId();
 	}
 	

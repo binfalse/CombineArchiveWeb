@@ -86,7 +86,7 @@ public class ArchiveEntryDataholder {
 
 		meta.clear();
 		for (MetaDataObject metaObject : metaDataHolder.getDescriptions ()) {
-			meta.add( MetaObjectDataholder.construct(metaObject) );
+			meta.add( MetaObjectDataholder.construct(metaObject, this) );
 		}
 
 	}

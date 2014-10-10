@@ -63,21 +63,6 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		
 		try {
 			SAXBuilder builder = new SAXBuilder ();
-<<<<<<< Upstream, based on master
-			Document doc = (Document) builder.build( new StringReader(xmlString) );
-			xmlTree = doc.getRootElement().clone();
-			exceptionMessage = null;
-		} catch (JDOMException | IOException e) {
-			LOGGER.error(e, "Cannot transform String to Xml Element");
-			xmlTree = null;
-			exceptionMessage = e.getMessage();
-		}
-	}
-	
-	@JsonIgnore
-	public String getExceptionMessage() {
-		return exceptionMessage;
-=======
 			Document doc = (Document) builder.build(xmlString);
 			xmlTree = doc.getRootElement().clone();
 			exceptionMessage = null;
@@ -86,9 +71,14 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 			xmlTree = null;
 			exceptionMessage = e.getMessage();
 		}
->>>>>>> 0dbbc88 added ability to parse XmlMeta Strings in the backend
+		
 	}
-
+	
+	@JsonIgnore
+	public String getExceptionMessage() {
+		return exceptionMessage;
+	}
+	
 	@JsonIgnore
 	@Override
 	public void update(MetaObjectDataholder newMetaObject) throws CombineArchiveWebException {
@@ -104,8 +94,6 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmlTree();
 		if( newXmltree != null ) {
 			xmlTree = newXmltree;
-<<<<<<< Upstream, based on master
-			// TODO set something...
 		}
 		else {
 			String message = ((XmlTreeMetaObjectDataholder) newMetaObject).exceptionMessage;
@@ -113,13 +101,6 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 				message = "Could not parse String to an Xml Element";
 			
 			throw new CombineArchiveWebException(message);
-=======
-		else {
-			if( exceptionMessage == null || exceptionMessage.isEmpty() )
-				exceptionMessage = "Could not parse String to an Xml Element";
-			
-			throw new CombineArchiveWebException(exceptionMessage);
->>>>>>> 0dbbc88 added ability to parse XmlMeta Strings in the backend
 		}
 		
 	}

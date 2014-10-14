@@ -463,6 +463,16 @@ var XmlMetaEntryView = MetaEntryView.extend({
 		this.$el.html( text );
 		Rainbow.color( this.$el.get(0) );
 	},
+	generateBlankXml: function( filePath ) {
+		
+		if( filePath == null || filePath == undefined )
+			filePath = "";
+		
+		// set some default xml for creation mode
+		this.model.set("xmlString", '<?xml version="1.0" encoding="UTF-8"?>' + "\n" +
+				'<rdf:Description xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:about="' + filePath + '">' + "\n" +
+				'</rdf:Description>');
+	},
 	
 	events: {
 		"click .archive-meta-edit": "startEdit",
@@ -497,7 +507,11 @@ var XmlMetaEntryView = MetaEntryView.extend({
 		this.messageId = "xmltree-" + this.model.get("id");
 		messageView.removeMessages( this.messageId );
 		
+		// update the model
 		this.model.set("xmlString", this.$el.find("textarea").val() );
+		// set type of meta data
+		this.model.set("type", "xmltree");
+		// push to server
 		this.saveModel();
 	}
 	
@@ -607,7 +621,8 @@ var ArchiveEntryView = Backbone.View.extend({
 		"click .archive-file-cancel": "cancelEntryEdit",
 		"click .archive-file-save": "saveEntry",
 		"click .archive-file-delete": "deleteEntry",
-		"click .archive-meta-omex-add": "addOmexMeta"
+		"click .archive-meta-omex-add": "addOmexMeta",
+		"click .archive-meta-xml-add": "addXmlMeta"
 	},
 	
 	startEntryEdit: function(event) {
@@ -728,6 +743,24 @@ var ArchiveEntryView = Backbone.View.extend({
 		// go into edit mode and add one empty vcard set
 		view.startEdit();
 		view.addCreator();
+		
+		return false;
+	},
+	addXmlMeta: function(event) {
+		
+		model = new XmlMetaModel();
+		model.setUrl( this.archiveId, this.entryId );
+		view = new XmlMetaEntryView({ "model": model });
+		// generates blank Xml for creation
+		view.generateBlankXml( this.model.get("filePath") );
+		
+		view.el = $("<div></div>");
+		view.render();
+		var content = $('<div class="archive-meta-entry"></div>').append(view.$el);
+		this.$el.find(".archive-meta-area").append(content);
+		
+		// go into edit mode and add one empty vcard set
+		view.startEdit();
 		
 		return false;
 	}

@@ -267,6 +267,7 @@
 					
 					<div class="edit-link">
 						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>
+						<a class="archive-meta-xml-add on-not-edit on-edit" href="#">[Add XML:RDF meta]</a>
 						{{# if( entry.filePath != "/" ) { }}
 						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}" target="_blank">[Download]</a>
 						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
@@ -358,7 +359,6 @@
 				<a class="archive-meta-cancel on-edit" href="#">[Cancel]</a>
 			</div> 
 		</div>
-		
 		<!-- **** -->
 		<div id="template-message-success">
 			<div class="message message-success" data-referring="{{# print( message.referring ); }}">

@@ -30,14 +30,17 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		super(metaObject, parent);
 		type = MetaObjectDataholder.TYPE_XML;
 		xmlTree = metaObject.getXmlDescription();
+		generateId();
 	}
 	
 	public XmlTreeMetaObjectDataholder(String id, String type, boolean changed) {
 		super(id, type, changed);
+		type = MetaObjectDataholder.TYPE_XML;
 	}
 	
 	public XmlTreeMetaObjectDataholder() {
 		super(null, null, false);
+		type = MetaObjectDataholder.TYPE_XML;
 	}
 	
 	@JsonIgnore
@@ -66,6 +69,7 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 			SAXBuilder builder = new SAXBuilder ();
 			Document doc = (Document) builder.build(xmlString);
 			xmlTree = doc.getRootElement().clone();
+			
 			exceptionMessage = null;
 		} catch (JDOMException | IOException e) {
 			LOGGER.error(e, "Cannot transform String to Xml Element");

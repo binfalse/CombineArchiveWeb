@@ -30,10 +30,12 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 	
 	public OmexMetaObjectDataholder(String id, String type, boolean changed) {
 		super(id, type, changed);
+		type = MetaObjectDataholder.TYPE_OMEX;
 	}
 	
 	public OmexMetaObjectDataholder() {
 		super(null, null, false);
+		type = MetaObjectDataholder.TYPE_OMEX;
 	}
 
 	public Date getCreated() {

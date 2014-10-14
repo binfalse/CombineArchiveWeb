@@ -94,19 +94,13 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		// apply changes
 		Element newXmltree = ((XmlTreeMetaObjectDataholder) newMetaObject).getXmlTree();
 		if( newXmltree != null ) {
-			MetaDataHolder parentMeta = parent.getArchiveEntry();
+			MetaDataHolder parentMeta = parent.getMetaDataHolder();
 			
 			// remove the old meta object
 			parentMeta.removeDescription(metaObject);
 			
 			// generates the new one
 			xmlTree = newXmltree;
-			try {
-				LOGGER.warn( Utils.prettyPrintDocument(new Document(xmlTree.clone())));
-			} catch (IOException | TransformerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			metaObject = getCombineArchiveMetaObject();
 			// add it
 			parentMeta.addDescription(metaObject);

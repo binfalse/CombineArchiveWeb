@@ -403,8 +403,16 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	padding: 5px;
 	min-height: 150px;
 }
+.archive-meta-xml-code {
+	overflow-x: hidden;
+}
 .archive-meta-xml-code > pre {
 	display: block;
+	word-break: break-all;
+	word-break: break-word;
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	hyphens: auto;
 }
 
 /* -------- Create View -------- */

@@ -1478,14 +1478,6 @@ var CreateView = Backbone.View.extend({
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
 		var self = this;
 		
-		// first of all, save the VCard
-		this.saveVCard();
-		
-		// check if there are errors in this model
-		if( !this.model.isValid() ) {
-			return false;
-		}
-		
 		if( archiveName == null || archiveName == undefined || archiveName == "" ) {
 			messageView.error("An archive name should be provided.");
 			return false;
@@ -1505,7 +1497,15 @@ var CreateView = Backbone.View.extend({
 		}
 		else if( archiveTemplate == "empty" ) {
 			// create new empty archive
-			// nothing else do to...
+			
+			// first of all, save the VCard
+			this.saveVCard();
+			
+			// check if there are errors in this model
+			if( !this.model.isValid() ) {
+				return false;
+			}
+			
 			archiveModel.set("template", "plain");
 		}
 		else if( archiveTemplate == "file" ) {

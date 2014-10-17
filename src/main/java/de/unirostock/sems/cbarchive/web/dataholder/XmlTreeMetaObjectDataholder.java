@@ -1,5 +1,6 @@
 package de.unirostock.sems.cbarchive.web.dataholder;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -67,7 +68,7 @@ public class XmlTreeMetaObjectDataholder extends MetaObjectDataholder {
 		
 		try {
 			SAXBuilder builder = new SAXBuilder ();
-			Document doc = (Document) builder.build(xmlString);
+			Document doc = (Document) builder.build(new ByteArrayInputStream (xmlString.getBytes ()));
 			xmlTree = doc.getRootElement().clone();
 			
 			exceptionMessage = null;

@@ -292,9 +292,9 @@
 					<nobr>[{{# print( new XDate(modDate).toLocaleString() ); }}]</nobr>&nbsp;&nbsp;
 				{{# }); }}<br />
 			<strong>description:</strong><br />
-				<span class="on-not-edit archive-meta-omex-description">{{# print(description); }}</span>
+				<span class="on-not-edit archive-meta-omex-description" style="padding-left: 15px;">{{# print(description); }}</span>
 				<textarea class="on-edit" name="omexDescription">{{# print(description); }}</textarea>
-				<br />
+				<br /><br />
 			<strong>creators:</strong>
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">

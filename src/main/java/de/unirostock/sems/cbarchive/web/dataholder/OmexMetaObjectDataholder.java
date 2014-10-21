@@ -96,6 +96,10 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		
 		// got modified today.
 		getModified().add( new Date() );
+		
+		// set description
+		description = ((OmexMetaObjectDataholder) newMetaObject).getDescription();
+//		((OmexMetaDataObject) metaObject).getOmexDescription().setDescription();
 	}
 
 	@Override

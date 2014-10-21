@@ -3,6 +3,7 @@ package de.unirostock.sems.cbarchive.web;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -323,6 +324,15 @@ public class UserManager {
 				if( metaObject instanceof OmexMetaDataObject )
 					((OmexMetaDataObject) metaObject).getOmexDescription().getModified().add( new Date() );
 			}
+		}
+		
+		// format changed
+		URI newFileFormat = newEntryDataholder.getFormat();
+		if( !oldEntryDataholder.getFormat().equals(newFileFormat) && newFileFormat != null ) {
+			
+			oldEntryDataholder.setFormat(newFileFormat);
+			oldEntryDataholder.getArchiveEntry().setFormat(newFileFormat);
+			
 		}
 		
 		// set the master flag or remove it

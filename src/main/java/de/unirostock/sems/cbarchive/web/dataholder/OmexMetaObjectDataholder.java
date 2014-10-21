@@ -16,16 +16,23 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 	private List<VCard> creators = null;
 	private Date created = null;
 	private List<Date> modified = null;
+	private String description = null;
 	
 	public OmexMetaObjectDataholder(OmexMetaDataObject metaObject) {
 		super(metaObject, null);
 		
 		OmexDescription omex = metaObject.getOmexDescription();
-		
 		type = MetaObjectDataholder.TYPE_OMEX;
 		created		= omex.getCreated();
 		creators	= omex.getCreators();
 		modified	= omex.getModified();
+		description = omex.getDescription();
+	}
+	
+	public OmexMetaObjectDataholder(String id, String type, String description, boolean changed) {
+		super(id, type, changed);
+		type = MetaObjectDataholder.TYPE_OMEX;
+		this.description = description;
 	}
 	
 	public OmexMetaObjectDataholder(String id, String type, boolean changed) {
@@ -60,6 +67,14 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 
 	public void setModified(List<Date> modified) {
 		this.modified = modified;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@JsonIgnore
@@ -96,7 +111,10 @@ public class OmexMetaObjectDataholder extends MetaObjectDataholder {
 		if( modified.isEmpty() )
 			modified.add( new Date() );
 		
-		this.metaObject = new OmexMetaDataObject( new OmexDescription(creators, modified, created) );
+		if( description != null && description.isEmpty() )
+			description = null;
+		
+		this.metaObject = new OmexMetaDataObject( new OmexDescription(creators, modified, created, description) );
 		// update the id
 		generateId();
 		return metaObject;

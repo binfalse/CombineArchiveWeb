@@ -92,6 +92,7 @@ var OmexMetaModel = Backbone.Model.extend({
 		"created": "",
 		"modified": [],
 		"type": "omex",
+		"description": "",
 		"changed": false
 	},
 	setUrl: function( archiveId, entryId )  {
@@ -361,6 +362,7 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		"click .archive-meta-omex-creator-delete": "removeCreator"
 	},
 	startEdit: function(event, isnew) {
+		this.$el.find("textarea[name='omexDescription']").val( this.$el.find("span.archive-meta-omex-description").html() );
 		this.$el.find(".archive-meta-omex-creator-box").each( function(index, boxElement) {
 			$(boxElement).find("input").each( function(index, inputElement) {
 				var field = $(inputElement).attr("data-field");
@@ -418,6 +420,8 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		if( !error ) {
 			// update model
 			this.model.set("creators", creators);
+			// set the description
+			this.model.set("description", this.$el.find("textarea[name='omexDescription']").val() );
 			// set type of meta data
 			this.model.set("type", "omex");
 			// push to server

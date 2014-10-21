@@ -256,7 +256,9 @@
 						<span class="text-archive-entry-filepath">{{# print(entry.filePath); }}</span><br />
 						
 					{{# if( entry.filePath != "/" ) { }}
-					<strong>format:</strong> <a href="{{# print(entry.format); }}" target="_blank">{{# print(entry.format); }}</a><br />
+					<strong>format:</strong>
+						<span class="on-not-edit"><a class="text-archive-entry-format" href="{{# print(entry.format); }}" target="_blank">{{# print(entry.format); }}</a></span>
+						<input type="text" class="on-edit" name="archiveEntryFormat" value="{{# print(entry.format); }}" placeholder="file format" /><br />
 					<strong>size:</strong> {{# print( bytesToSize(entry.fileSize) ); }}<br />
 					{{# } }}
 					
@@ -289,6 +291,10 @@
 				{{# _.each(modified, function(modDate) { }}
 					<nobr>[{{# print( new XDate(modDate).toLocaleString() ); }}]</nobr>&nbsp;&nbsp;
 				{{# }); }}<br />
+			<strong>description:</strong><br />
+				<span class="on-not-edit archive-meta-omex-description">{{# print(description); }}</span>
+				<textarea class="on-edit" name="omexDescription">{{# print(description); }}</textarea>
+				<br />
 			<strong>creators:</strong>
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">

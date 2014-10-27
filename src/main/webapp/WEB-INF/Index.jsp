@@ -309,7 +309,7 @@
 			<div style="clear: left;"></div>
 			<div class="attribute-name">description:</div>
 			<div class="attribute-detail">
-				<span class="on-not-edit archive-meta-omex-description" style="padding-left: 15px;">{{# print(description); }}</span>
+				<span class="on-not-edit archive-meta-omex-description">{{# print(description); }}</span>
 				<textarea class="on-edit" name="omexDescription">{{# print(description); }}</textarea>
 			</div>
 			<div class="attribute-name-br">creators:</div>

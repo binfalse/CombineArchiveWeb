@@ -182,11 +182,13 @@
 			
 			<div class="archive-headarea">	
 				<div class="archive-info">
-					<strong>id:</strong>
-						<span class="text-archive-id">{{# print(archive.id); }}</span><br />
-					<strong>name:</strong>
+<!-- 					<div class="attribute-name">id:</div> -->
+<!-- 					<div class="attribute-detail"><span class="text-archive-id">{{# print(archive.id); }}</span></div> -->
+					<div class="attribute-name">name:</div>
+					<div class="attribute-detail">
 						<span class="on-not-edit text-archive-name">{{# print(archive.name); }}</span>
-						<input type="text" class="on-edit" name="archiveName" value="{{# print(archive.name); }}" placeholder="archive name" /><br />
+						<input type="text" class="on-edit" name="archiveName" value="{{# print(archive.name); }}" placeholder="archive name" />
+					</div>
 						
 					<div class="edit-link">
 						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
@@ -247,25 +249,34 @@
 			<div class="archive-entry-frame">
 				<div class="archive-entry-header">
 					{{# if( entry.filePath != "/" ) { }}
-					<strong>file name:</strong>
+					<div class="attribute-name">file name:</div>
+					<div class="attribute-detail">
 						<span class="on-not-edit text-archive-entry-filename">{{# print(entry.fileName); }}</span>
-						<input type="text" class="on-edit" name="archiveEntryFileName" value="{{# print(entry.fileName); }}" placeholder="file name" /><br />
+						<input type="text" class="on-edit" name="archiveEntryFileName" value="{{# print(entry.fileName); }}" placeholder="file name" />
+					</div>
 					{{# } }}
 					
-					<strong>file path:</strong>
-						<span class="text-archive-entry-filepath">{{# print(entry.filePath); }}</span><br />
+					<div class="attribute-name">file path:</div>
+					<div class="attribute-detail">
+						<span class="text-archive-entry-filepath">{{# print(entry.filePath); }}</span>
+					</div>
 						
 					{{# if( entry.filePath != "/" ) { }}
-					<strong>format:</strong>
+					<div class="attribute-name">format:</div>
+					<div class="attribute-detail">
 						<span class="on-not-edit"><a class="text-archive-entry-format" href="{{# print(entry.format); }}" target="_blank">{{# print(entry.format); }}</a></span>
-						<input type="text" class="on-edit" name="archiveEntryFormat" value="{{# print(entry.format); }}" placeholder="file format" /><br />
-					<strong>size:</strong> {{# print( bytesToSize(entry.fileSize) ); }}<br />
+						<input type="text" class="on-edit" name="archiveEntryFormat" value="{{# print(entry.format); }}" placeholder="file format" />
+					</div>
+					<div class="attribute-name">size:</div>
+					<div class="attribute-detail">{{# print( bytesToSize(entry.fileSize) ); }}</div>
 					{{# } }}
 					
-					<strong>master:</strong>
+					<div class="attribute-name">master:</div>
+					<div class="attribute-detail">
 						<span class="on-not-edit text-archive-entry-master">{{# print(entry.master == true ? 'yes' : 'no'); }}</span>
 						<input type="checkbox" class="on-edit" name="archiveEntryMaster" />
-					<br /><br />
+					</div>
+					<br />
 					
 					<div class="edit-link">
 						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>
@@ -286,16 +297,23 @@
 		<!-- **** -->
 		<div id="template-omex-meta-entry">
 			<h4>OMEX entry</h4>
-			<strong>created:</strong> {{# print( new XDate(created).toLocaleString() ); }}<br />
-			<strong>modified:</strong>
+			<div class="attribute-name">created:</div>
+			<div class="attribute-detail">{{# print( new XDate(created).toLocaleString() ); }}</div>
+			
+			<div class="attribute-name">modified:</div>
+			<div class="attribute-detail">
 				{{# _.each(modified, function(modDate) { }}
 					<nobr>[{{# print( new XDate(modDate).toLocaleString() ); }}]</nobr>&nbsp;&nbsp;
-				{{# }); }}<br />
-			<strong>description:</strong><br />
+				{{# }); }}
+			</div>
+			<div style="clear: left;"></div>
+			<div class="attribute-name">description:</div>
+			<div class="attribute-detail">
 				<span class="on-not-edit archive-meta-omex-description" style="padding-left: 15px;">{{# print(description); }}</span>
 				<textarea class="on-edit" name="omexDescription">{{# print(description); }}</textarea>
-				<br /><br />
-			<strong>creators:</strong>
+			</div>
+			<div class="attribute-name-br">creators:</div>
+			<div class="attribute-detail-br">
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
 						<strong class="on-not-edit">
@@ -307,14 +325,14 @@
 						<span class="on-not-edit" data-field="email">{{# print(vcard.email); }}</span>
 						
 						<div class="on-edit">
-							<strong>given name: </strong>
-								<input type="text" class="on-edit" data-field="givenName" /> <br />
-							<strong>family name: </strong>
-								<input type="text" class="on-edit" data-field="familyName" /> <br />
-							<strong>E-Mail: </strong>
-								<input type="text" class="on-edit" data-field="email" /> <br />
-							<strong>organization: </strong>
-								<input type="text" class="on-edit" data-field="organization" /> <br />
+							<div class="attribute-name">given name:</div>
+							<div class="attribute-detail"><input type="text" class="on-edit" data-field="givenName" /></div>
+							<div class="attribute-name">family name:</div>
+							<div class="attribute-detail"><input type="text" class="on-edit" data-field="familyName" /></div>
+							<div class="attribute-name">E-Mail:</div>
+							<div class="attribute-detail"><input type="text" class="on-edit" data-field="email" /></div>
+							<div class="attribute-name">organization:</div>
+							<div class="attribute-detail"><input type="text" class="on-edit" data-field="organization" /></div>
 						</div>
 						
 						<div class="edit-link">
@@ -322,6 +340,7 @@
 						</div>
 					</div> 
 				{{# }); }}
+			</div>
 			<div class="edit-link">
 				<a class="archive-meta-edit on-not-edit" href="#">[Edit]</a>
 				<a class="archive-meta-delete on-not-edit" href="#">[Delete]</a>
@@ -333,18 +352,22 @@
 		<!-- **** -->
 		<div id="template-omex-meta-entry-creator">
 			<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
-				<strong>given name: </strong>
-					<span class="on-not-edit" data-field="givenName">{{# print(vcard.givenName); }}</span>
-					<input type="text" class="on-edit" data-field="givenName" placeholder="{{# print(vcard.givenName); }}" /> <br />
-				<strong>family name: </strong>
-					<span class="on-not-edit" data-field="familyName">{{# print(vcard.familyName); }}</span>
-					<input type="text" class="on-edit" data-field="familyName" placeholder="{{# print(vcard.familyName); }}" /> <br />
-				<strong>E-Mail: </strong>
-					<span class="on-not-edit" data-field="email">{{# print(vcard.email); }}</span>
-					<input type="text" class="on-edit" data-field="email" placeholder="{{# print(vcard.email); }}" /> <br />
-				<strong>organization: </strong>
-					<span class="on-not-edit" data-field="organization">{{# print(vcard.organization); }}</span>
-					<input type="text" class="on-edit" data-field="organization" placeholder="{{# print(vcard.organization); }}" /> <br />
+				<div class="attribute-name">given name:</div>
+				<div class="attribute-detail">
+					<input type="text" class="on-edit" data-field="givenName" placeholder="{{# print(vcard.givenName); }}" />
+				</div>
+				<div class="attribute-name">family name:</div>
+				<div class="attribute-detail">
+					<input type="text" class="on-edit" data-field="familyName" placeholder="{{# print(vcard.familyName); }}" />
+				</div>
+				<div class="attribute-name">E-Mail:</div>
+				<div class="attribute-detail">
+					<input type="text" class="on-edit" data-field="email" placeholder="{{# print(vcard.email); }}" />
+				</div>
+				<div class="attribute-name">organization:</div>
+				<div class="attribute-detail">
+					<input type="text" class="on-edit" data-field="organization" placeholder="{{# print(vcard.organization); }}" />
+				</div>
 				
 				<div class="edit-link">
 					<a class="archive-meta-omex-creator-delete on-edit" href="#">[-]</a>

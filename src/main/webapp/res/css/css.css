@@ -415,6 +415,30 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	hyphens: auto;
 }
 
+div.attribute-name {
+	float: left;
+	font-weight: bold;
+	width: 115px;
+	margin-bottom: 5px;
+}
+div.attribute-detail {
+	float: left;
+	width: calc(100% - 115px);
+	margin-bottom: 5px;
+}
+div.attribute-detail:after {
+	clear: left;
+	content: "\00a0";
+}
+
+div.attribute-name-br {
+	font-weight: bold;
+	padding-bottom: 5px;
+}
+div.attribute-detail-br {
+	
+}
+
 /* -------- Create View -------- */
 
 .on-archive-cellml, .on-archive-upload {

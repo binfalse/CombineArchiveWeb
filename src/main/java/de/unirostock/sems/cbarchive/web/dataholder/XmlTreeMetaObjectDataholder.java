@@ -2,7 +2,6 @@ package de.unirostock.sems.cbarchive.web.dataholder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 
 import javax.xml.transform.TransformerException;
 
@@ -14,7 +13,6 @@ import org.jdom2.input.SAXBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.binfalse.bflog.LOGGER;
-import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.meta.DefaultMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.MetaDataHolder;

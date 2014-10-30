@@ -430,6 +430,10 @@ div.attribute-detail:after {
 	clear: left;
 	content: "\00a0";
 }
+div.attribute-detail > input[type='text'],
+div.attribute-detail >  textarea {
+	width: calc(100% - 120px);
+}
 
 div.attribute-name-br {
 	font-weight: bold;

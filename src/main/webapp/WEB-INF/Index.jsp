@@ -215,8 +215,8 @@
 			
 			<div class="archive-headarea">	
 				<div class="archive-info">
-<!-- 					<div class="attribute-name">id:</div> -->
-<!-- 					<div class="attribute-detail"><span class="text-archive-id">{{# print(archive.id); }}</span></div> -->
+					<div class="attribute-name">id:</div>
+					<div class="attribute-detail"><span class="text-archive-id">{{# print(archive.id); }}</span></div>
 					<div class="attribute-name">name:</div>
 					<div class="attribute-detail">
 						<span class="on-not-edit text-archive-name">{{# print(archive.name); }}</span>

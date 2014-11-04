@@ -1456,9 +1456,11 @@ var CreateView = Backbone.View.extend({
 		
 		// remove old error messages
 		messageView.removeMessages("ownvcard");
+		this.$el.find(".error-element").removeClass("error-element");
 		
 		if( !this.model.isValid() ) {
 			messageView.warning("Meta information invalid", this.model.validationError, "ownvcard");
+			this.$el.find("create-vcard-box").addClass("error-element");
 			return false;
 		}
 		
@@ -1484,12 +1486,15 @@ var CreateView = Backbone.View.extend({
 		if (event.keyCode =! undefined && event.keyCode != null && event.keyCode != 13)
 			return;
 		
+		this.$el.find(".error-element").removeClass("error-element");
+		
 		var archiveName = this.$el.find("input[name='newArchiveName']").val();
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
 		var self = this;
 		
 		if( archiveName == null || archiveName == undefined || archiveName == "" ) {
 			messageView.error("An archive name should be provided.");
+			this.$el.find("input[name='newArchiveName']").addClass("error-element");
 			return false;
 		}
 		

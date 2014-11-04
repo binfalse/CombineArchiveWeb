@@ -1460,7 +1460,7 @@ var CreateView = Backbone.View.extend({
 		
 		if( !this.model.isValid() ) {
 			messageView.warning("Meta information invalid", this.model.validationError, "ownvcard");
-			this.$el.find("create-vcard-box").addClass("error-element");
+			this.$el.find("p.create-vcard-box").addClass("error-element");
 			return false;
 		}
 		

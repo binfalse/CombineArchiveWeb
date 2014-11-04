@@ -125,7 +125,7 @@
 				information will be included in the meta data of CombineArchives
 				produced by you.
 			</p>
-			<p>
+			<p class="create-vcard-box">
 				<label for="userGivenName">Given Name:</label><br />
 				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" value="{{# print(vcard.givenName); }}"/><br />
 				<label for="userFamilyName">Family Name:</label><br />

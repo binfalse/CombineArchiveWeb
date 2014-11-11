@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
@@ -32,7 +34,10 @@ public class Workspace {
 	private String workspaceId = null;
 	private String name = null;
 	private Date lastseen = null;
+	private boolean current = false;
+	@JsonIgnore
 	private File workspaceDir = null;
+	@JsonIgnore
 	private Map<String, String> archives = new HashMap<String, String>();
 	
 	public Workspace(String workspaceId, String name) {
@@ -53,6 +58,7 @@ public class Workspace {
 		this(null, null);
 	}
 	
+	@JsonIgnore
 	public void updateLastseen() {
 		this.lastseen = new Date();
 	}
@@ -64,7 +70,8 @@ public class Workspace {
 	public void setWorkspaceId(String workspaceId) {
 		this.workspaceId = workspaceId;
 	}
-
+	
+	@JsonIgnore
 	public File getWorkspaceDir() throws IOException {
 		
 		if( (workspaceDir == null || !workspaceDir.exists()) && workspaceId != null && !workspaceId.isEmpty() ) {
@@ -84,6 +91,7 @@ public class Workspace {
 		return workspaceDir;
 	}
 
+	@JsonIgnore
 	public void setWorkspaceDir(File workspaceDir) {
 		this.workspaceDir = workspaceDir;
 	}
@@ -103,7 +111,16 @@ public class Workspace {
 	public void setLastseen(Date lastseen) {
 		this.lastseen = lastseen;
 	}
+	
+	public boolean isCurrent() {
+		return current;
+	}
 
+	public void setCurrent(boolean current) {
+		this.current = current;
+	}
+
+	@JsonIgnore
 	public Map<String, String> getArchives() {
 		return archives;
 	}
@@ -112,6 +129,7 @@ public class Workspace {
 	 * Returns the size in bytes of all archives together in this workspace or {@code 0L} if it fails. 
 	 * @return
 	 */
+	@JsonIgnore
 	public long getWorkspaceSize() {
 		
 		long size = 0L;
@@ -142,6 +160,7 @@ public class Workspace {
 	 * @param archiveId
 	 * @return
 	 */
+	@JsonIgnore
 	public long getArchiveSize( String archiveId ) {
 		
 		long size = 0L;

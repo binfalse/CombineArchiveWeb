@@ -72,6 +72,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
+import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
@@ -108,8 +109,8 @@ public class RestApi extends RestHelper {
 			history = new WorkspaceHistory();
 		
 		// puts current workspace into history
-		if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
-			history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
+		if( history.containsWorkspace(user.getWorkspaceId()) == false )
+			history.getRecentWorkspaces().add( user.getWorkspace() );
 		history.setCurrentWorkspace( user.getWorkspaceId() );
 		
 		try {
@@ -168,7 +169,7 @@ public class RestApi extends RestHelper {
 	@GET
 	@Path("/workspaces")
 	@Produces( MediaType.APPLICATION_JSON )
-	public Response getCurrentWorkspaceId( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
+	public Response getWorkspaces( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -187,10 +188,11 @@ public class RestApi extends RestHelper {
 			if( history == null )
 				history = new WorkspaceHistory();
 			
-			if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
-				history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
-			
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
 			history.setCurrentWorkspace( user.getWorkspaceId() );
+			
 			historyCookie = history.toCookieJson();
 			
 		} catch (IOException e) {
@@ -200,8 +202,101 @@ public class RestApi extends RestHelper {
 		
 		return buildResponse(200, user)
 				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
-				.entity(history)
+				.entity(history.getRecentWorkspaces())
 				.build();
+	}
+	
+	@GET
+	@Path("/workspaces/{workspace_id}")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getSingleWorkspace( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @PathParam("workspace_id") String requestedWorkspace ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+			
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			
+			historyCookie = history.toCookieJson();
+			Workspace workspace = history.getWorkspace(requestedWorkspace);
+			
+			return buildResponse(200, user)
+					.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+					.entity(workspace)
+					.build();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie " + historyCookie, e.getMessage());
+		} catch (CombineArchiveWebException e) {
+			LOGGER.error(e, "Cannot find requested workspace in history ", requestedWorkspace);
+			return buildErrorResponse(500, user, "Cannot find requested workspace in history " + requestedWorkspace, e.getMessage());
+		}
+	}
+	
+	@POST
+	@Path("/workspaces/{workspace_id}")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response updateWorkspace( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @PathParam("workspace_id") String workspaceId, Workspace workspace ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+			
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			
+			if( workspaceId == null || workspaceId.isEmpty() )
+				workspaceId = workspace.getWorkspaceId();
+			
+			Workspace oldWorkspace = history.getWorkspace(workspaceId);
+			oldWorkspace.setName( workspace.getName() );
+			
+			historyCookie = history.toCookieJson();
+			
+			return buildResponse(200, user)
+					.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+					.entity(oldWorkspace)
+					.build();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie " + historyCookie, e.getMessage());
+		} catch (CombineArchiveWebException e) {
+			LOGGER.error(e, "Cannot find requested workspace in history ", workspaceId);
+			return buildErrorResponse(500, user, "Cannot find requested workspace in history " + workspaceId, e.getMessage());
+		}
 	}
 	
 	// --------------------------------------------------------------------------------

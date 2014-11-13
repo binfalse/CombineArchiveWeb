@@ -4,7 +4,7 @@
 	<groupId>de.unirostock.sems</groupId>
 	<artifactId>CombineArchiveWeb</artifactId>
 	<packaging>war</packaging>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 	<name>CombineArchiveWeb</name>
 	<description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
 	<url>http://sems.uni-rostock.de/projects/combinearchive/</url>
@@ -21,7 +21,7 @@
 		<developer>
 			<name>Martin Peters</name>
 			<id>martinP</id>
-			<email>martin.peters3@uni-rostock.de</email>
+			<email>martin@freakybytes.net</email>
 			<roles>
 				<role>Java Developer</role>
 			</roles>
@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>
 			<artifactId>CombineArchive</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.4.3</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>

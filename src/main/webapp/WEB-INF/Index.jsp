@@ -101,11 +101,13 @@
 					<ul class="start-history-list" style="margin-top: 0;">
 					{{# _.each( history, function(element, index, list) { }} 
 						<li class="edit-object {{# element.current == true ? print('current-workspace') : print(''); }}">
-							{{# if( element.current != true ) { }}
-								<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(element.name); }}</a>
-							{{# } else { }}
-								{{# print(element.name); }}
-							{{# } }}
+							<span>
+								{{# if( element.current != true ) { }}
+									<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(element.name); }}</a>
+								{{# } else { }}
+									{{# print(element.name); }}
+								{{# } }}
+							</span>
 							<span class="edit-link">
 								<a class="start-history-rename" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Rename]</a>
 							</span>

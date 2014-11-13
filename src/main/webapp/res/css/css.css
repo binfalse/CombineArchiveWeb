@@ -207,6 +207,7 @@ div.edit-link {
 	display: block;
 	text-align: right;
 	padding: 0 1em;
+	font-weight: normal;
 }
 .edit-link a, .edit-link a:visited, .edit-link a:active {
 	text-decoration: none;
@@ -261,12 +262,13 @@ ul.start-history-list {
 ul.start-history-list > li {
 	padding: 0.1em 0;
 }
-ul.start-history-list > li > a {
+ul.start-history-list > li > span:first-child {
 	font-weight: bold;
+	display: inline-block;
+	min-width: 10em;
 }
 ul.start-history-list > li.current-workspace {
 	list-style-type: square;
-	font-weight: bold;
 }
 
 /* -------- Archive View -------- */

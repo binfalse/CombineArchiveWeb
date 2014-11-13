@@ -82,13 +82,13 @@
 				We offer basic support for collaborative working.
 				All the archives that 
 				To share this workspace, just distribute the following link: <br />
-				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(history.currentWorkspace); }}" /> 
+				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(current.workspaceId); }}" /> 
 				<br />However, you should not work on the same workspace from different locations at the same time!
 			</p>
 			
 			<h2>Workspace History</h2>
 			<p>
-				{{# if( _.size(history.recentWorkspaces) == 1 ) { }}
+				{{# if( _.size(history) == 1 ) { }}
 					So far, you do not have a workspace history.
 					As soon as you have shared workspaces with other people you will see this history growing.<br/>
 					<div class="edit-link">
@@ -98,14 +98,18 @@
 					<div class="edit-link">
 						<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
 					</div>
-					<ul style="margin-top: 0;">
-					{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
-						{{# if( key != history.currentWorkspace ) { }}
-						<li>
-							<strong>{{# print(value); }}</strong> &nbsp;
-							<a href="{{# print(baseUrl); }}rest/share/{{# print(key); }}">{{# print(key); }}</a>
+					<ul class="start-history-list" style="margin-top: 0;">
+					{{# _.each( history, function(element, index, list) { }} 
+						<li class="edit-object {{# element.current == true ? print('current-workspace') : print(''); }}">
+							{{# if( element.current != true ) { }}
+								<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(element.name); }}</a>
+							{{# } else { }}
+								{{# print(element.name); }}
+							{{# } }}
+							<span class="edit-link">
+								<a class="start-history-rename" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Rename]</a>
+							</span>
 						</li>
-						{{# } }}
 					{{# }); }}
 					</ul>
 				{{# } }}

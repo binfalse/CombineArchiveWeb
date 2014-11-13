@@ -114,9 +114,17 @@ var XmlMetaModel = Backbone.Model.extend({
 
 var WorkspaceHistoryModel = Backbone.Model.extend({
 	urlRoot: RestRoot + "workspaces",
+	idAttribute: "workspaceId",
 	defaults: {
-		"currentWorkspace": ""
+		"workspaceId": "null",
+		"name": "",
+		"lastseen": "now",
+		"current": false
 	}
+});
+var WorkspaceHistoryCollection = Backbone.Collection.extend({
+	model: WorkspaceHistoryModel,
+	url: RestRoot + "workspaces"
 });
 
 var ArchiveCollection = Backbone.Collection.extend({
@@ -1720,29 +1728,33 @@ var CreateView = Backbone.View.extend({
 var StartView = Backbone.View.extend({
 	
 	el: "#start-page",
-	model: null,
+	collection: null,
 	
 	initialize: function() {
 		this.template = templateCache["template-start"];
-		this.model = new WorkspaceHistoryModel();
+		this.collection = new WorkspaceHistoryCollection();
 		this.fetch();
 	},
 	render: function() {
-		var json = { "history": this.model.toJSON(), "baseUrl": location.protocol+"//"+location.host+location.pathname+(location.search?location.search:"") };
+		var current = this.collection.find(function( element ) {
+			return element.get("current") == true;
+		});
+		
+		var json = { "history": this.collection.toJSON(), "current": current.toJSON(), "baseUrl": location.protocol+"//"+location.host+location.pathname+(location.search?location.search:"") };
 		this.$el.html( this.template(json) );
 	},
 	fetch: function() {
 		
-		if( this.model == null )
+		if( this.collection == null )
 			return;
 		
 		var self = this;
-		this.model.fetch({
+		this.collection.fetch({
 			reset: true,
-			success: function(model, response, options) {
+			success: function(collection, response, options) {
 				self.render();
 			},
-			error: function(model, response, options) {
+			error: function(collection, response, options) {
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
 					messageView.error( "Cannot fetch workspace history", text );
@@ -1755,7 +1767,40 @@ var StartView = Backbone.View.extend({
 	},
 	
 	events: {
+		"click .start-history-rename": "renameHistoryEntry"
+	},
+	renameHistoryEntry: function(event) {
 		
+		var workspace = this.collection.get( $(event.target).attr("data-workspace-id") );
+		if( workspace == null )
+			return false;
+		
+		var newName = window.prompt( workspace.get("workspaceId"), workspace.get("name") ); 
+		if( newName == null && newName != "" )
+			return false;
+		
+		workspace.set("name", newName);
+		
+		messageView.removeMessages("workspace-history");
+		var self = this;
+		workspace.save({}, {
+			success: function(model, response, options) {
+				// everything ok
+				self.render();
+				messageView.success( undefined, "Workspace successfully renamed", "workspace-history" );
+			},
+			error: function(model, response, options) {
+				console.log("error while renaming workspace");
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Cannot rename workspace", text, "workspace-history" );
+				}
+				else
+					messageView.error( "Unknown Error", "Cannot rename workspace", "workspace-history" );
+			}
+		});
+		
+		return false;
 	}
 });
 

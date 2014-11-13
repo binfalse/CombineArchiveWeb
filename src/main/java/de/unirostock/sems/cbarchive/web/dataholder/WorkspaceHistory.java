@@ -80,7 +80,7 @@ public class WorkspaceHistory {
 
 	public void setCurrentWorkspace(String currentWorkspace) {
 		
-		if( this.currentWorkspace.equals(currentWorkspace) )
+		if( this.currentWorkspace != null && this.currentWorkspace.equals(currentWorkspace) )
 			return;
 		
 		this.currentWorkspace = currentWorkspace;
@@ -117,7 +117,7 @@ public class WorkspaceHistory {
 	@JsonIgnore
 	public boolean containsWorkspace(String workspaceId) {
 		
-		if( currentWorkspace.equals(workspaceId) )
+		if( currentWorkspace != null && currentWorkspace.equals(workspaceId) )
 			return true;
 		
 		for( Workspace elem : recentWorkspaces) {

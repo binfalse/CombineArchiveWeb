@@ -250,7 +250,7 @@ public class RestApi extends RestHelper {
 		}
 	}
 	
-	@POST
+	@PUT
 	@Path("/workspaces/{workspace_id}")
 	@Produces( MediaType.APPLICATION_JSON )
 	public Response updateWorkspace( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @PathParam("workspace_id") String workspaceId, Workspace workspace ) {

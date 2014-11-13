@@ -72,13 +72,15 @@ public class ShareApi extends RestHelper {
 			if( history == null )
 				history = new WorkspaceHistory();
 			
-			if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
-				history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
+			history.setCurrentWorkspace( user.getWorkspaceId() );
 			
-			if( oldUserPath != null && !oldUserPath.isEmpty() && history.getRecentWorkspaces().containsKey( oldUserPath ) == false ) {
+			if( oldUserPath != null && !oldUserPath.isEmpty() && history.containsWorkspace( oldUserPath ) == false ) {
 				Workspace workspace = WorkspaceManager.getInstance().getWorkspace(oldUserPath);
 				if( workspace != null )
-					history.getRecentWorkspaces().put( oldUserPath, workspace.getName() );
+					history.getRecentWorkspaces().add( workspace );
 			}
 			
 			history.setCurrentWorkspace( user.getWorkspaceId() );

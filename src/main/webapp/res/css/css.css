@@ -208,15 +208,26 @@ div.edit-link {
 	text-align: right;
 	padding: 0 1em;
 }
-div.edit-link a, div.edit-link a:visited, div.edit-link a:active {
+.edit-link a, .edit-link a:visited, .edit-link a:active {
 	text-decoration: none;
 	text-align: right;
 	font-size: 0.8em;
 	cursor:pointer;
 	color: #c00;
 }
-div.edit-link > a:hover {
+.edit-link > a:hover {
 	font-style: italic;
+}
+
+span.edit-link {
+	padding-left: 2em;
+	font-weight: normal;
+}
+.edit-object > span.edit-link {
+	display: none;
+}
+.edit-object:hover > span.edit-link {
+	display: inline;
 }
 
 /* -------- Inline Editing -------- */
@@ -243,6 +254,19 @@ div.edit-link > a:hover {
 	background-repeat: no-repeat;
 	background-position: left center;
 	background-size: contain;
+}
+ul.start-history-list {
+	margin-top: 0;
+}
+ul.start-history-list > li {
+	padding: 0.1em 0;
+}
+ul.start-history-list > li > a {
+	font-weight: bold;
+}
+ul.start-history-list > li.current-workspace {
+	list-style-type: square;
+	font-weight: bold;
 }
 
 /* -------- Archive View -------- */

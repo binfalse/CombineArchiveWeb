@@ -1776,7 +1776,7 @@ var StartView = Backbone.View.extend({
 			return false;
 		
 		var newName = window.prompt( workspace.get("workspaceId"), workspace.get("name") ); 
-		if( newName == null && newName != "" )
+		if( newName == null || newName != "" || newName == workspace.get("name") )
 			return false;
 		
 		workspace.set("name", newName);

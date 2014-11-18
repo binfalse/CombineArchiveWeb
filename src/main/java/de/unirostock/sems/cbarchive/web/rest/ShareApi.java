@@ -118,7 +118,7 @@ public class ShareApi extends RestHelper {
 	}
 	
 	@GET
-	@Path("/share")
+	@Path("/import")
 	@Produces( MediaType.TEXT_PLAIN )
 	public Response downloadRemoteArchive(@CookieParam(Fields.COOKIE_PATH) String userPath, @Context HttpServletRequest requestContext, @QueryParam("remote") String remoteUrl, @QueryParam("name") String archiveName) {
 		// user stuff

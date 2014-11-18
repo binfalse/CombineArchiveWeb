@@ -89,32 +89,29 @@
 			<h2>Workspace History</h2>
 			<p>
 				{{# if( _.size(history) == 1 ) { }}
-					So far, you do not have a workspace history.
+					So far, you only have one workspace in your history.
 					As soon as you have shared workspaces with other people you will see this history growing.<br/>
-					<div class="edit-link">
-						<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
-					</div>
-				{{# } else { }}
-					<div class="edit-link">
-						<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
-					</div>
-					<ul class="start-history-list" style="margin-top: 0;">
-					{{# _.each( history, function(element, index, list) { }} 
-						<li class="edit-object {{# element.current == true ? print('current-workspace') : print(''); }}">
-							<span>
-								{{# if( element.current != true ) { }}
-									<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(element.name); }}</a>
-								{{# } else { }}
-									{{# print(element.name); }}
-								{{# } }}
-							</span>
-							<span class="edit-link">
-								<a class="start-history-rename" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Rename]</a>
-							</span>
-						</li>
-					{{# }); }}
-					</ul>
 				{{# } }}
+				<div class="edit-link">
+					<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
+				</div>
+				<ul class="start-history-list" style="margin-top: 0;">
+				{{# _.each( history, function(element, index, list) { }} 
+					<li class="edit-object {{# element.current == true ? print('current-workspace') : print(''); }}">
+						<span>
+							{{# if( element.current != true ) { }}
+								<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(element.name); }}</a>
+							{{# } else { }}
+								{{# print(element.name); }}
+							{{# } }}
+						</span>
+						<span class="edit-link">
+							<a class="start-history-rename" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Rename]</a>
+						</span>
+					</li>
+				{{# }); }}
+				</ul>
+				
 			</p>
 			
 			<h2>Disclaimer</h2>
@@ -212,7 +209,7 @@
 			</p>
 			<p>
 				You should have received a copy of the GNU General Public License
-				along with this program.  If not, see &lt;<a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>&gt;.
+				along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>.
     		</p>
 			
 		</div>

@@ -49,12 +49,15 @@ h4 {
 	text-shadow: 0.5px 0.5px 0.5px #aaa;
 }
 footer {
-        text-align: right;
-        font-size: .7em;
-        color: #aaa;
+	text-align: right;
+	font-size: .7em;
+	color: #aaa;
 }
 footer a:visited, footer a {
-        color: #aaa;
+	color: #aaa;
+}
+footer a:hover {
+	color: #c00;
 }
 
 nav
@@ -268,7 +271,8 @@ ul.start-history-list > li > span:first-child {
 	min-width: 10em;
 }
 ul.start-history-list > li.current-workspace {
-	list-style-type: square;
+/* 	list-style-type: square; */
+/* 	list-style-image: url("listarrow.png"); */
 }
 
 /* -------- Archive View -------- */

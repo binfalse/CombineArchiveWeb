@@ -24,9 +24,8 @@
 	</script>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
-<!-- 	<script type="text/javascript" src="res/js/3rd/jquery.colorbox-min.js"></script> -->
 	
-	<script type="text/javascript" src="res/js/3rd/underscore.js"></script>
+	<script type="text/javascript" src="res/js/3rd/underscore-min.js"></script>
 	<script type="text/javascript" src="res/js/3rd/backbone-min.js"></script>
 	
 	<!-- Load jsTree and friends -->

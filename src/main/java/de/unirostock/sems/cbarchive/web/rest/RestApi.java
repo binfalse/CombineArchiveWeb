@@ -74,6 +74,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
+import de.unirostock.sems.cbarchive.web.exception.ArchiveEntryUploadException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
@@ -752,7 +753,7 @@ public class RestApi extends RestHelper {
 		
 		try {
 			Archive archive = user.getArchive(archiveId);
-			List<ArchiveEntryDataholder> result = new LinkedList<ArchiveEntryDataholder>();
+			List<Object> result = new LinkedList<Object>();
 			
 			// adds ending slash
 			if( path == null || path.isEmpty() )
@@ -760,14 +761,13 @@ public class RestApi extends RestHelper {
 			else if( !path.endsWith("/") )
 				path = path + "/";
 			
+			// check maximum files in archive -> is the limit already reached, without uploading anything new?
+			if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( archive.countArchiveEntries(), Fields.QUOTA_FILE_LIMIT) == false ) {
+				LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+				return buildErrorResponse(507, user, "The max amount of files in one archive is reached.");
+			}
+			
 			for( FormDataBodyPart file : files ) {
-				
-				// TODO see below
-				// check maximum files in archive
-				if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_FILE_LIMIT) == false ) {
-					LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
-					return buildErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
-				}
 				
 				try {
 					String fileName = file.getFormDataContentDisposition().getFileName();
@@ -793,50 +793,40 @@ public class RestApi extends RestHelper {
 						LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The uploaded file is to big.");
+						result.add( new ArchiveEntryUploadException("The uploaded file is to big.", path + fileName) );
+						continue;
 					}
 					// max files in one archive
 					if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_FILE_LIMIT) == false ) {
 						LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The amount of files in one archive is reached.");
+						result.add( new ArchiveEntryUploadException("The max amount of files in one archive is reached.", path + fileName) );
+						continue;
 					}
 					// max archive size
 					if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + uploadedFileSize, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
 						LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The maximum size of one archive is reached.");
+						result.add( new ArchiveEntryUploadException("The maximum size of one archive is reached.", path + fileName) );
+						continue;
 					}
 					// max workspace size
 					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getWorkspaceSize() + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
 						LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The maximum size of one workspace is reached.");
+						result.add( new ArchiveEntryUploadException("The maximum size of one workspace is reached.", path + fileName) );
+						continue;
 					}
 					// max total size
 					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(WorkspaceManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
 						LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The maximum size is reached.");
+						result.add( new ArchiveEntryUploadException("The maximum size is reached.", path + fileName) );
+						continue;
 					}
 					
 					// add the file in the currently selected path
@@ -858,6 +848,8 @@ public class RestApi extends RestHelper {
 				catch (IOException e) {
 					// TODO ???
 					LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
+					result.add( new ArchiveEntryUploadException(MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir()), path) );
+					continue;
 				}
 				
 			}

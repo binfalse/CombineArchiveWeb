@@ -1090,7 +1090,7 @@ var ArchiveView = Backbone.View.extend({
 				else 
 					messageView.error( "Unknown Error", "No response from the server!" );
 				
-				// not necessary to display, because complete view gets re-rendered
+				// not necessary to display, because complete view gets re-rendered TODO improve this!
 //				this.$el.find(".dropbox .icon").hide();
 //				this.$el.find(".dropbox a").show();
 			},

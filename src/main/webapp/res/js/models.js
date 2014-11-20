@@ -1079,6 +1079,17 @@ var ArchiveView = Backbone.View.extend({
 			success: function(data) {
 				console.log(data);
 				self.fetchCollection(true);
+				
+				// scanning for any non-critical erros.
+				if( data !== undefined ) {
+					_.each(data, function(element, index, list) {
+						if( element.error == true )
+							messageView.warning( element.filePath, element.message );
+					});
+				}
+				else 
+					messageView.error( "Unknown Error", "No response from the server!" );
+				
 				// not necessary to display, because complete view gets re-rendered
 //				this.$el.find(".dropbox .icon").hide();
 //				this.$el.find(".dropbox a").show();

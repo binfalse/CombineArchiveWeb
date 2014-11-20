@@ -1056,13 +1056,22 @@ var ArchiveView = Backbone.View.extend({
 		// form data object to push to server
 		var formData = new FormData();
 		var self = this;
+		var options = {};
 		
 		// adds all files to the data object
 		_.each(files, function(file, index, list) {
 			console.log(file);
-			formData.append("files[]", file);
+			if( this.collection.find(function(elem) { 
+				return elem.filePath == path + file.name }) ) {
+				// replace, rename, cancel
+				console.log("denied");
+			}
+			else {
+				formData.append("files[]", file);
+			}
 		});
-		// add current path to formData, to upload files in the current directory
+		// add options and current path to formData, to upload files in the current directory
+		formData.append("options", options);
 		formData.append("path", path);
 		
 		// show waiting stuff

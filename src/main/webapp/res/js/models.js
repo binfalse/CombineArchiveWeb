@@ -1051,36 +1051,80 @@ var ArchiveView = Backbone.View.extend({
 			}
 		}
 		
-		console.log(path);
-		
-		// form data object to push to server
-		var formData = new FormData();
-		var self = this;
-		var options = {};
-		
-		// adds all files to the data object
-		_.each(files, function(file, index, list) {
-			console.log(file);
-			if( this.collection.find(function(elem) { 
-				return elem.filePath == path + file.name }) ) {
-				// replace, rename, cancel
-				console.log("denied");
-			}
-			else {
-				formData.append("files[]", file);
-			}
+		// Grabs the data
+		var uploadTask = {
+				"view": this,
+				"path": path,
+				"files": []
+		};
+		_.each(files, function(file) {
+			uploadTask.files.push({
+				"data": file,
+				"option": null
+			});
 		});
-		// add options and current path to formData, to upload files in the current directory
-		formData.append("options", options);
-		formData.append("path", path);
 		
 		// show waiting stuff
 		this.$el.find(".dropbox .icon").show();
 		this.$el.find(".dropbox a").hide();
+		// delegate stuff
+		var self = this;
+		setTimeout(function () { self.uploadFilesCheck(uploadTask); }, 0);
+	},
+	uploadFilesCheck: function(task) {
+		var uploadTask = task;
 		
+		var result = _.every(uploadTask.files, function(file, index) {
+			
+			// file already processed
+			if( file.option != null && file.option != undefined )
+				return true;
+			
+			if( uploadTask.view.collection.find(function(elem) { 
+				return elem.get("filePath") == uploadTask.path + file.data.name; }) ) {
+				// file exists in archive
+				var popupHtml = templateCache["template-dialog-exists"]({"fileName": uploadTask.path + file.name});
+				$.prompt( popupHtml, {
+					buttons: { "Rename": "rename", "Replace": "replace", "Cancel": "cancel" },
+					submit: function(event, value, message, fromVal) {
+						uploadTask.files[index].option = value;
+						// continue
+						setTimeout(function () { uploadTask.view.uploadFilesCheck(uploadTask); }, 0);
+					}
+				});
+				// breaks the loop
+				return false;
+			}
+			
+			// continue
+			return true;
+		});
+		
+		if( result == true ) {
+			// every file has passed the test
+			uploadTask.view.uploadFilesDoIt(uploadTask);
+		}
+	},
+	uploadFilesDoIt: function(uploadTask) {
+		
+		var formData = new FormData();
+		var options = {};
+		
+		// adds all files to the data object (prepare to submit)
+		_.each(uploadTask.files, function(file, index, list) {
+			if( file.option !== "cancel" && file.option !== undefined && file.option !== null ) {
+				formData.append("files[]", file.data);
+				options[file.data.name] = file.option;
+			}
+		});
+		// add options and current path to formData, to upload files in the current directory
+		formData.append("options", JSON.stringify(options) );
+		formData.append("path", uploadTask.path);
+		
+		var self = uploadTask.view;
 		// upload it
 		$.ajax({
-			"url": this.collection.url,
+			"url": self.collection.url,
 			"type": "POST",
 			processData: false,
 			contentType: false,

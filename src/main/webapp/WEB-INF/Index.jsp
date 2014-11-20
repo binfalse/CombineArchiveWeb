@@ -35,10 +35,16 @@
 	<script type="text/javascript" src="res/js/3rd/jstree/jstree.search.js"></script>
 	<script type="text/javascript" src="res/js/3rd/jstree/jstree.dnd.js"></script>
 	
+	<!-- rainbow syntax highlighter -->
 	<script type="text/javascript" src="res/js/3rd/rainbow/rainbow.js"></script>
 	<script type="text/javascript" src="res/js/3rd/rainbow/language/xml.js"></script>
 	<link rel="stylesheet" href="res/js/3rd/rainbow/themes/pastie.css" type="text/css">
 	
+	<!-- popup framwork -->
+	<script type="text/javascript" src="res/js/3rd/jquery-impromptu.min.js"></script>
+	<link rel="stylesheet" href="res/css/jquery-impromptu.min.css" type="text/css">
+	
+	<!-- main scripts -->
 	<script type="text/javascript" src="res/js/models.js"></script>
 	<script type="text/javascript" src="res/js/js.js"></script>
 	
@@ -407,6 +413,17 @@
 					<a class="archive-meta-omex-creator-delete on-edit" href="#">[-]</a>
 				</div>
 			</div> 
+		</div>
+		<!-- **** -->
+		<div id="template-dialog-exists">
+			<p>
+				<strong>{{# fileName }}</strong> already exists.
+			</p>
+<!-- 			<div class="edit-link"> -->
+<!-- 				<a class="dialog-exists-rename" href="#">[Rename]</a> -->
+<!-- 				<a class="dialog-exists-replace" href="#">[Replace]</a> -->
+<!-- 				<a class="dialog-exists-cancel" href="#">[Cancel]</a> -->
+<!-- 			</div> -->
 		</div>
 		<!-- **** -->
 		<div id="template-xml-meta-entry">

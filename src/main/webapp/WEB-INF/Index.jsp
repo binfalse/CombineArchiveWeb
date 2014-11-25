@@ -420,9 +420,9 @@
 				<strong>{{# print(fileName); }}</strong> already exists.
 			</p>
 			<ul>
-				<li><strong>Renames</strong> the new file, if the name is already taken</li>
+				<li><strong>Rename</strong> the new file</li>
 				<li><strong>Replace</strong> the old file, meta data will be copied</li>
-				<li><strong>Override</strong> the old file, meta data will be discarded</li>
+				<li><strong>Override</strong> the old file, meta data will be destroyed</li>
 			</ul>
 		</div>
 		<!-- **** -->

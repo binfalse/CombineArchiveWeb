@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -63,8 +64,11 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.MetaDataHolder;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
@@ -863,8 +867,29 @@ public class RestApi extends RestHelper {
 					
 					// add default meta information
 					if( user.getData() != null && user.getData().hasInformation() == true ) {
-						OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
-						entry.addDescription( new OmexMetaDataObject(metaData) );
+						
+						// scan for existing omex meta data and takes the first one
+						OmexMetaDataObject metaObject = null;
+						for( MetaDataObject iterMetaObject : entry.getDescriptions() ) {
+							if( iterMetaObject instanceof OmexMetaDataObject ) {
+								metaObject = (OmexMetaDataObject) iterMetaObject;
+								break;
+							}
+						}
+						
+						if( metaObject == null ) {
+							OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
+							entry.addDescription( new OmexMetaDataObject(metaData) );
+						}
+						else  {
+							// add current date of modification
+							metaObject.getOmexDescription().getModified().add( new Date() );
+							// add current user as creator, if not already present
+							List<VCard> creators = metaObject.getOmexDescription().getCreators();
+							if( !user.getData().isContained(creators) )
+								creators.add( user.getData().getVCard() );
+						}
+						
 					}
 						
 					LOGGER.info(MessageFormat.format("Successfully added file {0} to archive {1}", fileName, archiveId));

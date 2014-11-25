@@ -238,7 +238,9 @@ public class Archive {
 			}
 		}
 		else if( archive.getEntry(fileName) != null && strategy == ReplaceStrategy.REPLACE ) {
-			entry = archive.addEntry( file.toFile(), fileName, Formatizer.guessFormat(file.toFile()) );
+			
+			ArchiveEntry oldEntry = archive.getEntry(fileName);
+			entry = archive.replaceFile( file.toFile(), oldEntry );
 			// adds the entry to the dataholder (warning: this is probably inconsistent)
 			if( entry != null ) {
 				// entry information are gathered in the entry dataholder

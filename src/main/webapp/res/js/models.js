@@ -1089,7 +1089,7 @@ var ArchiveView = Backbone.View.extend({
 					submit: function(event, value, message, fromVal) {
 						uploadTask.files[index].option = value;
 						// continue
-						setTimeout(function () { uploadTask.view.uploadFilesCheck(uploadTask); }, 0);
+						setTimeout(function () { uploadTask.view.uploadFilesCheck(uploadTask); }, 500);
 					}
 				});
 				// breaks the loop

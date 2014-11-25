@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
@@ -67,6 +68,7 @@ import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.VcImporter;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
@@ -739,7 +741,7 @@ public class RestApi extends RestHelper {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
 	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files,
-			@FormDataParam("path") String path ,@CookieParam(Fields.COOKIE_USER) String userJson ) {
+			@FormDataParam("options") Map<String, String> options, @FormDataParam("path") String path, @CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -786,8 +788,6 @@ public class RestApi extends RestHelper {
 					output.close();
 					input.close();
 					
-					// TODO some mechanism, which does not stop the whole process and returns the already processed files
-					
 					// max size for upload
 					if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(uploadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
 						LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
@@ -829,8 +829,20 @@ public class RestApi extends RestHelper {
 						continue;
 					}
 					
+					// override flag
+					
+					ReplaceStrategy strategy = ReplaceStrategy.RENAME;
+					
+					String opt = options.get("");
+					if( opt != null && !opt.isEmpty() ) {
+						if( opt.contains("replace") )
+							strategy = ReplaceStrategy.REPLACE;
+						else if( opt.contains("override") )
+							strategy = ReplaceStrategy.OVERRIDE;
+					}
+					
 					// add the file in the currently selected path
-					ArchiveEntry entry = archive.addArchiveEntry(path + fileName, temp);
+					ArchiveEntry entry = archive.addArchiveEntry(path + fileName, temp, strategy);
 					
 					// add default meta information
 					if( user.getData() != null && user.getData().hasInformation() == true ) {
@@ -846,7 +858,6 @@ public class RestApi extends RestHelper {
 					result.add( new ArchiveEntryDataholder(entry) );
 				}
 				catch (IOException e) {
-					// TODO ???
 					LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
 					result.add( new ArchiveEntryUploadException(MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir()), path) );
 					continue;

@@ -192,24 +192,40 @@ public class Archive {
 	
 	@JsonIgnore
 	public ArchiveEntry addArchiveEntry(String fileName, Path file) throws CombineArchiveWebException, IOException {
+		return addArchiveEntry(fileName, file, ReplaceStrategy.RENAME);
+	}
+	
+	public enum ReplaceStrategy {
+		RENAME,
+		REPLACE,
+		OVERRIDE
+	}
+	
+	@JsonIgnore
+	public ArchiveEntry addArchiveEntry(String fileName, Path file, ReplaceStrategy strategy) throws CombineArchiveWebException, IOException {
 		
 		if( archive == null ) {
 			LOGGER.error( "The archive was not opened" );
 			throw new CombineArchiveWebException("The archive was not opened");
 		}
 		
-		// make sure file name is not taken yet
-		String altFileName = fileName;
-		int i = 1;
-		while( archive.getEntry(altFileName) != null ) {
-			i++;
-			int extensionPoint = fileName.lastIndexOf( '.' );
-			String extension = fileName.substring( extensionPoint );
-			String pureName = fileName.substring( 0, extensionPoint );
-			
-			altFileName = pureName + "-" + String.valueOf(i) + extension;
+		if( archive.getEntry(fileName) != null && strategy == ReplaceStrategy.RENAME ) {
+			// make sure file name is not taken yet
+			String altFileName = fileName;
+			int i = 1;
+			while( archive.getEntry(altFileName) != null ) {
+				i++;
+				int extensionPoint = fileName.lastIndexOf( '.' );
+				String extension = fileName.substring( extensionPoint );
+				String pureName = fileName.substring( 0, extensionPoint );
+				
+				altFileName = pureName + "-" + String.valueOf(i) + extension;
+			}
+			fileName = altFileName;
 		}
-		fileName = altFileName;
+		else if( archive.getEntry(fileName) != null && strategy == ReplaceStrategy.OVERRIDE ) {
+			// TODO
+		}
 		
 		// add the entry the archive
 		ArchiveEntry entry = null;

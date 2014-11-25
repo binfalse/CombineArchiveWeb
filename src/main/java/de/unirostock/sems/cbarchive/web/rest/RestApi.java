@@ -27,11 +27,13 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
@@ -52,27 +54,36 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.MetaDataHolder;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.VcImporter;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
+import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
+import de.unirostock.sems.cbarchive.web.exception.ArchiveEntryUploadException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
@@ -108,8 +119,8 @@ public class RestApi extends RestHelper {
 			history = new WorkspaceHistory();
 		
 		// puts current workspace into history
-		if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
-			history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
+		if( history.containsWorkspace(user.getWorkspaceId()) == false )
+			history.getRecentWorkspaces().add( user.getWorkspace() );
 		history.setCurrentWorkspace( user.getWorkspaceId() );
 		
 		try {
@@ -168,7 +179,7 @@ public class RestApi extends RestHelper {
 	@GET
 	@Path("/workspaces")
 	@Produces( MediaType.APPLICATION_JSON )
-	public Response getCurrentWorkspaceId( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
+	public Response getWorkspaces( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -187,10 +198,11 @@ public class RestApi extends RestHelper {
 			if( history == null )
 				history = new WorkspaceHistory();
 			
-			if( history.getRecentWorkspaces().containsKey(user.getWorkspaceId()) == false )
-				history.getRecentWorkspaces().put( user.getWorkspaceId(), user.getWorkspace().getName() );
-			
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
 			history.setCurrentWorkspace( user.getWorkspaceId() );
+			
 			historyCookie = history.toCookieJson();
 			
 		} catch (IOException e) {
@@ -200,8 +212,101 @@ public class RestApi extends RestHelper {
 		
 		return buildResponse(200, user)
 				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
-				.entity(history)
+				.entity(history.getRecentWorkspaces())
 				.build();
+	}
+	
+	@GET
+	@Path("/workspaces/{workspace_id}")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getSingleWorkspace( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @PathParam("workspace_id") String requestedWorkspace ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+			
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			
+			historyCookie = history.toCookieJson();
+			Workspace workspace = history.getWorkspace(requestedWorkspace);
+			
+			return buildResponse(200, user)
+					.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+					.entity(workspace)
+					.build();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie " + historyCookie, e.getMessage());
+		} catch (CombineArchiveWebException e) {
+			LOGGER.error(e, "Cannot find requested workspace in history ", requestedWorkspace);
+			return buildErrorResponse(500, user, "Cannot find requested workspace in history " + requestedWorkspace, e.getMessage());
+		}
+	}
+	
+	@PUT
+	@Path("/workspaces/{workspace_id}")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response updateWorkspace( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @PathParam("workspace_id") String workspaceId, Workspace workspace ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+			
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			
+			if( workspaceId == null || workspaceId.isEmpty() )
+				workspaceId = workspace.getWorkspaceId();
+			
+			Workspace oldWorkspace = history.getWorkspace(workspaceId);
+			oldWorkspace.setName( workspace.getName() );
+			
+			historyCookie = history.toCookieJson();
+			
+			return buildResponse(200, user)
+					.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+					.entity(oldWorkspace)
+					.build();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie " + historyCookie, e.getMessage());
+		} catch (CombineArchiveWebException e) {
+			LOGGER.error(e, "Cannot find requested workspace in history ", workspaceId);
+			return buildErrorResponse(500, user, "Cannot find requested workspace in history " + workspaceId, e.getMessage());
+		}
 	}
 	
 	// --------------------------------------------------------------------------------
@@ -643,7 +748,7 @@ public class RestApi extends RestHelper {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
 	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files,
-			@FormDataParam("path") String path ,@CookieParam(Fields.COOKIE_USER) String userJson ) {
+			@FormDataParam("options") String optionString, @FormDataParam("path") String path, @CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -655,9 +760,23 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
+		if( files == null ) {
+			LOGGER.error("No files were uploaded!");
+			return buildErrorResponse(400, user, "No files were uploaded!");
+		}
+		
+		Map<String, String> options = null;
+		try {
+			ObjectMapper mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
+			options = mapper.readValue(optionString, new TypeReference<Map<String, String>>() {} );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot parse options String.");
+			return buildErrorResponse(500, user, "Cannot read options string.");
+		}
+		
 		try {
 			Archive archive = user.getArchive(archiveId);
-			List<ArchiveEntryDataholder> result = new LinkedList<ArchiveEntryDataholder>();
+			List<Object> result = new LinkedList<Object>();
 			
 			// adds ending slash
 			if( path == null || path.isEmpty() )
@@ -665,14 +784,13 @@ public class RestApi extends RestHelper {
 			else if( !path.endsWith("/") )
 				path = path + "/";
 			
+			// check maximum files in archive -> is the limit already reached, without uploading anything new?
+			if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( archive.countArchiveEntries(), Fields.QUOTA_FILE_LIMIT) == false ) {
+				LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+				return buildErrorResponse(507, user, "The max amount of files in one archive is reached.");
+			}
+			
 			for( FormDataBodyPart file : files ) {
-				
-				// TODO see below
-				// check maximum files in archive
-				if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_FILE_LIMIT) == false ) {
-					LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
-					return buildErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
-				}
 				
 				try {
 					String fileName = file.getFormDataContentDisposition().getFileName();
@@ -691,66 +809,87 @@ public class RestApi extends RestHelper {
 					output.close();
 					input.close();
 					
-					// TODO some mechanism, which does not stop the whole process and returns the already processed files
-					
 					// max size for upload
 					if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(uploadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
 						LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The uploaded file is to big.");
+						result.add( new ArchiveEntryUploadException("The uploaded file is to big.", path + fileName) );
+						continue;
 					}
 					// max files in one archive
 					if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_FILE_LIMIT) == false ) {
 						LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The amount of files in one archive is reached.");
+						result.add( new ArchiveEntryUploadException("The max amount of files in one archive is reached.", path + fileName) );
+						continue;
 					}
 					// max archive size
 					if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + uploadedFileSize, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
 						LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The maximum size of one archive is reached.");
+						result.add( new ArchiveEntryUploadException("The maximum size of one archive is reached.", path + fileName) );
+						continue;
 					}
 					// max workspace size
 					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getWorkspaceSize() + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
 						LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The maximum size of one workspace is reached.");
+						result.add( new ArchiveEntryUploadException("The maximum size of one workspace is reached.", path + fileName) );
+						continue;
 					}
 					// max total size
 					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(WorkspaceManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
 						LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
-						// pack and close the archive
-						archive.getArchive().pack();
-						archive.getArchive().close();
-						return buildErrorResponse(507, user, "The maximum size is reached.");
+						result.add( new ArchiveEntryUploadException("The maximum size is reached.", path + fileName) );
+						continue;
+					}
+					
+					// override flag
+					
+					ReplaceStrategy strategy = ReplaceStrategy.RENAME;
+					
+					String opt = (options != null) ? options.get( file.getFormDataContentDisposition().getFileName() ) : null;
+					if( opt != null && !opt.isEmpty() ) {
+						if( opt.contains("replace") )
+							strategy = ReplaceStrategy.REPLACE;
+						else if( opt.contains("override") )
+							strategy = ReplaceStrategy.OVERRIDE;
 					}
 					
 					// add the file in the currently selected path
-					ArchiveEntry entry = archive.addArchiveEntry(path + fileName, temp);
+					ArchiveEntry entry = archive.addArchiveEntry(path + fileName, temp, strategy);
 					
 					// add default meta information
 					if( user.getData() != null && user.getData().hasInformation() == true ) {
-						OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
-						entry.addDescription( new OmexMetaDataObject(metaData) );
+						
+						// scan for existing omex meta data and takes the first one
+						OmexMetaDataObject metaObject = null;
+						for( MetaDataObject iterMetaObject : entry.getDescriptions() ) {
+							if( iterMetaObject instanceof OmexMetaDataObject ) {
+								metaObject = (OmexMetaDataObject) iterMetaObject;
+								break;
+							}
+						}
+						
+						if( metaObject == null ) {
+							OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
+							entry.addDescription( new OmexMetaDataObject(metaData) );
+						}
+						else  {
+							// add current date of modification
+							metaObject.getOmexDescription().getModified().add( new Date() );
+							// add current user as creator, if not already present
+							List<VCard> creators = metaObject.getOmexDescription().getCreators();
+							if( !user.getData().isContained(creators) )
+								creators.add( user.getData().getVCard() );
+						}
+						
 					}
 						
 					LOGGER.info(MessageFormat.format("Successfully added file {0} to archive {1}", fileName, archiveId));
@@ -761,8 +900,9 @@ public class RestApi extends RestHelper {
 					result.add( new ArchiveEntryDataholder(entry) );
 				}
 				catch (IOException e) {
-					// TODO ???
 					LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
+					result.add( new ArchiveEntryUploadException(MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir()), path) );
+					continue;
 				}
 				
 			}

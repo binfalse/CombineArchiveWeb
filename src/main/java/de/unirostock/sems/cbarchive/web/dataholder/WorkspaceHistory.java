@@ -19,10 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -36,23 +34,44 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 public class WorkspaceHistory {
 	
-	private Map<String, String> recentWorkspaces = new HashMap<String, String>();
+	private List<Workspace> recentWorkspaces = null;
 	@JsonInclude(Include.NON_NULL) 
 	private String currentWorkspace = null;
 	
-	public WorkspaceHistory(Map<String, String> recentWorkspaces, String currentWorkspace) {
+	public WorkspaceHistory(List<Workspace> recentWorkspaces, String currentWorkspace) {
 		super();
 		this.recentWorkspaces = recentWorkspaces;
-		this.currentWorkspace = currentWorkspace;
+		if( this.recentWorkspaces == null )
+			this.recentWorkspaces = new ArrayList<Workspace>();
 		
+		this.currentWorkspace = currentWorkspace;
+		if( this.currentWorkspace == null || this.currentWorkspace.isEmpty() ) {
+			// finding the current
+			this.currentWorkspace = null;
+			for( Workspace elem : this.recentWorkspaces ) {
+				if( this.currentWorkspace == null && elem.isCurrent() )
+					this.currentWorkspace = elem.getWorkspaceId();
+				else if( this.currentWorkspace != null && elem.isCurrent() )
+					elem.setCurrent(false);
+			}
+		}
+		else {
+			setCurrentWorkspace(this.currentWorkspace);
+		}
+			
 		cleanUpHistory();
 	}
 
 	public WorkspaceHistory() {
-		super();
+		this( null, null );
+	}
+	
+	public WorkspaceHistory( List<Workspace> recentWorkspaces ) {
+		this( recentWorkspaces, null );
 	}
 
 	public String getCurrentWorkspace() {
@@ -60,17 +79,25 @@ public class WorkspaceHistory {
 	}
 
 	public void setCurrentWorkspace(String currentWorkspace) {
+		
+		if( this.currentWorkspace != null && this.currentWorkspace.equals(currentWorkspace) )
+			return;
+		
 		this.currentWorkspace = currentWorkspace;
+		
+		// finding the current
+		for( Workspace elem : this.recentWorkspaces ) {
+			if( elem.getWorkspaceId().equals(this.currentWorkspace) )
+				elem.setCurrent(true);
+			else
+				elem.setCurrent(false);
+		}
 	}
 
-	public Map<String, String> getRecentWorkspaces() {
+	public List<Workspace> getRecentWorkspaces() {
 		return recentWorkspaces;
 	}
 
-	public void setRecentWorkspaces(Map<String, String> recentWorkspaces) {
-		this.recentWorkspaces = recentWorkspaces;
-	}
-	
 	/**
 	 * Removes all not existing workspaces from the history
 	 */
@@ -78,20 +105,44 @@ public class WorkspaceHistory {
 	public void cleanUpHistory() {
 		WorkspaceManager workspaceManager = WorkspaceManager.getInstance();
 
-		Iterator<String> iter = recentWorkspaces.keySet().iterator();
+		Iterator<Workspace> iter = recentWorkspaces.iterator();
 		while( iter.hasNext() ) {
-			String elem = iter.next();
-			if( workspaceManager.hasWorkspace(elem) == false )
+			Workspace elem = iter.next();
+			if( workspaceManager.hasWorkspace(elem.getWorkspaceId()) == false )
 				iter.remove();
 		}
 			
 	}
 	
 	@JsonIgnore
+	public boolean containsWorkspace(String workspaceId) {
+		
+		if( currentWorkspace != null && currentWorkspace.equals(workspaceId) )
+			return true;
+		
+		for( Workspace elem : recentWorkspaces) {
+			if( workspaceId.equals(elem.getWorkspaceId()) )
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public Workspace getWorkspace(String workspaceId) throws CombineArchiveWebException {
+		
+		for( Workspace elem : recentWorkspaces) {
+			if( workspaceId.equals(elem.getWorkspaceId()) )
+				return elem;
+		}
+		
+		throw new CombineArchiveWebException("No such workspace available");
+	}
+	
+	@JsonIgnore
 	public String toCookieJson() throws JsonProcessingException {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		String json = mapper.writeValueAsString( (List<String>) new ArrayList<String>( recentWorkspaces.keySet() ) );
+		String json = mapper.writeValueAsString( recentWorkspaces );
 		
 		json = Base64.encodeBase64URLSafeString( json.getBytes() );
 		return json;
@@ -106,19 +157,20 @@ public class WorkspaceHistory {
 		json = new String( Base64.decodeBase64(json) );
 		
 		ObjectMapper mapper = new ObjectMapper();
-		List<String> recent = mapper.readValue(json, new TypeReference<List<String>>(){} );
+		List<Workspace> recent = mapper.readValue(json, new TypeReference<List<Workspace>>(){} );
+		List<Workspace> result = new ArrayList<Workspace>();
 		
 		WorkspaceManager workspaceManager = WorkspaceManager.getInstance();
-		WorkspaceHistory result = new WorkspaceHistory();
+		
 		
 		// looking up the names
-		for( String elem : recent ) {
-			Workspace workspace = workspaceManager.getWorkspace(elem);
+		for( Workspace elem : recent ) {
+			Workspace workspace = workspaceManager.getWorkspace(elem.getWorkspaceId());
 			if( workspace != null )
-				result.getRecentWorkspaces().put(workspace.getWorkspaceId(), workspace.getName());
+				result.add(workspace);
 		}
 		
-		return result;
+		return new WorkspaceHistory(result);
 	}
 	
 	

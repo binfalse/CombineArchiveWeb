@@ -23,11 +23,9 @@
 		var RestRoot = 'rest/v1/';
 	</script>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="res/js/3rd/jquery-field-selection.js"></script>
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
-	<script type="text/javascript" src="res/js/3rd/jquery.colorbox-min.js"></script>
 	
-	<script type="text/javascript" src="res/js/3rd/underscore.js"></script>
+	<script type="text/javascript" src="res/js/3rd/underscore-min.js"></script>
 	<script type="text/javascript" src="res/js/3rd/backbone-min.js"></script>
 	
 	<!-- Load jsTree and friends -->
@@ -37,10 +35,16 @@
 	<script type="text/javascript" src="res/js/3rd/jstree/jstree.search.js"></script>
 	<script type="text/javascript" src="res/js/3rd/jstree/jstree.dnd.js"></script>
 	
+	<!-- rainbow syntax highlighter -->
 	<script type="text/javascript" src="res/js/3rd/rainbow/rainbow.js"></script>
 	<script type="text/javascript" src="res/js/3rd/rainbow/language/xml.js"></script>
 	<link rel="stylesheet" href="res/js/3rd/rainbow/themes/pastie.css" type="text/css">
 	
+	<!-- popup framwork -->
+	<script type="text/javascript" src="res/js/3rd/jquery-impromptu.min.js"></script>
+	<link rel="stylesheet" href="res/css/jquery-impromptu.min.css" type="text/css">
+	
+	<!-- main scripts -->
 	<script type="text/javascript" src="res/js/models.js"></script>
 	<script type="text/javascript" src="res/js/js.js"></script>
 	
@@ -82,33 +86,36 @@
 				We offer basic support for collaborative working.
 				All the archives that 
 				To share this workspace, just distribute the following link: <br />
-				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(history.currentWorkspace); }}" /> 
+				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(current.workspaceId); }}" /> 
 				<br />However, you should not work on the same workspace from different locations at the same time!
 			</p>
 			
 			<h2>Workspace History</h2>
 			<p>
-				{{# if( _.size(history.recentWorkspaces) == 1 ) { }}
-					So far, you do not have a workspace history.
+				{{# if( _.size(history) == 1 ) { }}
+					So far, you only have one workspace in your history.
 					As soon as you have shared workspaces with other people you will see this history growing.<br/>
-					<div class="edit-link">
-						<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
-					</div>
-				{{# } else { }}
-					<div class="edit-link">
-						<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
-					</div>
-					<ul style="margin-top: 0;">
-					{{# _.each( history.recentWorkspaces, function(value, key, list) { }} 
-						{{# if( key != history.currentWorkspace ) { }}
-						<li>
-							<strong>{{# print(value); }}</strong> &nbsp;
-							<a href="{{# print(baseUrl); }}rest/share/{{# print(key); }}">{{# print(key); }}</a>
-						</li>
-						{{# } }}
-					{{# }); }}
-					</ul>
 				{{# } }}
+				<div class="edit-link">
+					<a href="{{# print(baseUrl); }}rest/share/new-workspace">[Create new workspace]</a>
+				</div>
+				<ul class="start-history-list" style="margin-top: 0;">
+				{{# _.each( history, function(element, index, list) { }} 
+					<li class="edit-object {{# element.current == true ? print('current-workspace') : print(''); }}">
+						<span>
+							{{# if( element.current != true ) { }}
+								<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(element.name); }}</a>
+							{{# } else { }}
+								{{# print(element.name); }}
+							{{# } }}
+						</span>
+						<span class="edit-link">
+							<a class="start-history-rename" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Rename]</a>
+						</span>
+					</li>
+				{{# }); }}
+				</ul>
+				
 			</p>
 			
 			<h2>Disclaimer</h2>
@@ -206,7 +213,7 @@
 			</p>
 			<p>
 				You should have received a copy of the GNU General Public License
-				along with this program.  If not, see &lt;<a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>&gt;.
+				along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>.
     		</p>
 			
 		</div>
@@ -406,6 +413,17 @@
 					<a class="archive-meta-omex-creator-delete on-edit" href="#">[-]</a>
 				</div>
 			</div> 
+		</div>
+		<!-- **** -->
+		<div id="template-dialog-exists">
+			<p>
+				<strong>{{# print(fileName); }}</strong> already exists.
+			</p>
+			<ul>
+				<li><strong>Rename</strong> the new file</li>
+				<li><strong>Replace</strong> the old file, meta data will be copied</li>
+				<li><strong>Override</strong> the old file, meta data will be destroyed</li>
+			</ul>
 		</div>
 		<!-- **** -->
 		<div id="template-xml-meta-entry">

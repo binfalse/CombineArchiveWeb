@@ -114,9 +114,17 @@ var XmlMetaModel = Backbone.Model.extend({
 
 var WorkspaceHistoryModel = Backbone.Model.extend({
 	urlRoot: RestRoot + "workspaces",
+	idAttribute: "workspaceId",
 	defaults: {
-		"currentWorkspace": ""
+		"workspaceId": "null",
+		"name": "",
+		"lastseen": "now",
+		"current": false
 	}
+});
+var WorkspaceHistoryCollection = Backbone.Collection.extend({
+	model: WorkspaceHistoryModel,
+	url: RestRoot + "workspaces"
 });
 
 var ArchiveCollection = Backbone.Collection.extend({
@@ -1037,41 +1045,117 @@ var ArchiveView = Backbone.View.extend({
 				if( npath.indexOf("/", npath.length - 1) === -1 )
 					npath = npath + "/";
 				
-				path = npath + path;
+				if( npath !== "/" )
+					path = npath + path;
 				//path = par.text + ( par.text.indexOf("/", par.text.length-1) === -1 ? "/" : "") + path;
 				par = jstree.get_node( jstree.get_parent(par) );
 			}
 		}
 		
-		console.log(path);
-		
-		// form data object to push to server
-		var formData = new FormData();
-		var self = this;
-		
-		// adds all files to the data object
-		_.each(files, function(file, index, list) {
-			console.log(file);
-			formData.append("files[]", file);
+		// Grabs the data
+		var uploadTask = {
+				"view": this,
+				"path": path,
+				"files": []
+		};
+		_.each(files, function(file) {
+			uploadTask.files.push({
+				"data": file,
+				"option": null
+			});
 		});
-		// add current path to formData, to upload files in the current directory
-		formData.append("path", path);
 		
 		// show waiting stuff
 		this.$el.find(".dropbox .icon").show();
 		this.$el.find(".dropbox a").hide();
+		// delegate stuff
+		var self = this;
+		setTimeout(function () { self.uploadFilesCheck(uploadTask); }, 0);
+	},
+	uploadFilesCheck: function(task) {
+		var uploadTask = task;
 		
+		var result = _.every(uploadTask.files, function(file, index) {
+			
+			// file already processed
+			if( file.option != null && file.option != undefined )
+				return true;
+			
+			if( uploadTask.view.collection.find(function(elem) { 
+				return elem.get("filePath") == uploadTask.path + file.data.name; }) ) {
+				// file exists in archive
+				var popupHtml = templateCache["template-dialog-exists"]({"fileName": uploadTask.path + file.data.name});
+				$.prompt( popupHtml, {
+					buttons: { "Rename": "rename", "Replace": "replace", "Override": "override", "Cancel": "cancel" },
+					submit: function(event, value, message, fromVal) {
+						uploadTask.files[index].option = value;
+						// continue
+						setTimeout(function () { uploadTask.view.uploadFilesCheck(uploadTask); }, 500);
+					}
+				});
+				// breaks the loop
+				return false;
+			}
+			else {
+				// file does not exist => default value
+				uploadTask.files[index].option = "default"; 
+			}
+			
+			// continue
+			return true;
+		});
+		
+		if( result == true ) {
+			// every file has passed the test
+			uploadTask.view.uploadFilesDoIt(uploadTask);
+		}
+	},
+	uploadFilesDoIt: function(uploadTask) {
+		
+		var formData = new FormData();
+		var options = {};
+		
+		// adds all files to the data object (prepare to submit)
+		_.each(uploadTask.files, function(file, index, list) {
+			if( file.option !== "cancel" && file.option !== undefined && file.option !== null ) {
+				formData.append("files[]", file.data);
+				options[file.data.name] = file.option;
+			}
+		});
+		if( _.size(options) <= 0 ) {
+			// No file is selected to upload!
+			uploadTask.view.$el.find(".dropbox .icon").hide();
+			uploadTask.view.$el.find(".dropbox a").show();
+			return false;
+		}
+			
+		// add options and current path to formData, to upload files in the current directory
+		formData.append("options", JSON.stringify(options) );
+		formData.append("path", uploadTask.path);
+		
+		var self = uploadTask.view;
 		// upload it
 		$.ajax({
-			"url": this.collection.url,
+			"url": self.collection.url,
 			"type": "POST",
 			processData: false,
 			contentType: false,
 			data: formData,
 			success: function(data) {
-				console.log(data);
+//				console.log(data);
 				self.fetchCollection(true);
-				// not necessary to display, because complete view gets re-rendered
+				
+				// scanning for any non-critical erros.
+				if( data !== undefined ) {
+					_.each(data, function(element, index, list) {
+						if( element.error == true )
+							messageView.warning( element.filePath, element.message );
+					});
+				}
+				else 
+					messageView.error( "Unknown Error", "No response from the server!" );
+				
+				// not necessary to display, because complete view gets re-rendered TODO improve this!
 //				this.$el.find(".dropbox .icon").hide();
 //				this.$el.find(".dropbox a").show();
 			},
@@ -1720,29 +1804,33 @@ var CreateView = Backbone.View.extend({
 var StartView = Backbone.View.extend({
 	
 	el: "#start-page",
-	model: null,
+	collection: null,
 	
 	initialize: function() {
 		this.template = templateCache["template-start"];
-		this.model = new WorkspaceHistoryModel();
+		this.collection = new WorkspaceHistoryCollection();
 		this.fetch();
 	},
 	render: function() {
-		var json = { "history": this.model.toJSON(), "baseUrl": location.protocol+"//"+location.host+location.pathname+(location.search?location.search:"") };
+		var current = this.collection.find(function( element ) {
+			return element.get("current") == true;
+		});
+		
+		var json = { "history": this.collection.toJSON(), "current": current.toJSON(), "baseUrl": location.protocol+"//"+location.host+location.pathname+(location.search?location.search:"") };
 		this.$el.html( this.template(json) );
 	},
 	fetch: function() {
 		
-		if( this.model == null )
+		if( this.collection == null )
 			return;
 		
 		var self = this;
-		this.model.fetch({
+		this.collection.fetch({
 			reset: true,
-			success: function(model, response, options) {
+			success: function(collection, response, options) {
 				self.render();
 			},
-			error: function(model, response, options) {
+			error: function(collection, response, options) {
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
 					messageView.error( "Cannot fetch workspace history", text );
@@ -1755,7 +1843,40 @@ var StartView = Backbone.View.extend({
 	},
 	
 	events: {
+		"click .start-history-rename": "renameHistoryEntry"
+	},
+	renameHistoryEntry: function(event) {
 		
+		var workspace = this.collection.get( $(event.target).attr("data-workspace-id") );
+		if( workspace == null )
+			return false;
+		
+		var newName = window.prompt( workspace.get("workspaceId"), workspace.get("name") ); 
+		if( newName == null || newName == "" || newName == workspace.get("name") )
+			return false;
+		
+		workspace.set("name", newName);
+		
+		messageView.removeMessages("workspace-history");
+		var self = this;
+		workspace.save({}, {
+			success: function(model, response, options) {
+				// everything ok
+				self.render();
+				messageView.success( undefined, "Workspace successfully renamed", "workspace-history" );
+			},
+			error: function(model, response, options) {
+				console.log("error while renaming workspace");
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Cannot rename workspace", text, "workspace-history" );
+				}
+				else
+					messageView.error( "Unknown Error", "Cannot rename workspace", "workspace-history" );
+			}
+		});
+		
+		return false;
 	}
 });
 

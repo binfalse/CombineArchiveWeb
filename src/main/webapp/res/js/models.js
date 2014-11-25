@@ -819,6 +819,7 @@ var ArchiveView = Backbone.View.extend({
 				"children": this.generateJsTreeJson()
 			};
 		
+		var self = this;
 		// init file tree
 		this.$treeEl = this.$el.find(".archive-jstree");
 		this.$treeEl.jstree({
@@ -829,9 +830,10 @@ var ArchiveView = Backbone.View.extend({
                     // in case of 'rename_node' node_position is filled with the new node name
 					
 					if (operation === "move_node") {
-                        return (node_parent.original.type == "dir" || node_parent.original.type == "root") && node.original.type == "file"; // only allow moving files into directories
+						console.log(node_parent);
+                        return ( node_parent.parent == "#" || node_parent.original.type == "dir" || node_parent.original.type == "root") && node.original.type == "file"; // only allow moving files into directories
                     }
-                    return true;  //allow all other operations
+                    return true;  // allow all other operations
 				}
 			},
 			"dnd": {
@@ -840,7 +842,7 @@ var ArchiveView = Backbone.View.extend({
 			"plugins": ["dnd", "search"]
 		});
 		// work-around for these strange jstree event names
-		var self = this;
+		
 		this.$treeEl.on("changed.jstree", function(event, data) { self.jstreeClick.call(self, event, data); } );
 		this.$treeEl.on("move_node.jstree", function(event, data) { self.jstreeMove.call(self, event, data); } );
 		

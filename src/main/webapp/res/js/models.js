@@ -830,7 +830,6 @@ var ArchiveView = Backbone.View.extend({
                     // in case of 'rename_node' node_position is filled with the new node name
 					
 					if (operation === "move_node") {
-						console.log(node_parent);
                         return ( node_parent.parent == "#" || node_parent.original.type == "dir" || node_parent.original.type == "root") && node.original.type == "file"; // only allow moving files into directories
                     }
                     return true;  // allow all other operations

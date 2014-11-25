@@ -417,13 +417,13 @@
 		<!-- **** -->
 		<div id="template-dialog-exists">
 			<p>
-				<strong>{{# fileName }}</strong> already exists.
+				<strong>{{# print(fileName); }}</strong> already exists.
 			</p>
-<!-- 			<div class="edit-link"> -->
-<!-- 				<a class="dialog-exists-rename" href="#">[Rename]</a> -->
-<!-- 				<a class="dialog-exists-replace" href="#">[Replace]</a> -->
-<!-- 				<a class="dialog-exists-cancel" href="#">[Cancel]</a> -->
-<!-- 			</div> -->
+			<ul>
+				<li><strong>Renames</strong> the new file, if the name is already taken</li>
+				<li><strong>Replace</strong> the old file, meta data will be copied</li>
+				<li><strong>Override</strong> the old file, meta data will be discarded</li>
+			</ul>
 		</div>
 		<!-- **** -->
 		<div id="template-xml-meta-entry">

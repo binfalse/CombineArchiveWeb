@@ -196,9 +196,9 @@ public class Archive {
 	}
 	
 	public enum ReplaceStrategy {
-		RENAME,
-		REPLACE,
-		OVERRIDE
+		RENAME,		// renames the new file, if the name is already taken
+		REPLACE,	// replaces the old file, meta data will be copied
+		OVERRIDE	// replaces the old file, meta data will be discarded
 	}
 	
 	@JsonIgnore
@@ -209,33 +209,43 @@ public class Archive {
 			throw new CombineArchiveWebException("The archive was not opened");
 		}
 		
-		if( archive.getEntry(fileName) != null && strategy == ReplaceStrategy.RENAME ) {
-			// make sure file name is not taken yet
-			String altFileName = fileName;
-			int i = 1;
-			while( archive.getEntry(altFileName) != null ) {
-				i++;
-				int extensionPoint = fileName.lastIndexOf( '.' );
-				String extension = fileName.substring( extensionPoint );
-				String pureName = fileName.substring( 0, extensionPoint );
-				
-				altFileName = pureName + "-" + String.valueOf(i) + extension;
-			}
-			fileName = altFileName;
-		}
-		else if( archive.getEntry(fileName) != null && strategy == ReplaceStrategy.OVERRIDE ) {
-			// TODO
-		}
-		
-		// add the entry the archive
 		ArchiveEntry entry = null;
-		entry = archive.addEntry( file.toFile(), fileName, Formatizer.guessFormat(file.toFile()) );
-		// adds the entry to the dataholder (warning: this is probably inconsistent)
-		if( entry != null ) {
-			// entry information are gathered in the entry dataholder
-			ArchiveEntryDataholder dataholder = new ArchiveEntryDataholder(entry);
-			// put it into the map
-			this.entries.put(dataholder.getFilePath(), dataholder);
+		
+		if( strategy == ReplaceStrategy.RENAME || strategy == ReplaceStrategy.OVERRIDE ) {
+			
+			// make sure file name is not taken yet
+			if( archive.getEntry(fileName) != null && strategy == ReplaceStrategy.RENAME ) {
+				String altFileName = fileName;
+				int i = 1;
+				while( archive.getEntry(altFileName) != null ) {
+					i++;
+					int extensionPoint = fileName.lastIndexOf( '.' );
+					String extension = fileName.substring( extensionPoint );
+					String pureName = fileName.substring( 0, extensionPoint );
+					
+					altFileName = pureName + "-" + String.valueOf(i) + extension;
+				}
+				fileName = altFileName;
+			}
+			
+			entry = archive.addEntry( file.toFile(), fileName, Formatizer.guessFormat(file.toFile()) );
+			// adds the entry to the dataholder (warning: this is probably inconsistent)
+			if( entry != null ) {
+				// entry information are gathered in the entry dataholder
+				ArchiveEntryDataholder dataholder = new ArchiveEntryDataholder(entry);
+				// put it into the map
+				this.entries.put(dataholder.getFilePath(), dataholder);
+			}
+		}
+		else if( archive.getEntry(fileName) != null && strategy == ReplaceStrategy.REPLACE ) {
+			entry = archive.addEntry( file.toFile(), fileName, Formatizer.guessFormat(file.toFile()) );
+			// adds the entry to the dataholder (warning: this is probably inconsistent)
+			if( entry != null ) {
+				// entry information are gathered in the entry dataholder
+				ArchiveEntryDataholder dataholder = new ArchiveEntryDataholder(entry);
+				// put it into the map
+				this.entries.put(dataholder.getFilePath(), dataholder);
+			}
 		}
 		
 		return entry;

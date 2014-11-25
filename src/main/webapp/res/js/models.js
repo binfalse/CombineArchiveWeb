@@ -1083,9 +1083,9 @@ var ArchiveView = Backbone.View.extend({
 			if( uploadTask.view.collection.find(function(elem) { 
 				return elem.get("filePath") == uploadTask.path + file.data.name; }) ) {
 				// file exists in archive
-				var popupHtml = templateCache["template-dialog-exists"]({"fileName": uploadTask.path + file.name});
+				var popupHtml = templateCache["template-dialog-exists"]({"fileName": uploadTask.path + file.data.name});
 				$.prompt( popupHtml, {
-					buttons: { "Rename": "rename", "Replace": "replace", "Cancel": "cancel" },
+					buttons: { "Rename": "rename", "Replace": "replace", "Override": "override", "Cancel": "cancel" },
 					submit: function(event, value, message, fromVal) {
 						uploadTask.files[index].option = value;
 						// continue

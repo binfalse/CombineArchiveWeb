@@ -53,7 +53,10 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.binfalse.bflog.LOGGER;
@@ -741,7 +744,7 @@ public class RestApi extends RestHelper {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
 	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @FormDataParam("files[]") List<FormDataBodyPart> files,
-			@FormDataParam("options") Map<String, String> options, @FormDataParam("path") String path, @CookieParam(Fields.COOKIE_USER) String userJson ) {
+			@FormDataParam("options") String optionString, @FormDataParam("path") String path, @CookieParam(Fields.COOKIE_USER) String userJson ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -751,6 +754,20 @@ public class RestApi extends RestHelper {
 		} catch (IOException e) {
 			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if( files == null ) {
+			LOGGER.error("No files were uploaded!");
+			return buildErrorResponse(400, user, "No files were uploaded!");
+		}
+		
+		Map<String, String> options = null;
+		try {
+			ObjectMapper mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
+			options = mapper.readValue(optionString, new TypeReference<Map<String, String>>() {} );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot parse options String.");
+			return buildErrorResponse(500, user, "Cannot read options string.");
 		}
 		
 		try {
@@ -833,7 +850,7 @@ public class RestApi extends RestHelper {
 					
 					ReplaceStrategy strategy = ReplaceStrategy.RENAME;
 					
-					String opt = options.get("");
+					String opt = (options != null) ? options.get( file.getFormDataContentDisposition().getFileName() ) : null;
 					if( opt != null && !opt.isEmpty() ) {
 						if( opt.contains("replace") )
 							strategy = ReplaceStrategy.REPLACE;

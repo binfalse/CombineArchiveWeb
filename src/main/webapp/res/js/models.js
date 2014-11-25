@@ -1045,7 +1045,8 @@ var ArchiveView = Backbone.View.extend({
 				if( npath.indexOf("/", npath.length - 1) === -1 )
 					npath = npath + "/";
 				
-				path = npath + path;
+				if( npath !== "/" )
+					path = npath + path;
 				//path = par.text + ( par.text.indexOf("/", par.text.length-1) === -1 ? "/" : "") + path;
 				par = jstree.get_node( jstree.get_parent(par) );
 			}
@@ -1097,7 +1098,7 @@ var ArchiveView = Backbone.View.extend({
 			}
 			else {
 				// file does not exist => default value
-				uploadTask.files[index].option = "rename"; 
+				uploadTask.files[index].option = "default"; 
 			}
 			
 			// continue
@@ -1141,7 +1142,7 @@ var ArchiveView = Backbone.View.extend({
 			contentType: false,
 			data: formData,
 			success: function(data) {
-				console.log(data);
+//				console.log(data);
 				self.fetchCollection(true);
 				
 				// scanning for any non-critical erros.

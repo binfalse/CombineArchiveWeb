@@ -1095,6 +1095,10 @@ var ArchiveView = Backbone.View.extend({
 				// breaks the loop
 				return false;
 			}
+			else {
+				// file does not exist => default value
+				uploadTask.files[index].option = "rename"; 
+			}
 			
 			// continue
 			return true;
@@ -1117,6 +1121,13 @@ var ArchiveView = Backbone.View.extend({
 				options[file.data.name] = file.option;
 			}
 		});
+		if( _.size(options) <= 0 ) {
+			// No file is selected to upload!
+			uploadTask.view.$el.find(".dropbox .icon").hide();
+			uploadTask.view.$el.find(".dropbox a").show();
+			return false;
+		}
+			
 		// add options and current path to formData, to upload files in the current directory
 		formData.append("options", JSON.stringify(options) );
 		formData.append("path", uploadTask.path);

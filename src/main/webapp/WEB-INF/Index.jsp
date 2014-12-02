@@ -320,7 +320,7 @@
 					
 					<div class="edit-link">
 						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>
-						<a class="archive-meta-xml-add on-not-edit on-edit" href="#">[Add XML:RDF meta]</a>
+						<a class="archive-meta-xml-add on-not-edit on-edit" href="#">[Add RDF/XML meta]</a>
 						{{# if( entry.filePath != "/" ) { }}
 						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}" target="_blank">[Download]</a>
 						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
@@ -427,7 +427,7 @@
 		</div>
 		<!-- **** -->
 		<div id="template-xml-meta-entry">
-			<h4>XML:RDF entry</h4>
+			<h4>RDF/XML entry</h4>
 			<div class="archive-meta-xml-code">
  				<pre class="on-not-edit"><code data-language="xml">{{# print(xmlEscapedString); }}</code></pre>
  				<textarea class="on-edit archive-meta-xml-text" >{{# print(xmlEscapedString); }}</textarea>

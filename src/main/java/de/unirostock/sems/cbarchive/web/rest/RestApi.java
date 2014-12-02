@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -54,22 +53,20 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
-import de.unirostock.sems.cbarchive.meta.MetaDataHolder;
 import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
+import de.unirostock.sems.cbarchive.web.QuotaManager;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.VcImporter;
@@ -475,14 +472,14 @@ public class RestApi extends RestHelper {
 					
 					long repoFileSize = archiveFile.length();
 					// max workspace size
-					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getWorkspaceSize() + repoFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + repoFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
 						LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						archiveFile.delete();
 						return buildErrorResponse(507, user, "The maximum size of one workspace is reached.");
 					}
 					// max total size
-					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(WorkspaceManager.getInstance().getTotalSize() + repoFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
+					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + repoFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
 						LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						archiveFile.delete();
@@ -504,6 +501,9 @@ public class RestApi extends RestHelper {
 				String id = user.createArchive( archive.getName(), user.getData().getVCard() );
 				archive.setId(id);
 			}
+			
+			// trigger quota update
+			QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
 			
 			return buildResponse(200, user).entity(archive).build();
 			
@@ -582,14 +582,14 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(507, user, "The uploaded file is to big.");
 			}
 			// max workspace size
-			if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getWorkspaceSize() + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+			if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
 				LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 				// remove temp file
 				temp.toFile().delete();
 				return buildErrorResponse(507, user, "The maximum size of one workspace is reached.");
 			}
 			// max total size
-			if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(WorkspaceManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
+			if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
 				LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 				// remove temp file
 				temp.toFile().delete();
@@ -599,6 +599,9 @@ public class RestApi extends RestHelper {
 			// creates a existing archive in the working space (check is included)
 			String id = user.createArchive( archive.getName(), temp.toFile() );
 			archive.setId(id);
+			
+			// trigger quota update
+			QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
 			
 			return buildResponse(200, user).entity(archive).build();
 			
@@ -632,6 +635,9 @@ public class RestApi extends RestHelper {
 			LOGGER.error(e, MessageFormat.format("Cannot delete archive {1} in WorkingDir {0}", user.getWorkingDir(), id) );
 			return buildErrorResponse( 500, user, "Cannot delete archive!", e.getMessage() );
 		}	
+		
+		// trigger quota update
+		QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
 		
 		// just return a HTTP ok
 		return buildResponse(200, user).entity("ok").build();
@@ -834,7 +840,7 @@ public class RestApi extends RestHelper {
 						continue;
 					}
 					// max workspace size
-					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getWorkspaceSize() + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
 						LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
@@ -842,7 +848,7 @@ public class RestApi extends RestHelper {
 						continue;
 					}
 					// max total size
-					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(WorkspaceManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
+					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
 						LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 						// remove temp file
 						temp.toFile().delete();
@@ -911,6 +917,9 @@ public class RestApi extends RestHelper {
 			archive.getArchive().pack();
 			archive.getArchive().close();
 			
+			// trigger quota update
+			QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
+			
 			// return all successfully uploaded files
 			return buildResponse(200, user).entity(result).build();
 			
@@ -956,6 +965,9 @@ public class RestApi extends RestHelper {
 			try {
 				boolean result = combineArchive.removeEntry(archiveEntry);
 				combineArchive.pack();
+				
+				// trigger quota update
+				QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
 				
 				if( result )
 					return buildResponse(200, user).entity("ok").build();

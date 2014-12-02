@@ -31,6 +31,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.Utils;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 
 public class WorkspaceManager {
@@ -70,22 +71,6 @@ public class WorkspaceManager {
 		return workspaces.containsKey(workspaceId);
 	}
 	
-	/**
-	 * Retuns the total size in bytes from all workspaces or 0L if it fails.
-	 * 
-	 * @return
-	 */
-	public long getTotalSize() {
-		long size = 0;
-		
-		for( Workspace workspace : workspaces.values() ) {
-			if( workspace != null )
-				size += workspace.getWorkspaceSize();
-		}
-		
-		return size;
-	}
-	
 	public synchronized Workspace createWorkspace() throws IOException {
 		
 		if( Fields.STORAGE.exists() == false && Fields.STORAGE.mkdirs() == false ) {
@@ -116,6 +101,24 @@ public class WorkspaceManager {
 		return workspace;
 	}
 	
+	public synchronized void removeWorkspace( Workspace workspace ) {
+		
+		if( workspace == null )
+			return;
+		
+		// first remove it from the index
+		workspaces.remove( workspace.getWorkspaceId() );
+		updateStorage();
+		
+		// remove directory
+		try {
+			Utils.delete( workspace.getWorkspaceDir() );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot delete Workspace directory ", workspace.getWorkspaceId() );
+		}
+		
+	}
+	
 	/**
 	 * Checks if the time for the store cycle exceeded and runs the store process, if necessary
 	 */
@@ -125,7 +128,8 @@ public class WorkspaceManager {
 //		LOGGER.info( (new Date()).getTime(), "  ", lastSaved.getTime(), "  ", difference, "  ", Fields.STORAGE_AGE );
 		
 		if( difference > Fields.STORAGE_AGE )
-			this.storeSettings();
+			// Scan all workspaces and than saves the settings in a separate thread
+			QuotaManager.getInstance().forceAsyncScan(true);
 		
 	}
 	
@@ -205,7 +209,6 @@ public class WorkspaceManager {
 				
 				workspace.getArchives().put( parts[1], properties.getProperty(key) );			
 			}
-			
 		}
 		// **** end iterating over properties
 	}
@@ -232,7 +235,6 @@ public class WorkspaceManager {
 				String archiveName = workspace.getArchives().get(archiveId);
 				properties.setProperty( Fields.PROP_ARCHIVE_PRE + workspaceId + Fields.PROP_SEPARATOR + archiveId, archiveName);
 			}
-			
 		}
 		
 		try {

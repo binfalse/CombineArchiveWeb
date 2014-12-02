@@ -172,12 +172,12 @@ public class HttpImporter {
 			throw new ImporterException("The uploaded file is to big.");
 		}
 		// max workspace size
-		if( user != null && Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getWorkspaceSize() + length, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+		if( user != null && Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + length, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
 			LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 			throw new ImporterException("The maximum size of one workspace is reached.");
 		}
 		// max total size
-		if( user != null && Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(WorkspaceManager.getInstance().getTotalSize() + length, Fields.QUOTA_TOTAL_SIZE) == false ) {
+		if( user != null && Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + length, Fields.QUOTA_TOTAL_SIZE) == false ) {
 			LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 			throw new ImporterException("The maximum size is reached.");
 		}

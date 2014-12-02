@@ -32,8 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.Fields;
+import de.unirostock.sems.cbarchive.web.QuotaManager;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
@@ -52,6 +54,10 @@ public class Index extends HttpServlet {
 		// load settings form servlet context
 		ServletContext context = config.getServletContext();
 		Fields.loadSettingsFromContext(context);
+		
+		// init Singletons
+		WorkspaceManager.getInstance();
+		QuotaManager.getInstance().forceAsyncScan(true);
 	}
 
 	private void run (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

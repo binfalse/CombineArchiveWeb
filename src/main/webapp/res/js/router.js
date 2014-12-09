@@ -6,6 +6,7 @@ var PageRouter = Backbone.Router.extend({
 		"start":						"start",
 		"create":						"create",
 		"about":						"about",
+		"archive/:archiveId":			"archive",
 		"archive/:archiveId(/:fileId)":	"archive"
 	},
 	
@@ -26,24 +27,25 @@ var PageRouter = Backbone.Router.extend({
 	
 	// Helper functions
 	selectArchive: function( archiveId ) {
-		return this.navigate("archive/" + archiveId);
+		return this.navigate( "archive/" + archiveId, {trigger: true} );
 	},
 	goToPage: function( page ) {
-		return this.navigate( page );
+		return this.navigate( page, {trigger: true} );
 	},
 	
 	// Route functions
 	start: function() {
-		navigationView.goToPage("start-page");
+		navigationView.goToPage("start-page", false);
 	},
 	create: function() {
-		navigationView.goToPage("create-page");
+		navigationView.goToPage("create-page", false);
 	},
 	about: function() {
-		navigationView.goToPage("about-page");
+		navigationView.goToPage("about-page", false);
 	},
 	archive: function(archiveId, fileId) {
-		navigationView.selectArchive(archiveId);
+		console.log("routing to archive " + archiveId);
+		navigationView.selectArchive(archiveId, false);
 	}
 	
 });

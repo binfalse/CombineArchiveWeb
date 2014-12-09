@@ -193,34 +193,27 @@ var NavigationView = Backbone.View.extend({
 		});
 		
 	},
-	selectArchive: function(archiveId) {
+	selectArchive: function(archiveId, setHistory) {
 		var $navElem = this.$el.find( "#nav-archivelink-" + archiveId );
 		
 		if( $navElem.length <= 0 )
 			return false;
 		
-		this.doNavigation( {"currentTarget": $navElem} );
-		return true;
+		return this.doNavigation( $navElem, setHistory );
 	},
-	goToPage: function(page) {
+	goToPage: function(page, setHistory) {
 		var $navElem = this.$el.find( "a[data-page='" + page + "']" );
 		
 		if( $navElem.length <= 0 )
 			return false;
 		
-		this.doNavigation( {"currentTarget": $navElem} );
-		return true;
+		return this.doNavigation( $navElem, setHistory );
 	},
-	
-	events: {
-		"click .mainLinks": "doNavigation" 
-	},
-	doNavigation: function (event) {
+	doNavigation: function ($target, setHistory) {
 		
 		// hide current page
 		$(".subPage").hide();
 		// do highlighting
-		var $target = $(event.currentTarget);
 		this.$el.find(".mainLinks").removeClass("highlight");
 		$target.addClass("highlight");
 		
@@ -234,20 +227,44 @@ var NavigationView = Backbone.View.extend({
 			
 			console.log( archiveId );
 			
-			if( archiveModel )
+			if( archiveModel ) {
 				archiveView.setArchive( archiveModel );
+				if( setHistory == true )
+					pageRouter.navigate("archive/" + archiveId);
+				
+				return true;
+			}
 		}
 		else if( linkType == "page" ) {
-			$( "#" + $target.data("page") ).show();
+			var page = $target.data("page"); 
+			$( "#" + page ).show();
+			
+			if( setHistory == true )
+				pageRouter.navigate( page.split("-")[0] );
+			
+			return true;
 		}
 		else {
 			// seems to be no valid navlink
 			$("#start-page").show();
+			if( setHistory == true )
+				pageRouter.navigate( "start" );
+			
 			alert("no valid link!");
 		}
 		
 		return false;
+	},
+	
+	events: {
+		"click .mainLinks": "processNavigationEvent" 
+	},
+	processNavigationEvent: function(event) {
+		this.doNavigation( $(event.currentTarget), true );
+		return false;
 	}
+	
+	
 });
 
 /**
@@ -969,8 +986,7 @@ var ArchiveView = Backbone.View.extend({
 					// everything ok
 					console.log("deleted archive successfully");
 //					messageView.success("Deleted archive successfully");
-					//navigationView.goToPage("create");
-					pageRouter.navigate("create");
+					pageRouter.goToPage("create");
 					navigationView.fetch();
 				},
 				error: function(model, response, options) {
@@ -1009,8 +1025,13 @@ var ArchiveView = Backbone.View.extend({
 		
 	},
 	dropboxClick: function(event) {
+		// disables default click behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
 		var $button = this.$el.find(".dropbox input[name='fileUpload']");
 		$button.trigger("click");
+		return false;
 	},
 	dropboxManual: function(event) {
 		// disables default drag'n'drop behavior
@@ -1762,8 +1783,13 @@ var CreateView = Backbone.View.extend({
 		
 	},
 	dropboxClick: function(event) {
+		// disables default click behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
 		var $button = this.$el.find(".dropbox input[name='newArchiveExisting']");
 		$button.trigger("click");
+		return false;
 	},
 	dropboxManual: function(event) {
 		// disables default drag'n'drop behavior

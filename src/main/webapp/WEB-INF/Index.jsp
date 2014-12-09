@@ -46,6 +46,7 @@
 	
 	<!-- main scripts -->
 	<script type="text/javascript" src="res/js/models.js"></script>
+	<script type="text/javascript" src="res/js/router.js"></script>
 	<script type="text/javascript" src="res/js/js.js"></script>
 	
 	<link rel="stylesheet" href="res/css/css.css" type="text/css" media="all" />

@@ -1,5 +1,6 @@
 
 //the main collection with all archives in this workspace
+var pageRouter = null;
 var workspaceArchives = null;
 var navigationView = null;
 var archiveView = null;
@@ -49,19 +50,13 @@ $(document).ready(function () {
 			// remove cookie note
 			$("#noCookie").remove ();
 
-			// fetch archives
-			workspaceArchives = new ArchiveCollection();
-			navigationView = new NavigationView({ collection: workspaceArchives });
-			archiveView = new ArchiveView();
-			startView = new StartView();
-			createView = new CreateView();
-			aboutView = new AboutView();
-			messageView = new MessageView();
-			
-			navigationView.fetch();
+			// init router and views
+			pageRouter = new PageRouter();
+			pageRouter.navigate("", {trigger: true});
 			
 			$("#about-footer-link").click(function(event) {
-				navigationView.goToPage("about-page");
+				//navigationView.goToPage("about-page");
+				pageRouter.navigate("about", {trigger: true});
 				return false;
 			});
 			

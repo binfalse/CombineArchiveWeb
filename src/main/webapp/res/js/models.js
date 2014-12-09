@@ -202,9 +202,6 @@ var NavigationView = Backbone.View.extend({
 		this.doNavigation( {"currentTarget": $navElem} );
 		return true;
 	},
-	goToCreate: function() {
-		this.goToPage("create-page");
-	},
 	goToPage: function(page) {
 		var $navElem = this.$el.find( "a[data-page='" + page + "']" );
 		
@@ -972,7 +969,8 @@ var ArchiveView = Backbone.View.extend({
 					// everything ok
 					console.log("deleted archive successfully");
 //					messageView.success("Deleted archive successfully");
-					navigationView.goToCreate();
+					//navigationView.goToPage("create");
+					pageRouter.navigate("create");
 					navigationView.fetch();
 				},
 				error: function(model, response, options) {
@@ -1654,7 +1652,7 @@ var CreateView = Backbone.View.extend({
 						// add model to navigation collection and re-renders the view
 						navigationView.collection.add([model]);
 						navigationView.render();
-						navigationView.selectArchive( model.get("id") );
+						pageRouter.selectArchive( model.get("id") );
 					}
 				},
 				error: function(response) {
@@ -1710,7 +1708,7 @@ var CreateView = Backbone.View.extend({
 				// add model to navigation collection and re-renders the view
 				navigationView.collection.add([model]);
 				navigationView.render();
-				navigationView.selectArchive( model.get("id") );
+				pageRouter.selectArchive( model.get("id") );
 			},
 			error: function(model, response, options) {
 				console.log("error while creating new archive");

@@ -378,6 +378,7 @@ var OmexMetaEntryView = MetaEntryView.extend({
 	events: {
 		"click .archive-meta-edit": "startEdit",
 		"click .archive-meta-save": "saveEdit",
+		"keydown input[type='text']": "saveEdit",
 		"click .archive-meta-cancel": "cancelEdit",
 		"click .archive-meta-delete": "deleteModel",
 		"click .archive-meta-omex-creator-add": "addCreator",
@@ -412,6 +413,9 @@ var OmexMetaEntryView = MetaEntryView.extend({
 		return false;
 	},
 	saveEdit: function(event) {
+		if (event.keyCode =! undefined && event.keyCode != null && event.keyCode != 13)
+			return;
+		
 		this.$el.find(".error-element").removeClass("error-element");
 		var creators = [];
 		var error = false;
@@ -646,6 +650,7 @@ var ArchiveEntryView = Backbone.View.extend({
 		"click .archive-file-edit": "startEntryEdit",
 		"click .archive-file-cancel": "cancelEntryEdit",
 		"click .archive-file-save": "saveEntry",
+		"keydown input[type='text']": "saveEntry",
 		"click .archive-file-delete": "deleteEntry",
 		"click .archive-meta-omex-add": "addOmexMeta",
 		"click .archive-meta-xml-add": "addXmlMeta"
@@ -675,6 +680,8 @@ var ArchiveEntryView = Backbone.View.extend({
 		return false;
 	},
 	saveEntry: function(event) {
+		if (event.keyCode =! undefined && event.keyCode != null && event.keyCode != 13)
+			return;
 		
 		if( this.model == null )
 			return false;
@@ -923,6 +930,7 @@ var ArchiveView = Backbone.View.extend({
 		// also see workaround for jsTree in render function
 		"click .archive-info-edit": "startArchiveEdit",
 		"click .archive-info-save": "saveArchive",
+		"keydown input[name='archiveName']": "saveArchive",
 		"click .archive-info-cancel": "cancelEdit",
 		"click .archive-info-delete": "deleteArchive",
 		
@@ -954,6 +962,9 @@ var ArchiveView = Backbone.View.extend({
 		return false;
 	},
 	saveArchive: function(event) {
+		if (event.keyCode =! undefined && event.keyCode != null && event.keyCode != 13)
+			return;
+		
 		if( this.model == null )
 			return false;
 		

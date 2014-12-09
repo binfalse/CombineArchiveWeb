@@ -484,7 +484,7 @@ var XmlMetaEntryView = MetaEntryView.extend({
 			return;
 		
 		var json = this.model.toJSON();
-		json.xmlEscapedString = json.xmlString.replace(new RegExp("<", "g"), "&lt;").replace(new RegExp(">", "g"), "&gt;");
+		json.xmlEscapedString = escape( json.xmlString );
 		var text = this.template(json);
 		this.$el.html( text );
 		Rainbow.color( this.$el.get(0) );
@@ -728,6 +728,8 @@ var ArchiveEntryView = Backbone.View.extend({
 					messageView.error( "Unknown Error", "Error while saving archive entry." );
 			}
 		});
+		
+		return false;
 	},
 	deleteEntry: function(event) {
 		
@@ -1379,7 +1381,7 @@ var ArchiveView = Backbone.View.extend({
 			if( path == "/" || path == "" ) {
 				// file in root, just push it into the array
 				jstreeJson.push({
-					"text": entry.get("fileName"),
+					"text": escape(entry.get("fileName")),
 					"data": entry,
 					"type": "file",
 					"icon": "res/icon/" + entry.get("format"),
@@ -1409,7 +1411,7 @@ var ArchiveView = Backbone.View.extend({
 				if( pathIndex == pathSegment.length) {
 					// is it the last piece? -> yes -> push file and leave
 					currentBranch.push({
-						"text": entry.get("fileName"),
+						"text": escape(entry.get("fileName")),
 						"data": entry,
 						"type": "file",
 						"icon": "res/icon/" + entry.get("format"),
@@ -1442,7 +1444,7 @@ var ArchiveView = Backbone.View.extend({
 				if( found == false ) {
 					// branch does not exist -> create it
 					newBranch = {
-							"text": pathSegment[pathIndex],
+							"text": escape(pathSegment[pathIndex]),
 							"type": "dir",
 							"icon": "res/css/folder.png",
 							"state": {

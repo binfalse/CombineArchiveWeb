@@ -23,6 +23,22 @@ function bytesToSize(bytes) {
 	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
 }
 
+var __escape = {
+		lt: new RegExp("<", "g"),
+		gt: new RegExp(">", "g"),
+		br: new RegExp("\n", "g")
+};
+function escape(string, brline) {
+	if( string == null || string == undefined )
+		return string;
+	else {
+		if( brline == true )
+			return string.replace(__escape.lt, "&lt;").replace(__escape.gt, "&gt;").replace(__escape.br, "<br />\n");
+		else
+			return string.replace(__escape.lt, "&lt;").replace(__escape.gt, "&gt;");
+	}
+}
+
 $(document).ready(function () {
 	
 	$("#noJs").remove ();

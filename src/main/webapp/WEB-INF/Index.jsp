@@ -68,7 +68,7 @@
 				<div style="clear: both;"></div>
 				<ul id="nav-workspace" style="float: left; width: 70%;">
 					{{#	_.each(entries, function(entry) { }}
-					<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(entry.name); }} in current Workspace">{{# print(entry.name); }}</a></li>
+					<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(escape(entry.name)); }} in current Workspace">{{# print(escape(entry.name)); }}</a></li>
 					{{# }); }}
 				</ul>
 				<ul id="nav-main" style="float: right; width: 29%;">
@@ -105,9 +105,9 @@
 					<li class="edit-object {{# element.current == true ? print('current-workspace') : print(''); }}">
 						<span>
 							{{# if( element.current != true ) { }}
-								<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(element.name); }}</a>
+								<a href="{{# print(baseUrl); }}rest/share/{{# print(element.workspaceId); }}">{{# print(escape(element.name)); }}</a>
 							{{# } else { }}
-								{{# print(element.name); }}
+								{{# print(escape(element.name)); }}
 							{{# } }}
 						</span>
 						<span class="edit-link">
@@ -135,13 +135,13 @@
 			</p>
 			<p class="create-vcard-box">
 				<label for="userGivenName">Given Name:</label><br />
-				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" value="{{# print(vcard.givenName); }}"/><br />
+				<input type="text" id="userGivenName" name="userGivenName" placeholder="given name" value="{{# print(escape(vcard.givenName)); }}"/><br />
 				<label for="userFamilyName">Family Name:</label><br />
-				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" value="{{# print(vcard.familyName); }}" /><br />
+				<input type="text" id="userFamilyName" name="userFamilyName" placeholder="family name" value="{{# print(escape(vcard.familyName)); }}" /><br />
 				<label for="userMail">E-Mail:</label><br />
-				<input type="mail" id="userMail" name="userMail" placeholder="email address" value="{{# print(vcard.email); }}" /><br />
+				<input type="mail" id="userMail" name="userMail" placeholder="email address" value="{{# print(escape(vcard.email)); }}" /><br />
 				<label for="userOrganization">Organization:</label><br />
-				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(vcard.organization); }}" />
+				<input type="text" id="userOrganization" name="userOrganization" placeholder="organization" value="{{# print(escape(vcard.organization)); }}" />
 			</p>
 			<p>
 				<input type="button" class="save-vcard" value="Save" />
@@ -227,8 +227,8 @@
 					<div class="attribute-detail"><span class="text-archive-id">{{# print(archive.id); }}</span></div>
 					<div class="attribute-name">name:</div>
 					<div class="attribute-detail">
-						<span class="on-not-edit text-archive-name">{{# print(archive.name); }}</span>
-						<input type="text" class="on-edit" name="archiveName" value="{{# print(archive.name); }}" placeholder="archive name" />
+						<span class="on-not-edit text-archive-name">{{# print(escape(archive.name)); }}</span>
+						<input type="text" class="on-edit" name="archiveName" value="{{# print(escape(archive.name)); }}" placeholder="archive name" />
 					</div>
 						
 					<div class="edit-link">
@@ -283,7 +283,7 @@
 		<!-- **** -->
 		<div id="template-archive-entry">
 			{{# if( entry.filePath != "/" ) { }}
-			<h3><i class="file-icon" style="background-image: url('res/icon/{{# print(entry.format) }}');"></i>{{# print(entry.fileName); }}</h3>
+			<h3><i class="file-icon" style="background-image: url('res/icon/{{# print(entry.format) }}');"></i>{{# print(escape(entry.fileName)); }}</h3>
 			{{# } else { }}
 			<h3>Archive Meta Information</h3>
 			{{# } }}
@@ -292,14 +292,14 @@
 					{{# if( entry.filePath != "/" ) { }}
 					<div class="attribute-name">file name:</div>
 					<div class="attribute-detail">
-						<span class="on-not-edit text-archive-entry-filename">{{# print(entry.fileName); }}</span>
-						<input type="text" class="on-edit" name="archiveEntryFileName" value="{{# print(entry.fileName); }}" placeholder="file name" />
+						<span class="on-not-edit text-archive-entry-filename">{{# print(escape(entry.fileName)); }}</span>
+						<input type="text" class="on-edit" name="archiveEntryFileName" value="{{# print(escape(entry.fileName)); }}" placeholder="file name" />
 					</div>
 					{{# } }}
 					
 					<div class="attribute-name">file path:</div>
 					<div class="attribute-detail">
-						<span class="text-archive-entry-filepath">{{# print(entry.filePath); }}</span>
+						<span class="text-archive-entry-filepath">{{# print(escape(entry.filePath)); }}</span>
 					</div>
 						
 					{{# if( entry.filePath != "/" ) { }}
@@ -323,7 +323,7 @@
 						<a class="archive-meta-omex-add on-not-edit on-edit" href="#">[Add OMEX meta]</a>
 						<a class="archive-meta-xml-add on-not-edit on-edit" href="#">[Add RDF/XML meta]</a>
 						{{# if( entry.filePath != "/" ) { }}
-						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + entry.filePath); }}" target="_blank">[Download]</a>
+						<a class="archive-file-download on-not-edit" href="download/file/{{# print(archiveId + escape(entry.filePath)); }}" target="_blank">[Download]</a>
 						<a class="archive-file-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-file-delete on-not-edit" href="#">[Delete]</a>
 						<a class="archive-file-save on-edit" href="#">[Save]</a>
@@ -350,7 +350,7 @@
 			<div style="clear: left;"></div>
 			<div class="attribute-name">description:</div>
 			<div class="attribute-detail">
-				<span class="on-not-edit archive-meta-omex-description">{{# print(description); }}</span>
+				<span class="on-not-edit archive-meta-omex-description">{{# print(escape(description, true)); }}</span>
 				<textarea class="on-edit" name="omexDescription">{{# print(description); }}</textarea>
 			</div>
 			<div class="attribute-name-br">creators:</div>
@@ -358,12 +358,12 @@
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
 						<strong class="on-not-edit">
-							<span data-field="givenName">{{# print(vcard.givenName); }}</span>
-							<span data-field="familyName">{{# print(vcard.familyName); }}</span>
+							<span data-field="givenName">{{# print(escape(vcard.givenName)); }}</span>
+							<span data-field="familyName">{{# print(escape(vcard.familyName)); }}</span>
 						</strong>
-						<span class="on-not-edit archive-meta-omex-creator-orga" data-field="organization">{{# print(vcard.organization); }}</span>
+						<span class="on-not-edit archive-meta-omex-creator-orga" data-field="organization">{{# print(escape(vcard.organization)); }}</span>
 						<br class="on-not-edit" />
-						<span class="on-not-edit" data-field="email">{{# print(vcard.email); }}</span>
+						<span class="on-not-edit" data-field="email">{{# print(escape(vcard.email)); }}</span>
 						
 						<div class="on-edit">
 							<div class="attribute-name">given name:</div>
@@ -395,19 +395,19 @@
 			<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
 				<div class="attribute-name">given name:</div>
 				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="givenName" placeholder="{{# print(vcard.givenName); }}" />
+					<input type="text" class="on-edit" data-field="givenName" placeholder="{{# print(escape(vcard.givenName)); }}" />
 				</div>
 				<div class="attribute-name">family name:</div>
 				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="familyName" placeholder="{{# print(vcard.familyName); }}" />
+					<input type="text" class="on-edit" data-field="familyName" placeholder="{{# print(escape(vcard.familyName)); }}" />
 				</div>
 				<div class="attribute-name">E-Mail:</div>
 				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="email" placeholder="{{# print(vcard.email); }}" />
+					<input type="text" class="on-edit" data-field="email" placeholder="{{# print(escape(vcard.email)); }}" />
 				</div>
 				<div class="attribute-name">organization:</div>
 				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="organization" placeholder="{{# print(vcard.organization); }}" />
+					<input type="text" class="on-edit" data-field="organization" placeholder="{{# print(escape(vcard.organization)); }}" />
 				</div>
 				
 				<div class="edit-link">
@@ -418,7 +418,7 @@
 		<!-- **** -->
 		<div id="template-dialog-exists">
 			<p>
-				<strong>{{# print(fileName); }}</strong> already exists.
+				<strong>{{# print(escape(fileName)); }}</strong> already exists.
 			</p>
 			<ul>
 				<li><strong>Rename</strong> the new file</li>
@@ -448,19 +448,19 @@
 				</div>
 				
 				{{# if( message.title ) { }}
-						<strong>{{# print(message.title); }}: </strong>
+						<strong>{{# print(escape(message.title)); }}: </strong>
 				{{#	} }}
 				
 				{{# if( _.isArray(message.text) ) { }}
 					<ul>
 					{{# _.each(message.text, function(txt) { }}
-						<li>{{# print(txt); }}</li>
+						<li>{{# print(escape(txt)); }}</li>
 					{{# }); }}
 					</ul>
 				{{# } }}
 				
 				{{# if( !_.isArray(message.text) ) { }}
-						<span>{{# print( message.text ); }}</span>
+						<span>{{# print( escape(message.text) ); }}</span>
 				{{# } }}
 			</div>
 		</div>
@@ -471,19 +471,19 @@
 				</div>
 				
 				{{# if( message.title ) { }}
-						<strong>{{# print(message.title); }}: </strong>
+						<strong>{{# print(escape(message.title)); }}: </strong>
 				{{#	} }}
 				
 				{{# if( _.isArray(message.text) ) { }}
 					<ul>
 					{{# _.each(message.text, function(txt) { }}
-						<li>{{# print(txt); }}</li>
+						<li>{{# print(escape(txt)); }}</li>
 					{{# }); }}
 					</ul>
 				{{# } }}
 				
 				{{# if( !_.isArray(message.text) ) { }}
-						<span>{{# print( message.text ); }}</span>
+						<span>{{# print( escape(message.text) ); }}</span>
 				{{# } }}
 			</div>
 		</div>
@@ -494,19 +494,19 @@
 				</div>
 				
 				{{# if( message.title ) { }}
-						<strong>{{# print(message.title); }}: </strong>
+						<strong>{{# print(escape(message.title)); }}: </strong>
 				{{#	} }}
 				
 				{{# if( _.isArray(message.text) ) { }}
 					<ul>
 					{{# _.each(message.text, function(txt) { }}
-						<li>{{# print(txt); }}</li>
+						<li>{{# print(escape(txt)); }}</li>
 					{{# }); }}
 					</ul>
 				{{# } }}
 				
 				{{# if( !_.isArray(message.text) ) { }}
-						<span>{{# print( message.text ); }}</span>
+						<span>{{# print( escape(message.text) ); }}</span>
 				{{# } }}
 			</div>
 		</div>

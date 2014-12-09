@@ -53,7 +53,7 @@ public class QuotaManager {
 	private QuotaManager() {
 
 		workspaceManager = WorkspaceManager.getInstance();
-		forceAsyncScan(false);
+		//forceAsyncScan(false);
 	}
 	
 	/**

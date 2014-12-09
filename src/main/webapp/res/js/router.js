@@ -7,7 +7,6 @@ var PageRouter = Backbone.Router.extend({
 		"create":						"create",
 		"about":						"about",
 		"archive/:archiveId":			"archive",
-		"archive/:archiveId(/:fileId)":	"archive"
 	},
 	
 	initialize: function(options) {
@@ -21,13 +20,23 @@ var PageRouter = Backbone.Router.extend({
 		aboutView = new AboutView();
 		messageView = new MessageView();
 		
+		workspaceArchives.once("sync", function(eventName) {
+			Backbone.history.start();
+		});
 		navigationView.fetch();
-		Backbone.history.start();
 	},
 	
 	// Helper functions
 	selectArchive: function( archiveId ) {
 		return this.navigate( "archive/" + archiveId, {trigger: true} );
+	},
+	selectArchiveFile: function( archiveId, fileId ) {
+		if( archiveId == undefined ) {
+			fileId = archiveId;
+			archiveId = archiveView.model.get("id");
+		}
+		 
+		return this.navigate( "archive/" + archiveId + "/" + fileId );
 	},
 	goToPage: function( page ) {
 		return this.navigate( page, {trigger: true} );
@@ -43,8 +52,7 @@ var PageRouter = Backbone.Router.extend({
 	about: function() {
 		navigationView.goToPage("about-page", false);
 	},
-	archive: function(archiveId, fileId) {
-		console.log("routing to archive " + archiveId);
+	archive: function(archiveId) {
 		navigationView.selectArchive(archiveId, false);
 	}
 	

@@ -868,6 +868,19 @@ var ArchiveView = Backbone.View.extend({
 		// gets all entries in for this archive
 		this.fetchCollection(true);
 	},
+	setArchiveFile: function( fileId ) {
+		
+		this.hideExplorer(null, true);
+		
+		if( this.entryView != null )
+			this.entryView.leave();
+		
+		// creates new view, the rest is magic ;)
+		this.entryView = new ArchiveEntryView({
+			el: this.$el.find(".archive-fileinfo")
+		});
+		this.entryView.fetch( this.model.get("id"), fileId );
+	},
 	
 	fetchCollection: function( render ) {
 		
@@ -1306,17 +1319,7 @@ var ArchiveView = Backbone.View.extend({
 		if( data.node.original.type != "file" && data.node.original.type != "root" )
 			return false;
 		
-		this.hideExplorer(null, true);
-		
-		if( this.entryView != null )
-			this.entryView.leave();
-		
-		// creates new view, the rest is magic ;)
-		this.entryView = new ArchiveEntryView({
-			el: this.$el.find(".archive-fileinfo")
-		});
-		this.entryView.fetch( this.model.get("id"), data.node.data.id );
-		
+		this.setArchiveFile( data.node.data.id, true );
 	},
 	jstreeMove: function(event, data) {
 		

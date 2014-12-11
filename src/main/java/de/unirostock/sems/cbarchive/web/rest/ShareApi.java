@@ -167,10 +167,10 @@ public class ShareApi extends RestHelper {
 				String uri = requestContext.getRequestURL().toString();
 				uri = uri.substring(0, uri.indexOf("rest/"));
 				LOGGER.info("redirect to ", requestContext.getRequestURL(), " to ", uri);
-				newLocation = new URI( uri );
+				newLocation = new URI( uri + "#archive/" + archiveId );
 			}
 			else
-				newLocation = new URI("../");
+				newLocation = new URI( "../#archive/" + archiveId );
 			
 		} catch (URISyntaxException e) {
 			LOGGER.error(e, "Cannot generate relative URL to main app");

@@ -87,7 +87,13 @@
 				We offer basic support for collaborative working.
 				All the archives that 
 				To share this workspace, just distribute the following link: <br />
-				<input type="text" style="width: 100%;" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(current.workspaceId); }}" /> 
+				<div>
+					<input type="text" style="display: block; float: left; width: calc(100% - 6.5em);" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(current.workspaceId); }}" />
+					<div class="edit-link" style="float: right;"> 
+						<a href="mailto:?subject=Share%20CombineArchiveWeb%20Workspace:%20{{# print(encodeURIComponent( current.name )); }}&body=To%20take%20a%20look%20into%20the%20'{{# print(encodeURIComponent( current.name )); }}'%20Workspace,%20visit%20following%20link:%0D%0A%0D%0A{{# print(encodeURIComponent( baseUrl + 'rest/share/' + current.workspaceId )); }}">[Share]</a>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
 				<br />However, you should not work on the same workspace from different locations at the same time!
 			</p>
 			
@@ -112,6 +118,7 @@
 						</span>
 						<span class="edit-link">
 							<a class="start-history-rename" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Rename]</a>
+							<a href="mailto:?subject=Share%20CombineArchiveWeb%20Workspace:%20{{# print(encodeURIComponent( element.name )); }}&body=To%20take%20a%20look%20into%20the%20'{{# print(encodeURIComponent( element.name )); }}'%20Workspace,%20visit%20following%20link:%0D%0A%0D%0A{{# print(encodeURIComponent( baseUrl + 'rest/share/' + element.workspaceId )); }}">[Share]</a>
 						</span>
 					</li>
 				{{# }); }}

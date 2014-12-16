@@ -820,7 +820,7 @@ var ArchiveView = Backbone.View.extend({
 		this.template = templateCache["template-archive"];
 	},
 	
-	render: function() {
+	render: function( scrollValue ) {
 		
 		if( this.model == null || this.collection == null )
 			return;
@@ -869,6 +869,8 @@ var ArchiveView = Backbone.View.extend({
 		this.$treeEl.on("move_node.jstree", function(event, data) { self.jstreeMove.call(self, event, data); } );
 		
 		this.$el.show();
+		if( scrollValue !== undefined )
+			this.$treeEl.on("ready.jstree", function(event, data) { self.$el.find(".archive-filetree").scrollTop( scrollValue ); } );
 	},
 	
 	setArchive: function( archiveModel ) {
@@ -891,7 +893,7 @@ var ArchiveView = Backbone.View.extend({
 		this.entryView.fetch( this.model.get("id"), fileId );
 	},
 	
-	fetchCollection: function( render ) {
+	fetchCollection: function( render, scrollValue ) {
 		
 		if( this.model == null )
 			return;
@@ -912,7 +914,7 @@ var ArchiveView = Backbone.View.extend({
 				});
 				// render 
 				if( render == true )
-					self.render();
+					self.render( scrollValue );
 			},
 			error: function(collection, response, options) {
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
@@ -1351,6 +1353,7 @@ var ArchiveView = Backbone.View.extend({
 			par = jstree.get_node( jstree.get_parent(par) );
 		}
 		console.log(path);
+		var scrollValue = this.$el.find(".archive-filetree").scrollTop();
 		
 		var model = this.collection.findWhere( {"id": data.node.data.id } );
 		if( model.get("filePath") != path ) {
@@ -1361,7 +1364,7 @@ var ArchiveView = Backbone.View.extend({
 				success: function(model, response, options) {
 					// everything ok
 					messageView.success( "file successfully moved." );
-					self.fetchCollection(true);
+					self.fetchCollection(true, scrollValue);
 				},
 				error: function(model, response, options) {
 					console.log("error moving file.");

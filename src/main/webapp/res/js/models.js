@@ -1716,9 +1716,9 @@ var CreateView = Backbone.View.extend({
 			
 			return false;
 		}
-		else if( archiveTemplate == "hg" ) {
+		else if( archiveTemplate == "cellml" ) {
 			// create new archive based on a CellMl repository
-			archiveModel.set("template", "cellml");
+			archiveModel.set("template", "hg");
 			
 			var link = this.$el.find("input[name='newArchiveCellMlLink']").val();
 			if( !link.match(/https?:\/\/models.cellml.org\//) && !link.match(/^hg\ clone\ https?:\/\/models\.cellml\.org\//) && !link.match(/https?:\/\/models.physiomeproject.org\//) && !link.match(/^hg\ clone\ https?:\/\/models\.physiomeproject\.org\//) ) {

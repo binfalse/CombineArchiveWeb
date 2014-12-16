@@ -505,7 +505,6 @@ public class RestApi extends RestHelper {
 					String id = user.createArchive( archive.getName(), archiveFile );
 					archive.setId(id);
 					
-					archiveFile.delete();
 				}
 				catch (ImporterException e) {
 					LOGGER.error (e, "Cannot import archive.");

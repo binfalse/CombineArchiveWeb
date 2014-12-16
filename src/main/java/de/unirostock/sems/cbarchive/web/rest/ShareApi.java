@@ -17,13 +17,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -42,9 +45,11 @@ import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.HttpImporter;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.VcImporter;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
 @Path( "/" )
@@ -117,10 +122,13 @@ public class ShareApi extends RestHelper {
 		
 	}
 	
+	private static final String IMPORT_HTTP = "http";
+	private static final String IMPORT_HG = "hg";
+	
 	@GET
 	@Path("/import")
 	@Produces( MediaType.TEXT_PLAIN )
-	public Response downloadRemoteArchive(@CookieParam(Fields.COOKIE_PATH) String userPath, @Context HttpServletRequest requestContext, @QueryParam("remote") String remoteUrl, @QueryParam("name") String archiveName) {
+	public Response downloadRemoteArchive(@CookieParam(Fields.COOKIE_PATH) String userPath, @Context HttpServletRequest requestContext, @DefaultValue("http") @QueryParam("remote") String remoteUrl, @QueryParam("name") String archiveName, @QueryParam("type") String remoteType) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -137,27 +145,46 @@ public class ShareApi extends RestHelper {
 			return buildTextErrorResponse(400, user, "empty remote url provided");
 		}
 		
-		HttpImporter importer = null;
+		if( remoteType == null || remoteType.isEmpty() )
+			remoteType = IMPORT_HTTP;
+		else
+			remoteType = remoteType.toLowerCase();
+		
+		
 		String archiveId = null;
+		File tempFile = null;
 		try {
-			importer = new HttpImporter(remoteUrl, user);
-			importer.importRepo();
+			if( remoteType.equals(IMPORT_HTTP) ) {
+				HttpImporter importer = new HttpImporter(remoteUrl, user);
+				importer.importRepo();
+				
+				if( archiveName == null || archiveName.isEmpty() )
+					archiveName = importer.getSuggestedName();
+				
+				tempFile = importer.getTempFile();
+			}
+			else if( remoteType.equals(IMPORT_HG) ) {
+				try {
+					tempFile = VcImporter.importRepo( remoteUrl );
+				} catch ( CombineArchiveWebException | IOException | TransformerException | JDOMException | ParseException | CombineArchiveException e ) {
+					throw new ImporterException("Not able to clone HG repository.", e);
+				}
+			}
 			
-			if( archiveName == null || archiveName.isEmpty() )
-				archiveName = importer.getSuggestedName();
-			
-			archiveId = user.createArchive( archiveName, importer.getTempFile() );
+			// add archive to workspace
+			archiveId = user.createArchive( archiveName, tempFile );
 			
 		} catch (ImporterException e) {
+			LOGGER.warn(e, "Cannot import remote archive!");
 			return buildTextErrorResponse(400, user, e.getMessage(), "URL: " + remoteUrl);
-		}  catch (IOException | JDOMException | ParseException
+		} catch (IOException | JDOMException | ParseException
 				| CombineArchiveException | TransformerException e) {
 			
-			LOGGER.error(e, "Can not read downloaded archive");
-			return buildTextErrorResponse(400, user, "Can not read/parse downloaded archive", e.getMessage(), "URL: " + remoteUrl);
+			LOGGER.error(e, "Cannot read downloaded archive");
+			return buildTextErrorResponse(400, user, "Cannot read/parse downloaded archive", e.getMessage(), "URL: " + remoteUrl);
 		} finally {
-			if( importer.getTempFile() != null)
-				importer.getTempFile().delete();
+			if( tempFile != null && tempFile.exists() )
+				tempFile.delete();
 		}
 		
 		// redirect to workspace

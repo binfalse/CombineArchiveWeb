@@ -89,6 +89,19 @@ public class VcImporter
 		return cloneHg (link, archive);
 	}
 	
+	public static File importRepo( String link ) throws CombineArchiveWebException, MalformedURLException, IOException, TransformerException, JDOMException, ParseException, CombineArchiveException {
+		
+		if( link == null || link.isEmpty() )
+			throw new CombineArchiveWebException("The link should not be empty");
+		
+		
+		// is it a link to nz!? (models.cellml or physiome)
+		if (link.contains ("cellml.org/") || link.contains ("physiomeproject.org/"))
+			link = processNzRepoLink (link);
+
+		return cloneHg( link , null );
+	}
+	
 	
 	private static String processNzRepoLink (String link) throws MalformedURLException, IOException
 	{
@@ -257,8 +270,10 @@ public class VcImporter
 		FileUtils.deleteDirectory(tempDir);
 		
 		// add the combine archive to the dataholder
-		archive.setArchiveFile(archiveFile);
-		archive.getArchive().close();
+		if( archive != null ) {
+			archive.setArchiveFile(archiveFile);
+			archive.getArchive().close();
+		}
 		
 		return archiveFile;
 	}

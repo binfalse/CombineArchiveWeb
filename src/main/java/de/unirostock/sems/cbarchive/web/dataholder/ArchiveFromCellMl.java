@@ -23,19 +23,23 @@ public class ArchiveFromCellMl extends Archive {
 	
 	public ArchiveFromCellMl() {
 		super();
+		this.template = TEMPLATE_HG;
 	}
 
 	public ArchiveFromCellMl(String id, String name, String hgLink) {
 		super(id, name);
 		this.hgLink = hgLink;
+		this.template = TEMPLATE_HG;
 	}
 	
 	public ArchiveFromCellMl(String id, String name) {
 		super(id, name);
+		this.template = TEMPLATE_HG;
 	}
 
 	public ArchiveFromCellMl(String name) {
 		super(name);
+		this.template = TEMPLATE_HG;
 	}
 
 	public String getHgLink() {

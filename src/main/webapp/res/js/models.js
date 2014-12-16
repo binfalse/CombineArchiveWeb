@@ -1716,7 +1716,7 @@ var CreateView = Backbone.View.extend({
 			
 			return false;
 		}
-		else if( archiveTemplate == "cellml" ) {
+		else if( archiveTemplate == "hg" ) {
 			// create new archive based on a CellMl repository
 			archiveModel.set("template", "cellml");
 			
@@ -1726,7 +1726,7 @@ var CreateView = Backbone.View.extend({
 				return false;
 			}
 			// add link to the model
-			archiveModel.set ("cellmlLink", link);
+			archiveModel.set ("hgLink", link);
 		}
 		else if( archiveTemplate == "hg" ) {
 			// create new archive based on a Mercurial repository

@@ -22,14 +22,17 @@ public class ArchiveFromExisting extends Archive {
 	
 	public ArchiveFromExisting() {
 		super();
+		this.template = TEMPLATE_EXISTING;
 	}
 	
 	public ArchiveFromExisting(String id, String name) {
 		super(id, name);
+		this.template = TEMPLATE_EXISTING;
 	}
 
 	public ArchiveFromExisting(String name) {
 		super(name);
+		this.template = TEMPLATE_EXISTING;
 	}
 
 }

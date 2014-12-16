@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -166,6 +165,12 @@ public class ShareApi extends RestHelper {
 			else if( remoteType.equals(IMPORT_HG) ) {
 				try {
 					tempFile = VcImporter.importRepo( remoteUrl );
+					
+					String[] urlParts = remoteUrl.split("/");
+					archiveName = urlParts[ urlParts.length-1 ];
+					if( archiveName == null || archiveName.isEmpty() )
+						archiveName = "unknown";
+					
 				} catch ( CombineArchiveWebException | IOException | TransformerException | JDOMException | ParseException | CombineArchiveException e ) {
 					throw new ImporterException("Not able to clone HG repository.", e);
 				}

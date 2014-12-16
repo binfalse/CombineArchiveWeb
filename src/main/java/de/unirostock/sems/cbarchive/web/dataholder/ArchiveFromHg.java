@@ -17,27 +17,27 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-public class ArchiveFromCellMl extends Archive {
+public class ArchiveFromHg extends Archive {
 	
 	protected String hgLink = null;
 	
-	public ArchiveFromCellMl() {
+	public ArchiveFromHg() {
 		super();
 		this.template = TEMPLATE_HG;
 	}
 
-	public ArchiveFromCellMl(String id, String name, String hgLink) {
+	public ArchiveFromHg(String id, String name, String hgLink) {
 		super(id, name);
 		this.hgLink = hgLink;
 		this.template = TEMPLATE_HG;
 	}
 	
-	public ArchiveFromCellMl(String id, String name) {
+	public ArchiveFromHg(String id, String name) {
 		super(id, name);
 		this.template = TEMPLATE_HG;
 	}
 
-	public ArchiveFromCellMl(String name) {
+	public ArchiveFromHg(String name) {
 		super(name);
 		this.template = TEMPLATE_HG;
 	}

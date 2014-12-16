@@ -49,7 +49,7 @@ import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
-import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbext.Formatizer;
 
@@ -74,7 +74,7 @@ public class VcImporter
 	 * @throws JDOMException 
 	 * @throws CombineArchiveWebException 
 	 */
-	public static File importRepo (ArchiveFromCellMl archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
+	public static File importRepo (ArchiveFromHg archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
 	{
 		String link = archive.getHgLink ();
 		
@@ -174,7 +174,7 @@ public class VcImporter
 		return link;
 	}
 	
-	private static File cloneHg (String link, ArchiveFromCellMl archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
+	private static File cloneHg (String link, ArchiveFromHg archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
 	{
 		// create new temp dir
 		File tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();

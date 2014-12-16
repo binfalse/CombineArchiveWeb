@@ -74,7 +74,7 @@ import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
-import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromCellMl;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
@@ -464,12 +464,12 @@ public class RestApi extends RestHelper {
 		}
 		
 		try {
-			if( archive instanceof ArchiveFromCellMl ) {
+			if( archive instanceof ArchiveFromHg ) {
 				// import from CellMl
-				LOGGER.debug( ((ArchiveFromCellMl) archive).getHgLink() );
+				LOGGER.debug( ((ArchiveFromHg) archive).getHgLink() );
 				File archiveFile = null;
 				try {
-					archiveFile = VcImporter.importRepo( (ArchiveFromCellMl) archive );
+					archiveFile = VcImporter.importRepo( (ArchiveFromHg) archive );
 					
 					long repoFileSize = archiveFile.length();
 					// max workspace size

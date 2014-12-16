@@ -19,15 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class ArchiveFromCellMl extends Archive {
 	
-	protected String cellmlLink = null;
+	protected String hgLink = null;
 	
 	public ArchiveFromCellMl() {
 		super();
 	}
 
-	public ArchiveFromCellMl(String id, String name, String cellmlLink) {
+	public ArchiveFromCellMl(String id, String name, String hgLink) {
 		super(id, name);
-		this.cellmlLink = cellmlLink;
+		this.hgLink = hgLink;
 	}
 	
 	public ArchiveFromCellMl(String id, String name) {
@@ -38,12 +38,12 @@ public class ArchiveFromCellMl extends Archive {
 		super(name);
 	}
 
-	public String getCellmlLink() {
-		return cellmlLink;
+	public String getHgLink() {
+		return hgLink;
 	}
 
-	public void setCellmlLink(String cellmlLink) {
-		this.cellmlLink = cellmlLink;
+	public void setHgLink(String hgLink) {
+		this.hgLink = hgLink;
 	}
 	
 	

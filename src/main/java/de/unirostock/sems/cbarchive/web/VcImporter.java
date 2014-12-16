@@ -76,7 +76,7 @@ public class VcImporter
 	 */
 	public static File importRepo (ArchiveFromCellMl archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
 	{
-		String link = archive.getCellmlLink ();
+		String link = archive.getHgLink ();
 		
 		if( link == null || link.isEmpty() )
 			throw new CombineArchiveWebException("The link should not be empty");

@@ -167,7 +167,7 @@
 				
 				<input type="radio" id="newArchiveTemplate-File" name="newArchiveTemplate" value="file" />
 				<label for="newArchiveTemplate-File">Upload an existing archive</label><br />
-				<div class="on-archive-upload">
+				<div class="create-parameter on-archive-upload">
 					<div class="dropbox">
 						<div class="center-button">
 							<a href="#">Upload file</a>
@@ -179,8 +179,20 @@
 				
 				<input type="radio" id="newArchiveTemplate-CellMl" name="newArchiveTemplate" value="cellml" />
 				<label for="newArchiveTemplate-CellMl">Create an archive from CellMl model repository</label><br />
-				<div class="on-archive-cellml">
-					<input type="text" name="newArchiveCellMlLink" placeholder="link to CellML repository" /><br />
+				<div class="create-parameter on-archive-cellml">
+					<input type="text" name="newArchiveCellMlLink" placeholder="link to CellML repository" size="50" /><br />
+				</div>
+				
+				<input type="radio" id="newArchiveTemplate-Hg" name="newArchiveTemplate" value="hg" />
+				<label for="newArchiveTemplate-Hg">Create an archive form a Mercurial (HG) repository</label><br />
+				<div class="create-parameter on-archive-hg">
+					<input type="text" name="newArchiveHgLink" placeholder="link to Mercurial repository" size="50" /><br />
+				</div>
+				
+				<input type="radio" id="newArchiveTemplate-Http" name="newArchiveTemplate" value="http" />
+				<label for="newArchiveTemplate-Http">Import an remote archive via HTTP</label><br />
+				<div class="create-parameter on-archive-http">
+					<input type="text" name="newArchiveHttpLink" placeholder="HTTP link to the CombineArchive" size="50" /><br />
 				</div>
 			</div>
 			<div class="loading-container">

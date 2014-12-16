@@ -475,7 +475,7 @@ div.attribute-detail-br {
 
 /* -------- Create View -------- */
 
-.on-archive-cellml, .on-archive-upload {
+.create-parameter  {
 	display: none;
 	padding: 0 20px;
 }

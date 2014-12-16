@@ -61,12 +61,16 @@ import de.unirostock.sems.cbext.Formatizer;
 @JsonSubTypes({
 	@Type( value = Archive.class, name = Archive.TEMPLATE_PLAIN ),
 	@Type( value = ArchiveFromCellMl.class, name = Archive.TEMPLATE_CELLML ),
+	@Type( value = ArchiveFromCellMl.class, name = Archive.TEMPLATE_HG ),
+	@Type( value = Archive.class, name = Archive.TEMPLATE_HTTP ),
 	@Type( value = ArchiveFromExisting.class, name = Archive.TEMPLATE_EXISTING )
 })
 public class Archive {
 	
 	public static final String TEMPLATE_PLAIN		= "plain";
 	public static final String TEMPLATE_CELLML		= "cellml";
+	public static final String TEMPLATE_HG 			= "hg";
+	public static final String TEMPLATE_HTTP		= "http";
 	public static final String TEMPLATE_EXISTING	= "existing";
 	
 	protected String template	= TEMPLATE_PLAIN;

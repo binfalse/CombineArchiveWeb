@@ -1551,16 +1551,23 @@ var CreateView = Backbone.View.extend({
 			return false;
 		}
 		else if( archiveTemplate == "empty" ) {
-			this.$el.find(".on-archive-upload").hide ();
-			this.$el.find(".on-archive-cellml").hide ();
+			this.$el.find(".create-parameter").hide();
 		}
 		else if( archiveTemplate == "file" ) {
-			this.$el.find(".on-archive-upload").show ();
-			this.$el.find(".on-archive-cellml").hide ();
+			this.$el.find(".create-parameter").hide();
+			this.$el.find(".on-archive-upload").show();
 		}
 		else if( archiveTemplate == "cellml" ) {
-			this.$el.find(".on-archive-upload").hide ();
-			this.$el.find(".on-archive-cellml").show ();
+			this.$el.find(".create-parameter").hide();
+			this.$el.find(".on-archive-cellml").show();
+		}
+		else if( archiveTemplate == "hg" ) {
+			this.$el.find(".create-parameter").hide();
+			this.$el.find(".on-archive-hg").show();
+		}
+		else if( archiveTemplate == "http" ) {
+			this.$el.find(".create-parameter").hide();
+			this.$el.find(".on-archive-http").show();
 		}
 		else {
 			// no known type of archive
@@ -1720,6 +1727,22 @@ var CreateView = Backbone.View.extend({
 			}
 			// add link to the model
 			archiveModel.set ("cellmlLink", link);
+		}
+		else if( archiveTemplate == "hg" ) {
+			// create new archive based on a Mercurial repository
+			archiveModel.set("template", "hg");
+			
+			var link = this.$el.find("input[name='newArchiveHgLink']").val();
+			// add link to the model
+			archiveModel.set ("hgLink", link);
+		}
+		else if( archiveTemplate == "http" ) {
+			// create new archive based on a http link
+			archiveModel.set("template", "http");
+			
+			var link = this.$el.find("input[name='newArchiveHttpLink']").val();
+			// add link to the model
+			archiveModel.set ("url", link);
 		}
 		else {
 			// no known type of archive

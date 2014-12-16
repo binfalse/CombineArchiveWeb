@@ -466,9 +466,10 @@ public class RestApi extends RestHelper {
 		try {
 			if( archive instanceof ArchiveFromCellMl ) {
 				// import from CellMl
-				LOGGER.debug( ((ArchiveFromCellMl) archive).getCellmlLink() );
+				LOGGER.debug( ((ArchiveFromCellMl) archive).getHgLink() );
+				File archiveFile = null;
 				try {
-					File archiveFile = VcImporter.importRepo( (ArchiveFromCellMl) archive );
+					archiveFile = VcImporter.importRepo( (ArchiveFromCellMl) archive );
 					
 					long repoFileSize = archiveFile.length();
 					// max workspace size
@@ -494,6 +495,9 @@ public class RestApi extends RestHelper {
 				catch (CombineArchiveWebException e) {
 					LOGGER.error (e, "cannot create archive");
 					return buildErrorResponse( 500, user, "Cannot create archive!", e.getMessage() );
+				} finally {
+					if( archiveFile != null && archiveFile.exists() )
+						archiveFile.delete();
 				}
 			}
 			else {

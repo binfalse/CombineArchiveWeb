@@ -61,7 +61,7 @@ import de.unirostock.sems.cbext.Formatizer;
 @JsonSubTypes({
 	@Type( value = Archive.class, name = Archive.TEMPLATE_PLAIN ),
 	@Type( value = ArchiveFromHg.class, name = Archive.TEMPLATE_HG ),
-	@Type( value = Archive.class, name = Archive.TEMPLATE_HTTP ),
+	@Type( value = ArchiveFromHttp.class, name = Archive.TEMPLATE_HTTP ),
 	@Type( value = ArchiveFromExisting.class, name = Archive.TEMPLATE_EXISTING )
 })
 public class Archive {

@@ -1334,6 +1334,10 @@ var ArchiveView = Backbone.View.extend({
 		if( data.node.original.type != "file" && data.node.original.type != "root" )
 			return false;
 		
+		// if ctrl or shift is pressed, selection mode is activated
+		if( data.event.shiftKey == true || data.event.ctrlKey == true || data.event == false )
+			return false;
+		
 		this.setArchiveFile( data.node.data.id, true );
 	},
 	jstreeMove: function(event, data) {

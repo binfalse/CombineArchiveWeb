@@ -150,20 +150,9 @@ public class Archive implements Closeable {
 		this.archiveFile	= file;
 		this.lock 			= lock;
 		
-		// lock stuff
-//		try {
-//			if( lock == null )
-//				throw new CombineArchiveWebException("No lock provided.");
-//			
-//			if( lock.tryLock( Fields.LOCK_ARCHIVE_TIMEOUT, TimeUnit.SECONDS ) == false )
-//				throw new CombineArchiveWebException("Lock timeout.");
-//		} catch (InterruptedException e) {
-//			throw new CombineArchiveWebException("Lock interrupted.", e);
-//		}
-		
 		try {
 			archive = new CombineArchive(file);
-			LOGGER.error("opening ", file.getAbsolutePath());
+			LOGGER.info("opening ", file.getAbsolutePath());
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException e) {
 			LOGGER.error(e, MessageFormat.format("The archive is not parsable: {0}", file.getAbsolutePath()) );
 			throw new CombineArchiveWebException("The archive is not parsable", e);
@@ -202,7 +191,7 @@ public class Archive implements Closeable {
 			archive.close();
 			if( lock != null )
 				lock.unlock();
-			LOGGER.error("close ", archiveFile.getAbsolutePath());
+			LOGGER.info("close ", archiveFile.getAbsolutePath());
 		}
 		else {
 			if( lock != null )

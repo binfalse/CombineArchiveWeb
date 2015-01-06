@@ -160,15 +160,18 @@ public class Workspace {
 	}
 	
 	@JsonIgnore
-	public Lock lockArchive( String archiveId ) throws CombineArchiveWebException {
+	public synchronized Lock lockArchive( String archiveId ) throws CombineArchiveWebException {
 		
 		if( archives.containsKey(archiveId) == false )
 			throw new CombineArchiveWebException("No such archive.");
 		
-		ReentrantLock archiveLock = locks.get(archiveId);
-		if( archiveLock == null ) {
-			archiveLock = new ReentrantLock(true);
-			locks.put(archiveId, archiveLock);
+		ReentrantLock archiveLock = null;
+		synchronized (this) {
+			archiveLock = locks.get(archiveId);
+			if( archiveLock == null ) {
+				archiveLock = new ReentrantLock(true);
+				locks.put(archiveId, archiveLock);
+			}
 		}
 		
 		try {

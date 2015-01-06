@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
 
 import javax.xml.transform.TransformerException;
 
@@ -167,7 +168,8 @@ public class UserManager {
 				
 				Archive archiveModel = new Archive(archiveId, archiveName, null, null);
 				if( deepScan ) {
-					archiveModel.setArchiveFile(archive, workspace.lockArchive(archiveId) );
+					Lock lock = workspace.lockArchive(archiveId);
+					archiveModel.setArchiveFile(archive, lock );
 				}
 				return archiveModel;
 			}

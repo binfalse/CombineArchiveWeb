@@ -66,6 +66,9 @@ public class Fields {
 
 	/** The charset for all http related interactions */
 	public static final String CHARSET = "UTF-8";
+	
+	/** Timeout for locks on archives */
+	public static final long LOCK_ARCHIVE_TIMEOUT = 5;
 
 	// ------------------------------------------------------------------------
 	// Quotas

@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 
 public class Workspace {
 	
@@ -39,6 +43,8 @@ public class Workspace {
 	private File workspaceDir = null;
 	@JsonIgnore
 	private Map<String, String> archives = new HashMap<String, String>();
+	@JsonIgnore
+	private Map<String, ReentrantLock> locks = new HashMap<String, ReentrantLock>();
 	
 	public Workspace(String workspaceId, String name) {
 		super();
@@ -151,5 +157,27 @@ public class Workspace {
 			LOGGER.warn("archive ", archiveId, " in workspace ", workspaceId, " does not exists.");
 		
 		return size;
+	}
+	
+	@JsonIgnore
+	public Lock lockArchive( String archiveId ) throws CombineArchiveWebException {
+		
+		if( archives.containsKey(archiveId) == false )
+			throw new CombineArchiveWebException("No such archive.");
+		
+		ReentrantLock archiveLock = locks.get(archiveId);
+		if( archiveLock == null ) {
+			archiveLock = new ReentrantLock(true);
+			locks.put(archiveId, archiveLock);
+		}
+		
+		try {
+			if( archiveLock.tryLock( Fields.LOCK_ARCHIVE_TIMEOUT, TimeUnit.SECONDS ) == false )
+				throw new CombineArchiveWebException("Lock timeout.");
+		} catch (InterruptedException e) {
+			throw new CombineArchiveWebException("Lock interrupted.", e);
+		}
+		
+		return archiveLock;
 	}
 }

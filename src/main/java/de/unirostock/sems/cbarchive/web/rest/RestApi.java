@@ -679,7 +679,7 @@ public class RestApi extends RestHelper {
 
 		try {
 			Archive archive = user.getArchive(archiveId);
-			archive.getArchive().close();
+			archive.close();
 
 			// gets result and sorts it
 			List<ArchiveEntryDataholder> result = new ArrayList<ArchiveEntryDataholder>( archive.getEntries().values() );
@@ -713,7 +713,7 @@ public class RestApi extends RestHelper {
 
 		try {
 			Archive archive = user.getArchive(archiveId);
-			archive.getArchive().close();
+			archive.close();
 			ArchiveEntryDataholder entry = null;
 			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
 				if( iterEntry.getId().equals(entryId) ) {
@@ -752,7 +752,7 @@ public class RestApi extends RestHelper {
 			user.updateArchiveEntry(archiveId, newEntry);
 			
 			Archive archive = user.getArchive(archiveId);
-			archive.getArchive().close();
+			archive.close();
 			ArchiveEntryDataholder entry = archive.getEntries().get( newEntry.getFilePath() );
 			
 			// check if entry exists
@@ -932,8 +932,7 @@ public class RestApi extends RestHelper {
 			}
 			
 			// pack and close the archive
-			archive.getArchive().pack();
-			archive.getArchive().close();
+			archive.packAndClose();
 			
 			// trigger quota update
 			QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
@@ -1025,7 +1024,7 @@ public class RestApi extends RestHelper {
 		
 		try {
 			Archive archive = user.getArchive(archiveId);
-			archive.getArchive().close();
+			archive.close();
 			ArchiveEntryDataholder entry = null;
 			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
 				if( iterEntry.getId().equals(entryId) ) {
@@ -1061,7 +1060,7 @@ public class RestApi extends RestHelper {
 				
 		try {
 			Archive archive = user.getArchive(archiveId);
-			archive.getArchive().close();
+			archive.close();
 			
 			// iterate over all archive entries
 			ArchiveEntryDataholder entry = null;
@@ -1125,7 +1124,7 @@ public class RestApi extends RestHelper {
 			
 			// check if entry exists
 			if( entry == null ) {
-				archive.getArchive().close();
+				archive.close();
 				return buildErrorResponse(404, user, "No such entry found");
 			}
 			
@@ -1142,7 +1141,7 @@ public class RestApi extends RestHelper {
 			
 			// check if meta entry exists
 			if( oldMetaObject == null ) {
-				archive.getArchive().close();
+				archive.close();
 				return buildErrorResponse(404, user, "No such meta entry found");
 			}
 			
@@ -1161,7 +1160,7 @@ public class RestApi extends RestHelper {
 				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
-				archive.getArchive().close();
+				archive.close();
 			}
 			
 			return buildResponse(200, user).entity( oldMetaObject ).build();
@@ -1200,7 +1199,7 @@ public class RestApi extends RestHelper {
 			
 			// check if entry exists
 			if( entry == null ) {
-				archive.getArchive().close();
+				archive.close();
 				return buildErrorResponse(404, user, "No such entry found");
 			}
 			
@@ -1214,7 +1213,7 @@ public class RestApi extends RestHelper {
 				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Cannot create meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
-				archive.getArchive().close();
+				archive.close();
 			}
 			
 			return buildResponse(200, user).entity( metaObject ).build();
@@ -1253,7 +1252,7 @@ public class RestApi extends RestHelper {
 			
 			// check if entry exists
 			if( entry == null ) {
-				archive.getArchive().close();
+				archive.close();
 				return buildErrorResponse(404, user, "No such entry found");
 			}
 			
@@ -1268,7 +1267,7 @@ public class RestApi extends RestHelper {
 			
 			// check if meta entry exists
 			if( metaObject == null ) {
-				archive.getArchive().close();
+				archive.close();
 				return buildErrorResponse(404, user, "No such meta entry found");
 			}
 			

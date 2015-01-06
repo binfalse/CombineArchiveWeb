@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,9 +27,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.transform.TransformerException;
 
 import org.jdom2.JDOMException;
 
@@ -64,7 +67,7 @@ import de.unirostock.sems.cbext.Formatizer;
 	@Type( value = ArchiveFromHttp.class, name = Archive.TEMPLATE_HTTP ),
 	@Type( value = ArchiveFromExisting.class, name = Archive.TEMPLATE_EXISTING )
 })
-public class Archive {
+public class Archive implements Closeable {
 	
 	public static final String TEMPLATE_PLAIN		= "plain";
 	public static final String TEMPLATE_HG 			= "hg";
@@ -83,13 +86,15 @@ public class Archive {
 	private CombineArchive archive	= null;
 	@JsonIgnore
 	private File archiveFile		= null;
+	@JsonIgnore
+	protected Lock lock				= null;
 
-	public Archive(String id, String name, File file) throws CombineArchiveWebException {
+	public Archive(String id, String name, File file, Lock lock) throws CombineArchiveWebException {
 		this.id = id;
 		this.name = name;
 		this.archiveFile = file;
 		if( file != null )
-			setArchiveFile(file);
+			setArchiveFile(file, lock);
 	}
 	
 	public Archive() {
@@ -134,14 +139,15 @@ public class Archive {
 	}
 
 	@JsonIgnore
-	public void setArchiveFile(File file) throws CombineArchiveWebException {
+	public void setArchiveFile(File file, Lock lock) throws CombineArchiveWebException {
 		
 		if( !file.exists() || !file.isFile() ) {
 			LOGGER.error( MessageFormat.format("The archive is not accesible: {0}", file.getAbsolutePath()) );
 			throw new CombineArchiveWebException("The archive is not accesible");
 		}
 		
-		this.archiveFile = file;
+		this.archiveFile	= file;
+		this.lock 			= lock;
 
 		try {
 			archive = new CombineArchive(file);
@@ -175,6 +181,23 @@ public class Archive {
 		rootDataholder.updateId();
 		this.entries.put("/", rootDataholder );
 		
+	}
+	
+	@JsonIgnore
+	public void close() throws IOException {
+		if( lock != null )
+			lock.unlock();
+		
+		if( archive != null )
+			archive.close();
+	}
+	
+	@JsonIgnore
+	public void packAndClose() throws IOException, TransformerException {
+		if( archive != null ) {
+			archive.pack();
+			this.close();
+		}
 	}
 	
 	@JsonIgnore

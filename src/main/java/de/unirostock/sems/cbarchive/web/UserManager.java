@@ -127,9 +127,9 @@ public class UserManager {
 
 					// if deepScan enabled, analyse content
 					if( deepScan == true ) {
-						dataholder.setArchiveFile(archiveFile);
+						dataholder.setArchiveFile(archiveFile, workspace.lockArchive(archiveId));
 						// closes it
-						dataholder.getArchive().close();
+						dataholder.close();
 					}
 
 					// adds this archive to the dataholder
@@ -164,7 +164,12 @@ public class UserManager {
 			// get the file
 			File archive = new File( workingDir.getAbsolutePath(), archiveId );
 			if( archive.isFile() && archive.exists() && archive.canRead() ) {
-				return new Archive(archiveId, archiveName, deepScan == true ? archive : null);
+				
+				Archive archiveModel = new Archive(archiveId, archiveName, null, null);
+				if( deepScan ) {
+					archiveModel.setArchiveFile(archive, workspace.lockArchive(archiveId) );
+				}
+				return archiveModel;
 			}
 			else
 				throw new FileNotFoundException("Cannot find/read combine archive file for " + archiveId);
@@ -304,7 +309,7 @@ public class UserManager {
 		if( archiveEntry == null ) {
 			// was not able to find the old entry
 			try {
-				combineArchive.close();
+				archive.close();
 			} catch (IOException e1) {
 				LOGGER.error(e1, "Cannot close archive");
 			}
@@ -328,7 +333,7 @@ public class UserManager {
 				LOGGER.error(e, "Cannot move file from ", oldEntryDataholder.getFilePath(), " to ", newFilePath);
 				
 				try {
-					combineArchive.close();
+					archive.close();
 				} catch (IOException e1) {
 					LOGGER.error(e1, "Cannot close archive");
 				}
@@ -359,8 +364,7 @@ public class UserManager {
 			combineArchive.removeMainEntry( archiveEntry );
 
 		try {
-			combineArchive.pack();
-			combineArchive.close();
+			archive.packAndClose();
 		} catch (IOException | TransformerException e) {
 			LOGGER.error(e, "Cannot pack and close archive ", archiveId);
 			throw new CombineArchiveWebException("Cannot pack and close archive", e);

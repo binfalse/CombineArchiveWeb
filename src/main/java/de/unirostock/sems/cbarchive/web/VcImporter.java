@@ -271,7 +271,8 @@ public class VcImporter
 		
 		// add the combine archive to the dataholder
 		if( archive != null ) {
-			archive.setArchiveFile(archiveFile);
+			//TODO ugly workaround with the lock. 
+			archive.setArchiveFile(archiveFile, null);
 			archive.getArchive().close();
 		}
 		

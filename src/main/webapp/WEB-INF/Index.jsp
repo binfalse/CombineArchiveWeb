@@ -190,7 +190,7 @@
 				</div>
 				
 				<input type="radio" id="newArchiveTemplate-Http" name="newArchiveTemplate" value="http" />
-				<label for="newArchiveTemplate-Http">Import an remote archive via HTTP</label><br />
+				<label for="newArchiveTemplate-Http">Import a remote archive via HTTP</label><br />
 				<div class="create-parameter on-archive-http">
 					<input type="text" name="newArchiveHttpLink" placeholder="HTTP link to the CombineArchive" size="50" /><br />
 				</div>

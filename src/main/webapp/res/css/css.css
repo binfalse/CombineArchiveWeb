@@ -121,8 +121,8 @@ div.nav-container
 .message {
 	margin: 5px 0;
 	padding: 12px;
-	border: 1px solid;
-	border-radius: 4px;
+	border: none;
+	border-left: 5px solid;
 }
 .message ul {
 	margin-bottom: 0;
@@ -140,15 +140,15 @@ div.nav-container
 
 .message-error {
 	background-color: #FF9696;
-	border-color: #FF0000;
+	border-left-color: #FF0000;
 }
 .message-warning {
 	background-color: #FFFC96;
-	border-color: #F2C200;
+	border-left-color: #2C200;
 }
 .message-success {
 	background-color: #8BE688;
-	border-color: #079100;
+	border-left-color: #079100;
 }
 
 /* -------- File Dropbox -------- */

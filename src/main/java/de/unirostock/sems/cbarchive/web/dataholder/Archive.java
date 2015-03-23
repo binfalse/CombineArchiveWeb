@@ -154,7 +154,7 @@ public class Archive implements Closeable {
 		
 		try {
 			archive = new CombineArchive(file);
-			LOGGER.info("opening ", file.getAbsolutePath());
+			LOGGER.debug("opening ", file.getAbsolutePath());
 		} catch (IOException | JDOMException | ParseException | CombineArchiveException e) {
 			LOGGER.error(e, MessageFormat.format("The archive is not parsable: {0}", file.getAbsolutePath()) );
 			throw new CombineArchiveWebException("The archive is not parsable", e);
@@ -193,7 +193,7 @@ public class Archive implements Closeable {
 			archive.close();
 			if( lock != null )
 				lock.unlock();
-			LOGGER.info("close ", archiveFile.getAbsolutePath());
+			LOGGER.debug("close ", archiveFile.getAbsolutePath());
 		}
 		else {
 			if( lock != null )

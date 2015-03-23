@@ -485,7 +485,7 @@ public class RestApi extends RestHelper {
 					else if( archive instanceof ArchiveFromGit ) {
 						LOGGER.debug( "Git-Link", ((ArchiveFromGit) archive).getGitLink() );
 						GitImporter importer = new GitImporter( ((ArchiveFromGit) archive).getGitLink(), user );
-						//archiveFile = importer.importRepo().getTempFile();
+						archiveFile = importer.importRepo().getTempFile();
 					}
 					// import form HTTP
 					else if( archive instanceof ArchiveFromHttp ) {

@@ -163,10 +163,10 @@
 			
 			<div style="margin: 0.5em 0; float: left;">
 				<input type="radio" id="newArchiveTemplate-Empty" name="newArchiveTemplate" value="empty" checked="checked" />
-				<label for="newArchiveTemplate-Empty">Create an empty archive</label><br />
+				<label for="newArchiveTemplate-Empty">Create an <b>empty archive</b></label><br />
 				
 				<input type="radio" id="newArchiveTemplate-File" name="newArchiveTemplate" value="file" />
-				<label for="newArchiveTemplate-File">Upload an existing archive</label><br />
+				<label for="newArchiveTemplate-File"><b>Upload</b> an existing archive</label><br />
 				<div class="create-parameter on-archive-upload">
 					<div class="dropbox">
 						<div class="center-button">
@@ -178,25 +178,25 @@
 				</div>
 				
 				<input type="radio" id="newArchiveTemplate-CellMl" name="newArchiveTemplate" value="cellml" />
-				<label for="newArchiveTemplate-CellMl">Create an archive from CellMl model repository</label><br />
+				<label for="newArchiveTemplate-CellMl">Create an archive from <b>CellMl model repository</b></label><br />
 				<div class="create-parameter on-archive-cellml">
 					<input type="text" name="newArchiveCellMlLink" placeholder="link to CellML repository" size="50" /><br />
 				</div>
 				
 				<input type="radio" id="newArchiveTemplate-Hg" name="newArchiveTemplate" value="hg" />
-				<label for="newArchiveTemplate-Hg">Create an archive form a Mercurial (HG) repository</label><br />
+				<label for="newArchiveTemplate-Hg">Create an archive form a <b>Mercurial (HG)</b> repository</label><br />
 				<div class="create-parameter on-archive-hg">
 					<input type="text" name="newArchiveHgLink" placeholder="link to Mercurial repository" size="50" /><br />
 				</div>
 				
 				<input type="radio" id="newArchiveTemplate-Git" name="newArchiveTemplate" value="git" />
-				<label for="newArchiveTemplate-Git">Create an archive from a Git repository</label><br />
+				<label for="newArchiveTemplate-Git">Create an archive from a <b>Git</b> repository</label><br />
 				<div class="create-parameter on-archive-git">
 					<input type="text" name="newArchiveGitLink" placeholder="link to Git repository" size="50" /><br />
 				</div>
 				
 				<input type="radio" id="newArchiveTemplate-Http" name="newArchiveTemplate" value="http" />
-				<label for="newArchiveTemplate-Http">Import a remote archive via HTTP</label><br />
+				<label for="newArchiveTemplate-Http">Import a remote archive via <b>HTTP</b></label><br />
 				<div class="create-parameter on-archive-http">
 					<input type="text" name="newArchiveHttpLink" placeholder="HTTP link to the CombineArchive" size="50" /><br />
 				</div>
@@ -364,27 +364,29 @@
 		<div id="template-omex-meta-entry">
 			<h4>OMEX entry</h4>
 			<div class="attribute-name">created:</div>
-			<div class="attribute-detail">{{# print( new XDate(created).toLocaleString() ); }}</div>
+			<div class="attribute-detail">{{# print( new XDate(created).toLocaleString() ); }}&nbsp;</div>
 			
 			<div class="attribute-name">modified:</div>
 			<div class="attribute-detail">
 				{{# _.each(modified, function(modDate) { }}
 					<nobr>[{{# print( new XDate(modDate).toLocaleString() ); }}]</nobr>&nbsp;&nbsp;
 				{{# }); }}
+				&nbsp;
 			</div>
 			<div style="clear: left;"></div>
 			<div class="attribute-name">description:</div>
 			<div class="attribute-detail">
 				<span class="on-not-edit archive-meta-omex-description">{{# print(escape(description, true)); }}</span>
 				<textarea class="on-edit" name="omexDescription">{{# print(description); }}</textarea>
+				&nbsp;
 			</div>
 			<div class="attribute-name-br">creators:</div>
 			<div class="attribute-detail-br">
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
 						<strong class="on-not-edit">
-							<span data-field="givenName">{{# print(escape(vcard.givenName)); }}</span>
-							<span data-field="familyName">{{# print(escape(vcard.familyName)); }}</span>
+							<span data-field="givenName">{{# print(escape(vcard.givenName)); }}&nbsp;</span>
+							<span data-field="familyName">{{# print(escape(vcard.familyName)); }}&nbsp;</span>
 						</strong>
 						<span class="on-not-edit archive-meta-omex-creator-orga" data-field="organization">{{# print(escape(vcard.organization)); }}</span>
 						<br class="on-not-edit" />

@@ -453,12 +453,16 @@ div.attribute-name {
 }
 div.attribute-detail {
 	float: left;
-	width: calc(100% - 115px);
+	width: calc(100% - 120px);
 	margin-bottom: 5px;
 }
 div.attribute-detail:after {
 	clear: left;
-	content: "\00a0";
+	content: ".";
+	display: block;
+	font-size: 0;
+	height: 1px;
+	visibility: hidden;
 }
 div.attribute-detail > input[type='text'],
 div.attribute-detail >  textarea {

@@ -1751,7 +1751,7 @@ var CreateView = Backbone.View.extend({
 			// create new archive based on a Git repository
 			archiveModel.set("template", "git");
 			
-			var link = this.$el.find("input{name='newArchiveGitLink']").val();
+			var link = this.$el.find("input[name='newArchiveGitLink']").val();
 			// add link to the model
 			archiveModel.set("gitLink", link);
 		}

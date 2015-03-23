@@ -30,9 +30,44 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromGit;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHttp;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
 public abstract class Importer {
+	
+	/**
+	 * Gets an importer corresponding to the type of archive
+	 * 
+	 * @param archive
+	 * @param user
+	 * @return
+	 */
+	public static Importer getImporter( Archive archive, UserManager user ) throws ImporterException {
+		
+		if( archive instanceof ArchiveFromHg ) 
+			return new VcImporter((ArchiveFromHg) archive, user);
+		else if( archive instanceof ArchiveFromGit )
+			return new GitImporter((ArchiveFromGit) archive, user);
+		else if( archive instanceof ArchiveFromHttp )
+			return new HttpImporter((ArchiveFromHttp) archive, user);
+		else
+			throw new ImporterException("No suiting importer found. Is this even an Archive dataholder with import order?");
+		
+	}
+	
+	public static boolean isImportable( Archive archive ) {
+		
+		if( archive instanceof ArchiveFromHg || archive instanceof ArchiveFromGit || archive instanceof ArchiveFromHttp )
+			return true;
+		else
+			return false;
+		
+	}
+	
+	// ----------------------------------------
 	
 	protected File tempFile = null;
 	protected UserManager user = null;

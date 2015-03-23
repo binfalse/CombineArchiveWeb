@@ -39,6 +39,7 @@ import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.QuotaManager;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHttp;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
 public class HttpImporter extends Importer {
@@ -51,6 +52,10 @@ public class HttpImporter extends Importer {
 	
 	public HttpImporter( String remoteUrl ) {
 		this(remoteUrl, null);
+	}
+	
+	public HttpImporter( ArchiveFromHttp archive, UserManager user ) {
+		this( archive.getUrl(), user );
 	}
 	
 	public HttpImporter( String remoteUrl, UserManager user ) {

@@ -50,6 +50,7 @@ import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 import de.unirostock.sems.cbext.Formatizer;
 
@@ -66,6 +67,10 @@ public class VcImporter extends Importer {
 	public VcImporter(String hgLink, UserManager user) {
 		super(user);
 		this.hgLink = hgLink;
+	}
+	
+	public VcImporter( ArchiveFromHg archive, UserManager user ) {
+		this( archive.getHgLink(), user );
 	}
 	
 	@Override

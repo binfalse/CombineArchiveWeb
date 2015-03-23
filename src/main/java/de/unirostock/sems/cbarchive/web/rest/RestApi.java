@@ -73,10 +73,7 @@ import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
-import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromGit;
-import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
-import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHttp;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
@@ -84,9 +81,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.ArchiveEntryUploadException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
-import de.unirostock.sems.cbarchive.web.importer.GitImporter;
-import de.unirostock.sems.cbarchive.web.importer.HttpImporter;
-import de.unirostock.sems.cbarchive.web.importer.VcImporter;
+import de.unirostock.sems.cbarchive.web.importer.Importer;
 import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
 @Path("v1")
@@ -469,31 +464,14 @@ public class RestApi extends RestHelper {
 		}
 		
 		try {
-			if( archive instanceof ArchiveFromHg || archive instanceof ArchiveFromGit || archive instanceof ArchiveFromHttp ) {
+			if( Importer.isImportable(archive) ) {
 				
 				File archiveFile = null;
 				try {
-					// import from CellMl
-					if( archive instanceof ArchiveFromHg ) {
-						LOGGER.debug( "HG-Link: ", ((ArchiveFromHg) archive).getHgLink() );
-						VcImporter importer = new VcImporter( ((ArchiveFromHg) archive).getHgLink(), user );
-						archiveFile = importer.importRepo().getTempFile();
-						importer.cleanUp();
-					}
-					// import from Git
-					else if( archive instanceof ArchiveFromGit ) {
-						LOGGER.debug( "Git-Link", ((ArchiveFromGit) archive).getGitLink() );
-						GitImporter importer = new GitImporter( ((ArchiveFromGit) archive).getGitLink(), user );
-						archiveFile = importer.importRepo().getTempFile();
-						importer.cleanUp();
-					}
-					// import from HTTP
-					else if( archive instanceof ArchiveFromHttp ) {
-						LOGGER.debug( "Http-Link: ", ((ArchiveFromHttp) archive).getUrl() );
-						HttpImporter importer = new HttpImporter( ((ArchiveFromHttp) archive).getUrl(), user );
-						archiveFile = importer.importRepo().getTempFile();
-						importer.cleanUp();
-					}
+					// import stuff
+					Importer importer = Importer.getImporter(archive, user);
+					archiveFile = importer.importRepo().getTempFile();
+					importer.cleanUp();
 					
 					long repoFileSize = archiveFile.length();
 					// max workspace size

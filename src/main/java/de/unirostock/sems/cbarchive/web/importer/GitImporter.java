@@ -27,6 +27,7 @@ import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromGit;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 import de.unirostock.sems.cbext.Formatizer;
 
@@ -36,6 +37,10 @@ public class GitImporter extends Importer {
 	private String gitUrl = null;
 	private File tempDir = null;
 	private Git repo = null;
+	
+	public GitImporter( ArchiveFromGit archive, UserManager user ) {
+		this( archive.getGitLink(), user );
+	}
 	
 	public GitImporter( String gitUrl, UserManager user ) {
 		super(user);

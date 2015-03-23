@@ -46,8 +46,8 @@ import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
-import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
+import de.unirostock.sems.cbarchive.web.importer.GitImporter;
 import de.unirostock.sems.cbarchive.web.importer.HttpImporter;
 import de.unirostock.sems.cbarchive.web.importer.VcImporter;
 
@@ -123,6 +123,7 @@ public class ShareApi extends RestHelper {
 	
 	private static final String IMPORT_HTTP = "http";
 	private static final String IMPORT_HG = "hg";
+	private static final String IMPORT_GIT = "git";
 	
 	@GET
 	@Path("/import")
@@ -156,6 +157,7 @@ public class ShareApi extends RestHelper {
 			if( remoteType.equals(IMPORT_HTTP) ) {
 				HttpImporter importer = new HttpImporter(remoteUrl, user);
 				importer.importRepo();
+				importer.cleanUp();
 				
 				if( archiveName == null || archiveName.isEmpty() )
 					archiveName = importer.getSuggestedName();
@@ -172,6 +174,16 @@ public class ShareApi extends RestHelper {
 				if( archiveName == null || archiveName.isEmpty() )
 					archiveName = "unknown";
 					
+			}
+			else if( remoteType.equals(IMPORT_GIT) ) {
+				GitImporter importer = new GitImporter(remoteUrl, user);
+				tempFile = importer.importRepo().getTempFile();
+				importer.cleanUp();
+				
+				String[] urlParts = remoteUrl.split("/");
+				archiveName = urlParts[ urlParts.length-1 ];
+				if( archiveName == null || archiveName.isEmpty() )
+					archiveName = "unknown";
 			}
 			
 			// add archive to workspace

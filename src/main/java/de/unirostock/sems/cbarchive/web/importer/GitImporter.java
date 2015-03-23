@@ -85,6 +85,7 @@ public class GitImporter extends Importer {
 			repo = Git.cloneRepository()
 					.setURI( gitUrl )
 					.setDirectory( tempDir )
+					.setCloneSubmodules(true)		// include all submodules -> important for PMR2-Project
 					.call();
 			
 		} catch (GitAPIException e) {

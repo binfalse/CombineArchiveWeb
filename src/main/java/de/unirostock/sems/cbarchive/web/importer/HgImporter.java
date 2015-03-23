@@ -96,7 +96,7 @@ public class HgImporter extends Importer {
 			if( tempDir.exists() )
 				FileUtils.deleteDirectory(tempDir);
 		} catch (IOException e) {
-			LOGGER.error(e, "Exception cleaning up temp dir, after importing a Git repository");
+			LOGGER.error(e, "Exception cleaning up temp dir, after importing a HG repository");
 		}
 
 	}

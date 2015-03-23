@@ -143,12 +143,14 @@ public abstract class Importer {
 	
 	protected static class HgNameTransformer {
 		
-		private static Pattern pattern = Pattern.compile("(\\w)\\s+((\\w)\\s+)+(\\<(\\S+\\@\\S+\\.\\S+\\)>)?");
+		private static Pattern pattern = Pattern.compile("((\\w+\\s+)+)(\\w+)(\\s+<(\\w+@\\w+\\.\\w+)>)?");
 		
 		protected static String getGivenName( String name ) {
 			Matcher matcher = pattern.matcher(name);
-			if( matcher.find() )
-				return matcher.group(1).trim();
+			if( matcher.find() ) {
+				String result = matcher.group(1);
+				return result != null && result.isEmpty() == false ? result.trim() : "";
+			}
 			else
 				return "";
 		}
@@ -158,7 +160,8 @@ public abstract class Importer {
 			if( matcher.find() ) {
 				for( int i = 0; i < matcher.groupCount(); i++ )
 					System.out.println( matcher.group(i) );
-				return matcher.group(2).trim();
+				String result = matcher.group(3);
+				return result != null && result.isEmpty() == false ? result.trim() : "";
 			}
 			else
 				return "";
@@ -166,8 +169,10 @@ public abstract class Importer {
 		
 		protected static String getEmail( String name ) {
 			Matcher matcher = pattern.matcher(name);
-			if( matcher.find() )
-				return matcher.group(5).trim();
+			if( matcher.find() ) {
+				String result = matcher.group(5);
+				return result != null && result.isEmpty() == false ? result.trim() : "";
+			}
 			else
 				return "";
 		}

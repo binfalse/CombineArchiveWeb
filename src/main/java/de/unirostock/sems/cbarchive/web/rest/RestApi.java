@@ -469,7 +469,7 @@ public class RestApi extends RestHelper {
 		}
 		
 		try {
-			if( archive instanceof ArchiveFromHg || archive instanceof ArchiveFromHttp ) {
+			if( archive instanceof ArchiveFromHg || archive instanceof ArchiveFromGit || archive instanceof ArchiveFromHttp ) {
 				
 				File archiveFile = null;
 				try {
@@ -482,12 +482,14 @@ public class RestApi extends RestHelper {
 							throw new ImporterException("Not able to clone HG repository.", e);
 						}
 					}
+					// import from Git
 					else if( archive instanceof ArchiveFromGit ) {
 						LOGGER.debug( "Git-Link", ((ArchiveFromGit) archive).getGitLink() );
 						GitImporter importer = new GitImporter( ((ArchiveFromGit) archive).getGitLink(), user );
 						archiveFile = importer.importRepo().getTempFile();
+						importer.cleanUp();
 					}
-					// import form HTTP
+					// import from HTTP
 					else if( archive instanceof ArchiveFromHttp ) {
 						LOGGER.debug( "Http-Link: ", ((ArchiveFromHttp) archive).getUrl() );
 						HttpImporter importer = new HttpImporter( ((ArchiveFromHttp) archive).getUrl(), user );

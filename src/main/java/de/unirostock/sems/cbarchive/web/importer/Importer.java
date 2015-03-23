@@ -19,5 +19,5 @@ public abstract class Importer {
 	}
 	
 	public abstract Importer importRepo() throws ImporterException;
-	
+	public abstract void cleanUp();
 }

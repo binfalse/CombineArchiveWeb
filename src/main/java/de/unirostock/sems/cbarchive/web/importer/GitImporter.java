@@ -14,11 +14,11 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
 import de.binfalse.bflog.LOGGER;
@@ -61,6 +61,16 @@ public class GitImporter extends Importer {
 		return this;
 	}
 	
+	public void cleanUp() {
+		
+		try {
+			FileUtils.deleteDirectory(tempDir);
+		} catch (IOException e) {
+			LOGGER.error(e, "Exception cleaning up temp dir, after importing a Git repository");
+		}
+		
+	}
+	
 	private void cloneGit() throws ImporterException {
 		
 		try {
@@ -99,7 +109,7 @@ public class GitImporter extends Importer {
 			
 			scanRepository(tempDir, archive);
 			archive.pack();
-			
+			archive.close();
 			
 		} catch (IOException e) {
 			LOGGER.error(e, "IOException while build CombineArchive from Git Repository");
@@ -126,7 +136,7 @@ public class GitImporter extends Importer {
 			else if( entry.isFile() && entry.exists() ) {
 				// Entry is a file
 				// make Path relative
-				Path relativePath = entry.toPath().relativize( tempDir.toPath() );
+				Path relativePath = tempDir.toPath().relativize( entry.toPath() );
 				
 				// add file and scan log for omex description
 				try {
@@ -187,24 +197,12 @@ public class GitImporter extends Importer {
 	protected class GitVCard extends VCard {
 		
 		public GitVCard( PersonIdent person ) {
-			super(	person.getName().split(" ", 1)[0],
-					person.getName().split(" ", 1)[1],
+			super(	Transformer.getFamilyName( person.getName() ),
+					Transformer.getGivenName( person.getName() ),
 					person.getEmailAddress(),
 					"" );
 		}
 		
-		public GitVCard() {
-			super();
-		}
-		
-		public GitVCard(Element element) {
-			super(element);
-		}
-
-		public GitVCard(String familyName, String givenName, String email, String organization) {
-			super(familyName, givenName, email, organization);
-		}
-
 		public int hashCode() {
 			
 			if( getEmail() == null && getFamilyName() == null && getGivenName() == null && getOrganization() == null )
@@ -226,6 +224,36 @@ public class GitImporter extends Importer {
 			else
 				return false;
 			
+		}
+	}
+	
+	private static class Transformer {
+		protected static String getGivenName( String name ) {
+			if( name == null || name.isEmpty() )
+				return "";
+			
+			String[] splitted = splitIt(name);
+			if( splitted[0] == null || splitted[0].isEmpty() )
+				return "";
+			else
+				return splitted[0];
+		}
+		
+		protected static String getFamilyName( String name ) {
+			if( name == null || name.isEmpty() )
+				return "";
+			
+			String[] splitted = splitIt(name);
+			if( splitted[0] == null || splitted[0].isEmpty() )
+				return name;
+			else if( splitted.length < 2 || splitted[1] == null || splitted[1].isEmpty() )
+				return "";
+			else
+				return splitted[1];
+		}
+		
+		private static String[] splitIt( String name ) {
+			return name.split("\\s+", 2);
 		}
 	}
 }

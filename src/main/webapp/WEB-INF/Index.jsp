@@ -364,7 +364,7 @@
 		<div id="template-omex-meta-entry">
 			<h4>OMEX entry</h4>
 			<div class="attribute-name">created:</div>
-			<div class="attribute-detail">{{# print( new XDate(created).toLocaleString() ); }}&nbsp;</div>
+			<div class="attribute-detail">{{# print( new XDate(created).toLocaleString() ); }}</div>
 			
 			<div class="attribute-name">modified:</div>
 			<div class="attribute-detail">
@@ -385,8 +385,8 @@
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
 						<strong class="on-not-edit">
-							<span data-field="givenName">{{# print(escape(vcard.givenName)); }}&nbsp;</span>
-							<span data-field="familyName">{{# print(escape(vcard.familyName)); }}&nbsp;</span>
+							<span data-field="givenName">{{# print(escape(vcard.givenName)); }}</span>
+							<span data-field="familyName">{{# print(escape(vcard.familyName)); }}</span>
 						</strong>
 						<span class="on-not-edit archive-meta-omex-creator-orga" data-field="organization">{{# print(escape(vcard.organization)); }}</span>
 						<br class="on-not-edit" />

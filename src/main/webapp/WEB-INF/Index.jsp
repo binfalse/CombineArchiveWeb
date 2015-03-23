@@ -189,6 +189,12 @@
 					<input type="text" name="newArchiveHgLink" placeholder="link to Mercurial repository" size="50" /><br />
 				</div>
 				
+				<input type="radio" id="newArchiveTemplate-Git" name="newArchiveTemplate" value="git" />
+				<label for="newArchiveTemplate-Git">Create an archive from a Git repository</label><br />
+				<div class="create-parameter on-archive-git">
+					<input type="text" name="newArchiveGitLink" placeholder="link to Git repository" size="50" /><br />
+				</div>
+				
 				<input type="radio" id="newArchiveTemplate-Http" name="newArchiveTemplate" value="http" />
 				<label for="newArchiveTemplate-Http">Import a remote archive via HTTP</label><br />
 				<div class="create-parameter on-archive-http">

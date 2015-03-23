@@ -1572,6 +1572,10 @@ var CreateView = Backbone.View.extend({
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-hg").show();
 		}
+		else if( archiveTemplate == "git" ) {
+			this.$el.find(".create-parameter").hide();
+			this.$el.find(".on-archive-git").show();
+		}
 		else if( archiveTemplate == "http" ) {
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-http").show();
@@ -1741,7 +1745,15 @@ var CreateView = Backbone.View.extend({
 			
 			var link = this.$el.find("input[name='newArchiveHgLink']").val();
 			// add link to the model
-			archiveModel.set ("hgLink", link);
+			archiveModel.set("hgLink", link);
+		}
+		else if( archiveTemplate == "git" ) {
+			// create new archive based on a Git repository
+			archiveModel.set("template", "git");
+			
+			var link = this.$el.find("input{name='newArchiveGitLink']").val();
+			// add link to the model
+			archiveModel.set("gitLink", link);
 		}
 		else if( archiveTemplate == "http" ) {
 			// create new archive based on a http link

@@ -143,10 +143,11 @@ public abstract class Importer {
 	
 	protected static class HgNameTransformer {
 		
-		private static Pattern pattern = Pattern.compile("((\\w+\\s+)+)(\\w+)(\\s+<(\\w+@\\w+\\.\\w+)>)?");
+		private static Pattern namePattern = Pattern.compile("((\\w+\\s+)+)(\\w+)");
+		private static Pattern mailPattern = Pattern.compile("<?(\\w+@\\w+\\.\\w+)>?");
 		
 		protected static String getGivenName( String name ) {
-			Matcher matcher = pattern.matcher(name);
+			Matcher matcher = namePattern.matcher(name);
 			if( matcher.find() ) {
 				String result = matcher.group(1);
 				return result != null && result.isEmpty() == false ? result.trim() : "";
@@ -156,7 +157,7 @@ public abstract class Importer {
 		}
 		
 		protected static String getFamilyName( String name ) {
-			Matcher matcher = pattern.matcher(name);
+			Matcher matcher = namePattern.matcher(name);
 			if( matcher.find() ) {
 				for( int i = 0; i < matcher.groupCount(); i++ )
 					System.out.println( matcher.group(i) );
@@ -168,9 +169,9 @@ public abstract class Importer {
 		}
 		
 		protected static String getEmail( String name ) {
-			Matcher matcher = pattern.matcher(name);
+			Matcher matcher = mailPattern.matcher(name);
 			if( matcher.find() ) {
-				String result = matcher.group(5);
+				String result = matcher.group(1);
 				return result != null && result.isEmpty() == false ? result.trim() : "";
 			}
 			else

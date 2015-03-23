@@ -1,4 +1,4 @@
-package de.unirostock.sems.cbarchive.web;
+package de.unirostock.sems.cbarchive.web.importer;
 /*
 CombineArchiveWeb - a WebInterface to read/create/write/manipulate/... COMBINE archives
 Copyright (C) 2014  SEMS Group
@@ -49,6 +49,7 @@ import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
+import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbext.Formatizer;

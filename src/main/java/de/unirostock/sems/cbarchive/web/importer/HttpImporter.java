@@ -1,4 +1,4 @@
-package de.unirostock.sems.cbarchive.web;
+package de.unirostock.sems.cbarchive.web.importer;
 /*
 CombineArchiveWeb - a WebInterface to read/create/write/manipulate/... COMBINE archives
 Copyright (C) 2014  SEMS Group
@@ -35,6 +35,10 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.web.Fields;
+import de.unirostock.sems.cbarchive.web.QuotaManager;
+import de.unirostock.sems.cbarchive.web.Tools;
+import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
 public class HttpImporter {

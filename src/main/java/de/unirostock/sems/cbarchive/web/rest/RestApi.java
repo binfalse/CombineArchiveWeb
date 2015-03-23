@@ -66,15 +66,14 @@ import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
-import de.unirostock.sems.cbarchive.web.HttpImporter;
 import de.unirostock.sems.cbarchive.web.QuotaManager;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
-import de.unirostock.sems.cbarchive.web.VcImporter;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromGit;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHttp;
@@ -85,6 +84,9 @@ import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.ArchiveEntryUploadException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
+import de.unirostock.sems.cbarchive.web.importer.GitImporter;
+import de.unirostock.sems.cbarchive.web.importer.HttpImporter;
+import de.unirostock.sems.cbarchive.web.importer.VcImporter;
 import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
 @Path("v1")
@@ -473,15 +475,21 @@ public class RestApi extends RestHelper {
 				try {
 					// import from CellMl
 					if( archive instanceof ArchiveFromHg ) {
-						LOGGER.debug( ((ArchiveFromHg) archive).getHgLink() );
+						LOGGER.debug( "HG-Link: ", ((ArchiveFromHg) archive).getHgLink() );
 						try {
 							archiveFile = VcImporter.importRepo( (ArchiveFromHg) archive );
 						} catch ( CombineArchiveWebException | IOException | TransformerException | JDOMException | ParseException | CombineArchiveException e ) {
 							throw new ImporterException("Not able to clone HG repository.", e);
 						}
 					}
+					else if( archive instanceof ArchiveFromGit ) {
+						LOGGER.debug( "Git-Link", ((ArchiveFromGit) archive).getGitLink() );
+						GitImporter importer = new GitImporter( ((ArchiveFromGit) archive).getGitLink(), user );
+						//archiveFile = importer.importRepo().getTempFile();
+					}
+					// import form HTTP
 					else if( archive instanceof ArchiveFromHttp ) {
-						LOGGER.debug( ((ArchiveFromHttp) archive).getUrl() );
+						LOGGER.debug( "Http-Link: ", ((ArchiveFromHttp) archive).getUrl() );
 						HttpImporter importer = new HttpImporter( ((ArchiveFromHttp) archive).getUrl(), user );
 						archiveFile = importer.importRepo().getTempFile();
 					}

@@ -20,14 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,74 +49,161 @@ import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
-import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
-import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
+import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 import de.unirostock.sems.cbext.Formatizer;
-
-
-/**
- * 
- */
 
 /**
  * @author Martin Scharm
  *
  */
-public class VcImporter
-{
-	/**
-	 * @param archive
-	 * @return true or false.
-	 * @throws IOException 
-	 * @throws TransformerException 
-	 * @throws CombineArchiveException 
-	 * @throws ParseException 
-	 * @throws JDOMException 
-	 * @throws CombineArchiveWebException 
-	 */
-	public static File importRepo (ArchiveFromHg archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
-	{
-		String link = archive.getHgLink ();
-		
-		if( link == null || link.isEmpty() )
-			throw new CombineArchiveWebException("The link should not be empty");
-		
-		
-		// is it a link to nz!? (models.cellml or physiome)
-		if (link.contains ("cellml.org/") || link.contains ("physiomeproject.org/"))
-			link = processNzRepoLink (link);
-		
-		return cloneHg (link, archive);
+public class VcImporter extends Importer {
+	
+	private String hgLink = null;
+	private File tempDir = null;
+	private Repository repo = null;
+	
+	public VcImporter(String hgLink, UserManager user) {
+		super(user);
+		this.hgLink = hgLink;
 	}
 	
-	public static File importRepo( String link ) throws CombineArchiveWebException, MalformedURLException, IOException, TransformerException, JDOMException, ParseException, CombineArchiveException {
+	@Override
+	public VcImporter importRepo() throws ImporterException {
 		
-		if( link == null || link.isEmpty() )
-			throw new CombineArchiveWebException("The link should not be empty");
+		// is it a link to New Zealand!? (models.cellml or physiome)
+		if (hgLink.contains ("cellml.org/") || hgLink.contains ("physiomeproject.org/"))
+			hgLink = processNzRepoLink (hgLink);
 		
+		cloneHg();
+		buildArchive();
 		
-		// is it a link to nz!? (models.cellml or physiome)
-		if (link.contains ("cellml.org/") || link.contains ("physiomeproject.org/"))
-			link = processNzRepoLink (link);
+		return this;
+	}
 
-		return cloneHg( link , null );
+	@Override
+	public void cleanUp() {
+		
+		repo.close();
+		
+		try {
+			if( tempDir.exists() )
+				FileUtils.deleteDirectory(tempDir);
+		} catch (IOException e) {
+			LOGGER.error(e, "Exception cleaning up temp dir, after importing a Git repository");
+		}
+
+	}
+
+	private void cloneHg() throws ImporterException {
+		
+		// create a temp dir
+		tempDir = createTempDir();
+		
+		repo = Repository.clone(tempDir, hgLink);
+		if( repo == null ) {	
+			LOGGER.error ("Cannot clone Mercurial Repository ", hgLink, " into ", tempDir);
+			throw new ImporterException("Cannot clone Mercurial Repository " + hgLink + " into " + tempDir);
+		}
+		
 	}
 	
+	private void buildArchive() throws ImporterException {
+		
+		if( repo == null )
+			return;
+		
+		try {
+			tempFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, ".omex");
+			tempFile.delete(); // delete tmp file, so CombineArchive lib will create a new archive
+			CombineArchive archive = new CombineArchive(tempFile);
+			
+			scanRepository(tempDir, archive);
+			
+			archive.pack();
+			archive.close();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "IOException while build CombineArchive from HG Repository");
+			throw new ImporterException(e);
+		} catch (JDOMException | ParseException | CombineArchiveException e) {
+			LOGGER.error(e, "Exception while creating empty CombineArchive");
+			throw new ImporterException("Exception while creating epmty CombineArchive", e);
+		} catch (TransformerException e) {
+			LOGGER.error(e, "Exception while packing CombineArchive");
+			throw new ImporterException("Exception while packing CombineArchive", e);
+		}
+		
+	}
 	
-	private static String processNzRepoLink (String link) throws MalformedURLException, IOException
-	{
+	private void scanRepository( File directory, CombineArchive archive ) throws ImporterException {
+		
+		String[] dirContent = directory.list();
+		for(int index = 0; index < dirContent.length; index++ ) {
+			File entry = new File( directory, dirContent[index] );
+			
+			if( entry.isDirectory() && entry.exists() && !entry.getName().startsWith(".") ) {
+				// Entry is a directory and not hidden (begins with a dot) -> recursive
+				scanRepository(entry, archive);
+			}
+			else if( entry.isFile() && entry.exists() ) {
+				// Entry is a file
+				// make Path relative
+				Path relativePath = tempDir.toPath().relativize( entry.toPath() );
+				
+				// add file and scan log for omex description
+				try {
+					ArchiveEntry archiveEntry = archive.addEntry(tempDir, entry, Formatizer.guessFormat(entry) );
+					archiveEntry.addDescription( new OmexMetaDataObject(
+									getOmexForFile(entry)
+								));
+				} catch (IOException e) {
+					LOGGER.error(e, "Error while adding ", relativePath, " to the CombineArchive.");
+					throw new ImporterException("Error while adding \"" + relativePath.toString() + "\" to CombineArchive", e);
+				}
+			}
+		}
+		
+	}
+	
+	private OmexDescription getOmexForFile( File file ) {
+		LinkedHashSet<ImportVCard> contributors = new LinkedHashSet<ImportVCard>();
+		List<Date> modified = new LinkedList<Date>();
+		Date created = null;
+		
+		LogCommand logCmd = new LogCommand(repo);
+		List<Changeset> changesets = logCmd.execute( file.getAbsolutePath() );
+		
+		for( Changeset current : changesets) {
+			// add person
+			ImportVCard vcard = new ImportVCard( current.getUser() );
+			contributors.add(vcard);
+
+			// add time stamp
+			Date timeStamp = current.getTimestamp().getDate(); 
+			modified.add( timeStamp );
+		
+			// set created time stamp
+			if( created == null || timeStamp.before(created) )
+				created = timeStamp;
+		}
+		
+		return new OmexDescription(
+					new ArrayList<VCard>( contributors ),
+					modified, created
+				);
+	}
+	
+	private String processNzRepoLink (String link) throws ImporterException {
 		/*
-		 * 
 		 * cellml feature 1:
 		 * 
 		 * if link starts with "hg clone", remove it.
-		 * 
 		 */
 		if( link.toLowerCase().startsWith("hg clone ") )
 			link = link.substring(9);
 		
 		/*
-		 * 
 		 * cellml feature 2:
 		 * 
 		 * hg path for exposures such as 
@@ -127,34 +213,33 @@ public class VcImporter
 		 * http://models.cellml.org/workspace/aguda_b_1999
 		 * http://models.cellml.org/workspace/goldbeter_1991
 		 */
-		
 		if ((link.toLowerCase().contains("cellml.org/e") || link.toLowerCase().contains("physiomeproject.org/e")))
 		{
 			LOGGER.debug ("apparently got an exposure url: ", link);
-			InputStream in = new URL (link).openStream();
-			try
-			{
+			InputStream in = null;
+			try {
+				in = new URL (link).openStream();
+			} catch (IOException e1) {
+				LOGGER.error("Got a malformed URL to hg clone: ", link);
+				throw new ImporterException("Got a malformed URL", e1);
+			}
+			
+			try {
 				String source = IOUtils.toString (in);
 				Pattern hgClonePattern = Pattern.compile ("<input [^>]*value=.hg clone ([^'\"]*). ");
 				Matcher matcher = hgClonePattern.matcher (source);
-				if (matcher.find())
-				{
-			    link = matcher.group (1);
+				if (matcher.find()) {
+					link = matcher.group (1);
 					LOGGER.debug ("resolved exposure url to: ", link);
 				}
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				LOGGER.warn (e, "failed to retrieve cellml exposure source code");
-			}
-			finally
-			{
+			} finally {
 				IOUtils.closeQuietly(in);
 			}
 		}
 		
 		/*
-		 * 
 		 * cellml feature 3:
 		 * 
 		 * hg path for files such as 
@@ -170,150 +255,8 @@ public class VcImporter
 			LOGGER.debug ("resolved file url to: ", link);
 		}
 		
-		
 		// now we assume it is a link to a workspace, which can be hg-cloned.
 		return link;
 	}
 	
-	private static File cloneHg (String link, ArchiveFromHg archive) throws IOException, TransformerException, JDOMException, ParseException, CombineArchiveException, CombineArchiveWebException
-	{
-		// create new temp dir
-		File tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();
-		if( !tempDir.isDirectory () && !tempDir.mkdirs() )
-			throw new CombineArchiveWebException("The temporary directories could not be created: " + tempDir.getAbsolutePath ());
-		
-		// temp file for CombineArchive
-		File archiveFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, "ca-imported");
-		archiveFile.delete(); // delete the tmp file, so the CombineArchive Lib will create a new file
-		// create the archive
-		CombineArchive ca = new CombineArchive(archiveFile);
-		
-		Repository repo = Repository.clone(tempDir, link);
-		if( repo == null ) {	
-			ca.close();
-			LOGGER.error ("Cannot clone Mercurial Repository ", link, " into ", tempDir);
-			throw new CombineArchiveWebException("Cannot clone Mercurial Repository " + link + " into " + tempDir);
-		}
-		
-		List<File> relevantFiles = scanRepository(tempDir, repo);
-		System.out.println ("before LogCommand");
-		LogCommand logCmd = new LogCommand(repo);
-		System.out.println ("after LogCommand");
-		for (File cur : relevantFiles) {
-			List<Changeset> relevantVersions = logCmd.execute(cur.getAbsolutePath ());
-			
-			ArchiveEntry caFile = ca.addEntry (
-			   tempDir,
-			   cur,
-			   Formatizer.guessFormat (cur));
-			
-			// lets create meta!
-			List<Date> modified = new ArrayList<Date> ();
-			List<VCard> creators = new ArrayList<VCard> ();
-			
-			HashMap<String, VCard> users = new HashMap<String, VCard> ();
-			for (Changeset cs : relevantVersions) {
-				LOGGER.debug ("cs: " + cs.getTimestamp ().getDate () + " -- " + cs.getUser ());
-				modified.add (cs.getTimestamp ().getDate ());
-			
-				String vcuser = cs.getUser ();
-				String firstName = "";
-				String lastName = "";
-				String mail = "";
-				
-				String[] tokens = vcuser.split (" ");
-				int lastNameToken = tokens.length - 1;
-				// is there a mail address?
-				if (tokens[lastNameToken].contains ("@")) {
-					mail = tokens[lastNameToken];
-					if (mail.startsWith ("<") && mail.endsWith (">"))
-						mail = mail.substring (1, mail.length () - 1);
-					lastNameToken--;
-				}
-				
-				// search for a non-empty last name
-				while (lastNameToken >= 0) {
-					if (tokens[lastNameToken].length () > 0) {
-						lastName = tokens[lastNameToken];
-						break;
-					}
-					lastNameToken--;
-				}
-				
-				// and first name of course...
-				for (int i = 0; i < lastNameToken; i++) {
-					if (tokens[i].length () > 0)
-						firstName += tokens[i] + " ";
-				}
-				firstName = firstName.trim ();
-				
-				String userid = "[" + firstName + "] -- [" + lastName + "] -- [" + mail + "]";
-				LOGGER.debug ("this is user: " + userid);
-				if (users.get (userid) == null) {
-					users.put (userid, new VCard (lastName, firstName, mail, null));
-				}
-			}
-			
-			for (VCard vc : users.values ())
-				creators.add (vc);
-
-			caFile.addDescription( new OmexMetaDataObject(
-						new OmexDescription(creators, modified, modified.get(modified.size() - 1) )
-					));
-			
-		}
-		
-		ca.pack ();
-		ca.close ();
-		repo.close ();
-		
-		// clean up the directory
-		FileUtils.deleteDirectory(tempDir);
-		
-		// add the combine archive to the dataholder
-		if( archive != null ) {
-			//TODO ugly workaround with the lock. 
-			archive.setArchiveFile(archiveFile, null);
-			archive.getArchive().close();
-		}
-		
-		return archiveFile;
-	}
-	
-	
-	
-	private static List<File> scanRepository ( File location, Repository repo )
-	{
-		List<File> relevantFiles = new ArrayList<File>();
-
-		// scans the directory recursively
-		scanRepositoryDir( location, location, relevantFiles );
-
-		return relevantFiles;
-	}
-
-	private static void scanRepositoryDir( File base, File dir, List<File> relevantFiles ) {
-		
-		String[] entries = dir.list();
-		// nothing to scan in this dir
-		if( entries == null )
-			return;
-
-		// looping throw all directory elements
-		for( int index = 0; index < entries.length; index++ ) {
-			File entry = new File( dir, entries[index] );
-
-			if( entry.isDirectory() && entry.exists() && !entry.getName().startsWith(".") ) {
-				// Entry is a directory and not hidden (begins with a dot) -> recursive
-				scanRepositoryDir(base, entry, relevantFiles);
-			}
-			else if( entry.isFile() && entry.exists() ) {
-				// Entry is a file -> check if it is relevant
-				
-				relevantFiles.add (entry);
-			}
-
-		}
-
-	}
 }

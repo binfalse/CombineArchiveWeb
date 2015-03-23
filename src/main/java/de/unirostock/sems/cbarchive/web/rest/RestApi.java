@@ -476,11 +476,9 @@ public class RestApi extends RestHelper {
 					// import from CellMl
 					if( archive instanceof ArchiveFromHg ) {
 						LOGGER.debug( "HG-Link: ", ((ArchiveFromHg) archive).getHgLink() );
-						try {
-							archiveFile = VcImporter.importRepo( (ArchiveFromHg) archive );
-						} catch ( CombineArchiveWebException | IOException | TransformerException | JDOMException | ParseException | CombineArchiveException e ) {
-							throw new ImporterException("Not able to clone HG repository.", e);
-						}
+						VcImporter importer = new VcImporter( ((ArchiveFromHg) archive).getHgLink(), user );
+						archiveFile = importer.importRepo().getTempFile();
+						importer.cleanUp();
 					}
 					// import from Git
 					else if( archive instanceof ArchiveFromGit ) {
@@ -494,6 +492,7 @@ public class RestApi extends RestHelper {
 						LOGGER.debug( "Http-Link: ", ((ArchiveFromHttp) archive).getUrl() );
 						HttpImporter importer = new HttpImporter( ((ArchiveFromHttp) archive).getUrl(), user );
 						archiveFile = importer.importRepo().getTempFile();
+						importer.cleanUp();
 					}
 					
 					long repoFileSize = archiveFile.length();

@@ -163,17 +163,15 @@ public class ShareApi extends RestHelper {
 				tempFile = importer.getTempFile();
 			}
 			else if( remoteType.equals(IMPORT_HG) ) {
-				try {
-					tempFile = VcImporter.importRepo( remoteUrl );
+				VcImporter importer = new VcImporter(remoteUrl, user);
+				tempFile = importer.importRepo().getTempFile();
+				importer.cleanUp();
+				
+				String[] urlParts = remoteUrl.split("/");
+				archiveName = urlParts[ urlParts.length-1 ];
+				if( archiveName == null || archiveName.isEmpty() )
+					archiveName = "unknown";
 					
-					String[] urlParts = remoteUrl.split("/");
-					archiveName = urlParts[ urlParts.length-1 ];
-					if( archiveName == null || archiveName.isEmpty() )
-						archiveName = "unknown";
-					
-				} catch ( CombineArchiveWebException | IOException | TransformerException | JDOMException | ParseException | CombineArchiveException e ) {
-					throw new ImporterException("Not able to clone HG repository.", e);
-				}
 			}
 			
 			// add archive to workspace

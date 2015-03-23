@@ -2,9 +2,7 @@ package de.unirostock.sems.cbarchive.web.importer;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +15,6 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.jdom2.JDOMException;
 
@@ -55,6 +52,10 @@ public class GitImporter extends Importer {
 	
 	public GitImporter importRepo() throws ImporterException {
 		
+		// remove leading "git clone"
+		if( gitUrl.toLowerCase().startsWith("git clone") )
+			gitUrl = gitUrl.substring(10);
+		
 		cloneGit();
 		buildArchive();
 		
@@ -63,8 +64,11 @@ public class GitImporter extends Importer {
 	
 	public void cleanUp() {
 		
+		repo.close();
+		
 		try {
-			FileUtils.deleteDirectory(tempDir);
+			if( tempDir.exists() )
+				FileUtils.deleteDirectory(tempDir);
 		} catch (IOException e) {
 			LOGGER.error(e, "Exception cleaning up temp dir, after importing a Git repository");
 		}
@@ -73,15 +77,8 @@ public class GitImporter extends Importer {
 	
 	private void cloneGit() throws ImporterException {
 		
-		try {
-			// generate a temp dir
-			tempDir = Files.createTempDirectory(Fields.TEMP_FILE_PREFIX, PosixFilePermissions.asFileAttribute( PosixFilePermissions.fromString("rwx------") )).toFile();
-			if( !tempDir.isDirectory () && !tempDir.mkdirs() )
-				throw new ImporterException("The temporary directories could not be created: " + tempDir.getAbsolutePath ());
-		} catch (IOException e) {
-			LOGGER.error(e, "Cannot create temporary directory");
-			throw new ImporterException("Cannot create temporary directory,  while Git import", e);
-		}
+		// get a temp dir
+		tempDir = createTempDir();
 		
 		try {
 			// clone the repo
@@ -154,7 +151,7 @@ public class GitImporter extends Importer {
 	}
 	
 	private OmexDescription getOmexForFile( Path relativePath ) throws ImporterException {
-		LinkedHashSet<GitVCard> contributors = new LinkedHashSet<GitVCard>();
+		LinkedHashSet<ImportVCard> contributors = new LinkedHashSet<ImportVCard>();
 		List<Date> modified = new LinkedList<Date>();
 		Date created = null;
 		
@@ -165,7 +162,7 @@ public class GitImporter extends Importer {
 			
 			for( RevCommit current : commits ) {
 				// add person
-				GitVCard vcard = new GitVCard( current.getAuthorIdent() );
+				ImportVCard vcard = new ImportVCard( current.getAuthorIdent() );
 				contributors.add(vcard);
 
 				// add time stamp
@@ -188,72 +185,4 @@ public class GitImporter extends Importer {
 				);
 	}
 	
-	/**
-	 * Wrapper class for VCard datamodel,
-	 * adding equals and hashCode for better
-	 * determination in HashMaps/-Sets
-	 *
-	 */
-	protected class GitVCard extends VCard {
-		
-		public GitVCard( PersonIdent person ) {
-			super(	Transformer.getFamilyName( person.getName() ),
-					Transformer.getGivenName( person.getName() ),
-					person.getEmailAddress(),
-					"" );
-		}
-		
-		public int hashCode() {
-			
-			if( getEmail() == null && getFamilyName() == null && getGivenName() == null && getOrganization() == null )
-				return 0;
-			
-			int hash = 1;
-			hash = hash * 17 + (getEmail() == null ? 0 : getEmail().hashCode());
-			hash = hash * 31 + (getFamilyName() == null ? 0 : getFamilyName().hashCode());
-			hash = hash * 13 + (getGivenName() == null ? 0 : getGivenName().hashCode());
-			hash = hash * 07 + (getOrganization() == null ? 0 : getOrganization().hashCode());
-			
-			return hash;
-		}
-		
-		public boolean equals(Object obj) {
-			
-			if( (obj instanceof GitVCard || obj instanceof VCard) && obj.hashCode() == hashCode() )
-				return true;
-			else
-				return false;
-			
-		}
-	}
-	
-	private static class Transformer {
-		protected static String getGivenName( String name ) {
-			if( name == null || name.isEmpty() )
-				return "";
-			
-			String[] splitted = splitIt(name);
-			if( splitted[0] == null || splitted[0].isEmpty() )
-				return "";
-			else
-				return splitted[0];
-		}
-		
-		protected static String getFamilyName( String name ) {
-			if( name == null || name.isEmpty() )
-				return "";
-			
-			String[] splitted = splitIt(name);
-			if( splitted[0] == null || splitted[0].isEmpty() )
-				return name;
-			else if( splitted.length < 2 || splitted[1] == null || splitted[1].isEmpty() )
-				return "";
-			else
-				return splitted[1];
-		}
-		
-		private static String[] splitIt( String name ) {
-			return name.split("\\s+", 2);
-		}
-	}
 }

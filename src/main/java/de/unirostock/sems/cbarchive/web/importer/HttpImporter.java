@@ -94,7 +94,8 @@ public class HttpImporter extends Importer {
 			}
 			
 			// compares this header with the quota
-			checkQuotas();
+			if( user != null)
+				checkQuotas();
 			
 		} catch (IOException e) {
 			LOGGER.error(e, "Exception while check file from ", remoteUrl);

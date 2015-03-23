@@ -41,13 +41,11 @@ import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
-public class HttpImporter {
+public class HttpImporter extends Importer {
 	
 	private HttpClient client = null;
-	private UserManager user = null;
 	
 	private String remoteUrl = null;
-	private File tempFile = null;
 	private String suggestedName = Tools.DATE_FORMATTER.format( new Date() );;
 	private long length = 0;
 	
@@ -56,8 +54,8 @@ public class HttpImporter {
 	}
 	
 	public HttpImporter( String remoteUrl, UserManager user ) {
+		super(user);
 		this.remoteUrl = remoteUrl;
-		this.user = user;
 		this.client = HttpClientBuilder.create().build();
 	}
 	
@@ -66,6 +64,10 @@ public class HttpImporter {
 		downloadFile();
 		
 		return this;
+	}
+	
+	public void cleanUp() {
+		// nothing todo
 	}
 	
 	private boolean checkFile() throws ImporterException {
@@ -190,10 +192,6 @@ public class HttpImporter {
 
 	public String getRemoteUrl() {
 		return remoteUrl;
-	}
-
-	public File getTempFile() {
-		return tempFile;
 	}
 
 	public long getLength() {

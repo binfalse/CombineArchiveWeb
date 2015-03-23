@@ -48,7 +48,7 @@ public abstract class Importer {
 	public static Importer getImporter( Archive archive, UserManager user ) throws ImporterException {
 		
 		if( archive instanceof ArchiveFromHg ) 
-			return new VcImporter((ArchiveFromHg) archive, user);
+			return new HgImporter((ArchiveFromHg) archive, user);
 		else if( archive instanceof ArchiveFromGit )
 			return new GitImporter((ArchiveFromGit) archive, user);
 		else if( archive instanceof ArchiveFromHttp )

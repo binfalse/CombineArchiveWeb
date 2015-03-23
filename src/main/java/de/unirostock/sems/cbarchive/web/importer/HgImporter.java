@@ -56,25 +56,26 @@ import de.unirostock.sems.cbext.Formatizer;
 
 /**
  * @author Martin Scharm
+ * @author Martin Peters
  *
  */
-public class VcImporter extends Importer {
+public class HgImporter extends Importer {
 	
 	private String hgLink = null;
 	private File tempDir = null;
 	private Repository repo = null;
 	
-	public VcImporter(String hgLink, UserManager user) {
+	public HgImporter(String hgLink, UserManager user) {
 		super(user);
 		this.hgLink = hgLink;
 	}
 	
-	public VcImporter( ArchiveFromHg archive, UserManager user ) {
+	public HgImporter( ArchiveFromHg archive, UserManager user ) {
 		this( archive.getHgLink(), user );
 	}
 	
 	@Override
-	public VcImporter importRepo() throws ImporterException {
+	public HgImporter importRepo() throws ImporterException {
 		
 		// is it a link to New Zealand!? (models.cellml or physiome)
 		if (hgLink.contains ("cellml.org/") || hgLink.contains ("physiomeproject.org/"))

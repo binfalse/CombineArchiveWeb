@@ -49,7 +49,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 import de.unirostock.sems.cbarchive.web.importer.GitImporter;
 import de.unirostock.sems.cbarchive.web.importer.HttpImporter;
-import de.unirostock.sems.cbarchive.web.importer.VcImporter;
+import de.unirostock.sems.cbarchive.web.importer.HgImporter;
 
 @Path( "/" )
 public class ShareApi extends RestHelper {
@@ -165,7 +165,7 @@ public class ShareApi extends RestHelper {
 				tempFile = importer.getTempFile();
 			}
 			else if( remoteType.equals(IMPORT_HG) ) {
-				VcImporter importer = new VcImporter(remoteUrl, user);
+				HgImporter importer = new HgImporter(remoteUrl, user);
 				tempFile = importer.importRepo().getTempFile();
 				importer.cleanUp();
 				

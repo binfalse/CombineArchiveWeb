@@ -1568,10 +1568,6 @@ var CreateView = Backbone.View.extend({
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-cellml").show();
 		}
-		else if( archiveTemplate == "hg" ) {
-			this.$el.find(".create-parameter").hide();
-			this.$el.find(".on-archive-hg").show();
-		}
 		else if( archiveTemplate == "git" ) {
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-git").show();
@@ -1729,23 +1725,15 @@ var CreateView = Backbone.View.extend({
 		}
 		else if( archiveTemplate == "cellml" ) {
 			// create new archive based on a CellMl repository
-			archiveModel.set("template", "hg");
+			archiveModel.set("template", "git");
 			
 			var link = this.$el.find("input[name='newArchiveCellMlLink']").val();
-			if( !link.match(/https?:\/\/models.cellml.org\//) && !link.match(/^hg\ clone\ https?:\/\/models\.cellml\.org\//) && !link.match(/https?:\/\/models.physiomeproject.org\//) && !link.match(/^hg\ clone\ https?:\/\/models\.physiomeproject\.org\//) ) {
+			if( !link.match(/https?:\/\/models.cellml.org\//) && !link.match(/^git\ clone\ https?:\/\/models\.cellml\.org\//) && !link.match(/https?:\/\/models.physiomeproject.org\//) && !link.match(/^git\ clone\ https?:\/\/models\.physiomeproject\.org\//) ) {
 				messageView.error ("expected a link to a cellml or physiome repository");
 				return false;
 			}
 			// add link to the model
-			archiveModel.set ("hgLink", link);
-		}
-		else if( archiveTemplate == "hg" ) {
-			// create new archive based on a Mercurial repository
-			archiveModel.set("template", "hg");
-			
-			var link = this.$el.find("input[name='newArchiveHgLink']").val();
-			// add link to the model
-			archiveModel.set("hgLink", link);
+			archiveModel.set ("gitLink", link);
 		}
 		else if( archiveTemplate == "git" ) {
 			// create new archive based on a Git repository

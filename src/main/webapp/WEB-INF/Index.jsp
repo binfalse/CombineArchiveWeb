@@ -183,12 +183,6 @@
 					<input type="text" name="newArchiveCellMlLink" placeholder="link to CellML repository" size="50" /><br />
 				</div>
 				
-				<input type="radio" id="newArchiveTemplate-Hg" name="newArchiveTemplate" value="hg" />
-				<label for="newArchiveTemplate-Hg">Create an archive form a <b>Mercurial (HG)</b> repository</label><br />
-				<div class="create-parameter on-archive-hg">
-					<input type="text" name="newArchiveHgLink" placeholder="link to Mercurial repository" size="50" /><br />
-				</div>
-				
 				<input type="radio" id="newArchiveTemplate-Git" name="newArchiveTemplate" value="git" />
 				<label for="newArchiveTemplate-Git">Create an archive from a <b>Git</b> repository</label><br />
 				<div class="create-parameter on-archive-git">

@@ -33,14 +33,12 @@ import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromGit;
-import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHttp;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
 public abstract class Importer implements Closeable {
 	
 	public static final String IMPORT_HTTP = "http";
-	public static final String IMPORT_HG = "hg";
 	public static final String IMPORT_GIT = "git";
 	
 	/**
@@ -57,9 +55,7 @@ public abstract class Importer implements Closeable {
 		if( archive == null )
 			throw new IllegalArgumentException("No archive provided");
 		
-		if( archive instanceof ArchiveFromHg ) 
-			return new HgImporter((ArchiveFromHg) archive, user);
-		else if( archive instanceof ArchiveFromGit )
+		if( archive instanceof ArchiveFromGit )
 			return new GitImporter((ArchiveFromGit) archive, user);
 		else if( archive instanceof ArchiveFromHttp )
 			return new HttpImporter((ArchiveFromHttp) archive, user);
@@ -86,9 +82,7 @@ public abstract class Importer implements Closeable {
 		if( user == null )
 			throw new IllegalArgumentException("No UserManager provided");
 		
-		if( type.equals(IMPORT_HG) )
-			return new HgImporter(remoteUrl, user);
-		else if( type.equals(IMPORT_GIT) )
+		if( type.equals(IMPORT_GIT) )
 			return new GitImporter(remoteUrl, user);
 		else if( type.equals(IMPORT_HTTP) ) 
 			return new HttpImporter(remoteUrl, user);
@@ -105,7 +99,7 @@ public abstract class Importer implements Closeable {
 	 */
 	public static boolean isImportable( Archive archive ) {
 		
-		if( archive instanceof ArchiveFromHg || archive instanceof ArchiveFromGit || archive instanceof ArchiveFromHttp )
+		if( archive instanceof ArchiveFromGit || archive instanceof ArchiveFromHttp )
 			return true;
 		else
 			return false;
@@ -187,17 +181,17 @@ public abstract class Importer implements Closeable {
 		}
 		
 		/**
-		 * Generates a VCard from a default mail string (used by hg) <br>
+		 * Generates a VCard from a default mail string <br><br>
 		 * 
 		 * Given-Name Family-Name &lt;mail@example.org&gt; <br>
 		 * Given-Name Family-Name
 		 * 
-		 * @param hgUserString
+		 * @param MailUserString
 		 */
-		public ImportVCard( String hgUserString ) {
-			super(	HgNameTransformer.getFamilyName( hgUserString ),
-					HgNameTransformer.getGivenName( hgUserString ),
-					HgNameTransformer.getEmail( hgUserString ),
+		public ImportVCard( String MailUserString ) {
+			super(	DefaultNameTransformer.getFamilyName( MailUserString ),
+					DefaultNameTransformer.getGivenName( MailUserString ),
+					DefaultNameTransformer.getEmail( MailUserString ),
 					"" );
 		}
 		
@@ -255,7 +249,7 @@ public abstract class Importer implements Closeable {
 		}
 	}
 	
-	protected static class HgNameTransformer {
+	protected static class DefaultNameTransformer {
 		
 		private static Pattern namePattern = Pattern.compile("((\\w+\\s+)+)(\\w+)");
 		private static Pattern mailPattern = Pattern.compile("<?(\\w+@\\w+\\.\\w+)>?");

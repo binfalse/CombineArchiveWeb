@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class ArchiveFromGit extends Archive {
 
-	protected String gitLink = null;
+	protected String remoteUrl = null;
 	
 	public ArchiveFromGit() {
 		super();
@@ -28,7 +28,7 @@ public class ArchiveFromGit extends Archive {
 	
 	public ArchiveFromGit(String id, String name, String gitLink) {
 		super(id, name);
-		this.gitLink = gitLink;
+		this.remoteUrl = gitLink;
 		this.template = TEMPLATE_GIT;
 	}
 	
@@ -42,12 +42,12 @@ public class ArchiveFromGit extends Archive {
 		this.template = TEMPLATE_GIT;
 	}
 
-	public String getGitLink() {
-		return gitLink;
+	public String getRemoteUrl() {
+		return remoteUrl;
 	}
 
-	public void setGitLink(String gitLink) {
-		this.gitLink = gitLink;
+	public void setRemoteUrl(String gitLink) {
+		this.remoteUrl = gitLink;
 	}
 	
 }

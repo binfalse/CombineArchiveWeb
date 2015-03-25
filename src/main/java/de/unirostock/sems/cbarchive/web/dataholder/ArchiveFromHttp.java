@@ -19,11 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 public class ArchiveFromHttp extends Archive {
 	
-	private String url = null;
+	private String remoteUrl = null;
 	
 	public ArchiveFromHttp(String id, String name, String url) {
 		super(id, name);
-		this.url = url;
+		this.remoteUrl = url;
 		this.template = TEMPLATE_HTTP;
 	}
 
@@ -42,12 +42,12 @@ public class ArchiveFromHttp extends Archive {
 		this.template = TEMPLATE_HTTP;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getRemoteUrl() {
+		return remoteUrl;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setRemoteUrl(String url) {
+		this.remoteUrl = url;
 	}
 
 }

@@ -55,7 +55,7 @@ public class HttpImporter extends Importer {
 	}
 	
 	public HttpImporter( ArchiveFromHttp archive, UserManager user ) {
-		this( archive.getUrl(), user );
+		this( archive.getRemoteUrl(), user );
 	}
 	
 	public HttpImporter( String remoteUrl, UserManager user ) {

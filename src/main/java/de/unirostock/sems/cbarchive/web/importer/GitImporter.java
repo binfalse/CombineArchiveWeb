@@ -38,7 +38,7 @@ public class GitImporter extends Importer {
 	private Git repo = null;
 	
 	public GitImporter( ArchiveFromGit archive, UserManager user ) {
-		this( archive.getGitLink(), user );
+		this( archive.getRemoteUrl(), user );
 	}
 	
 	public GitImporter( String remoteUrl, UserManager user ) {

@@ -1733,7 +1733,7 @@ var CreateView = Backbone.View.extend({
 				return false;
 			}
 			// add link to the model
-			archiveModel.set ("gitLink", link);
+			archiveModel.set ("remoteUrl", link);
 		}
 		else if( archiveTemplate == "git" ) {
 			// create new archive based on a Git repository
@@ -1741,7 +1741,7 @@ var CreateView = Backbone.View.extend({
 			
 			var link = this.$el.find("input[name='newArchiveGitLink']").val();
 			// add link to the model
-			archiveModel.set("gitLink", link);
+			archiveModel.set("remoteUrl", link);
 		}
 		else if( archiveTemplate == "http" ) {
 			// create new archive based on a http link
@@ -1749,7 +1749,7 @@ var CreateView = Backbone.View.extend({
 			
 			var link = this.$el.find("input[name='newArchiveHttpLink']").val();
 			// add link to the model
-			archiveModel.set ("url", link);
+			archiveModel.set ("remoteUrl", link);
 		}
 		else {
 			// no known type of archive

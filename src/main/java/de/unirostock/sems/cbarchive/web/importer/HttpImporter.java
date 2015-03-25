@@ -65,6 +65,10 @@ public class HttpImporter extends Importer {
 	}
 	
 	public HttpImporter importRepo() throws ImporterException {
+		
+		if( remoteUrl == null || remoteUrl.isEmpty() )
+			throw new IllegalArgumentException("remoteUrl is empty");
+
 		checkFile();
 		downloadFile();
 		

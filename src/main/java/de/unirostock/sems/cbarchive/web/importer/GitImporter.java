@@ -57,6 +57,9 @@ public class GitImporter extends Importer {
 	
 	public GitImporter importRepo() throws ImporterException {
 		
+		if( remoteUrl == null || remoteUrl.isEmpty() )
+			throw new IllegalArgumentException("remoteUrl is empty");
+		
 		// remove leading "git clone"
 		if( remoteUrl.toLowerCase().startsWith("git clone") )
 			remoteUrl = remoteUrl.substring(10);

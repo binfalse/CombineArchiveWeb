@@ -223,7 +223,7 @@ public class GitImporter extends Importer {
 			
 			try {
 				String source = IOUtils.toString (in);
-				Pattern hgClonePattern = Pattern.compile ("<input [^>]*value=.hg clone ([^'\"]*). ");
+				Pattern hgClonePattern = Pattern.compile ("<input [^>]*value=.git clone ([^'\"]*). ");
 				Matcher matcher = hgClonePattern.matcher (source);
 				if (matcher.find()) {
 					link = matcher.group (1);

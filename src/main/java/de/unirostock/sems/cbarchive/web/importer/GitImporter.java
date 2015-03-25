@@ -2,6 +2,8 @@ package de.unirostock.sems.cbarchive.web.importer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -9,10 +11,13 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -55,6 +60,10 @@ public class GitImporter extends Importer {
 		// remove leading "git clone"
 		if( remoteUrl.toLowerCase().startsWith("git clone") )
 			remoteUrl = remoteUrl.substring(10);
+		
+		// is it a link to New Zealand!? (models.cellml or physiome)
+		if (remoteUrl.contains ("cellml.org/") || remoteUrl.contains ("physiomeproject.org/"))
+			remoteUrl = processNzRepoLink( remoteUrl );
 		
 		cloneGit();
 		buildArchive();
@@ -184,6 +193,64 @@ public class GitImporter extends Importer {
 					new ArrayList<VCard>( contributors ),
 					modified, created
 				);
+	}
+	
+	private String processNzRepoLink (String link) throws ImporterException {
+				
+		/*
+		 * cellml feature 1:
+		 * 
+		 * hg path for exposures such as 
+		 * http://models.cellml.org/exposure/2d0da70d5253291015a892326fa27b7b/aguda_b_1999.cellml/view
+		 * http://models.cellml.org/e/4c/goldbeter_1991.cellml/view
+		 * is
+		 * http://models.cellml.org/workspace/aguda_b_1999
+		 * http://models.cellml.org/workspace/goldbeter_1991
+		 */
+		if ((link.toLowerCase().contains("cellml.org/e") || link.toLowerCase().contains("physiomeproject.org/e")))
+		{
+			LOGGER.debug ("apparently got an exposure url: ", link);
+			InputStream in = null;
+			try {
+				in = new URL (link).openStream();
+			} catch (IOException e1) {
+				LOGGER.error("Got a malformed URL to hg clone: ", link);
+				throw new ImporterException("Got a malformed URL", e1);
+			}
+			
+			try {
+				String source = IOUtils.toString (in);
+				Pattern hgClonePattern = Pattern.compile ("<input [^>]*value=.hg clone ([^'\"]*). ");
+				Matcher matcher = hgClonePattern.matcher (source);
+				if (matcher.find()) {
+					link = matcher.group (1);
+					LOGGER.debug ("resolved exposure url to: ", link);
+				}
+			} catch (IOException e) {
+				LOGGER.warn (e, "failed to retrieve cellml exposure source code");
+			} finally {
+				IOUtils.closeQuietly(in);
+			}
+		}
+		
+		/*
+		 * cellml feature 2:
+		 * 
+		 * hg path for files such as 
+		 * http://models.cellml.org/workspace/aguda_b_1999/file/56788658c953e1d0a6bc745b81bdb0c0c20e9821/aguda_1999_bb.ai
+		 * is
+		 * http://models.cellml.org/workspace/aguda_b_1999
+		 */
+		if ((link.toLowerCase().contains("cellml.org/workspace/") || link.toLowerCase().contains("physiomeproject.org/workspace/")) && link.toLowerCase().contains("/file/"))
+		{
+			LOGGER.debug ("apparently got an cellml/physiome file url: ", link);
+			int pos = link.indexOf ("/file/");
+			link = link.substring (0, pos);
+			LOGGER.debug ("resolved file url to: ", link);
+		}
+		
+		// now we assume it is a link to a workspace, which can be hg-cloned.
+		return link;
 	}
 	
 }

@@ -133,6 +133,11 @@ public abstract class Importer implements Closeable {
 	public abstract Importer importRepo() throws ImporterException;
 	public abstract void close();
 	
+	/**
+	 * Suggest a name, in case the user does not provide one
+	 * 
+	 * @return String
+	 */
 	public String getSuggestedName() {
 		
 		String[] urlParts = remoteUrl.split("/");

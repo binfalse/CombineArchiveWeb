@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,7 +37,11 @@ import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHg;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromHttp;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 
-public abstract class Importer {
+public abstract class Importer implements Closeable {
+	
+	public static final String IMPORT_HTTP = "http";
+	public static final String IMPORT_HG = "hg";
+	public static final String IMPORT_GIT = "git";
 	
 	/**
 	 * Gets an importer corresponding to the type of archive
@@ -46,6 +51,11 @@ public abstract class Importer {
 	 * @return
 	 */
 	public static Importer getImporter( Archive archive, UserManager user ) throws ImporterException {
+		
+		if( user == null )
+			throw new IllegalArgumentException("No UserManager provided");
+		if( archive == null )
+			throw new IllegalArgumentException("No archive provided");
 		
 		if( archive instanceof ArchiveFromHg ) 
 			return new HgImporter((ArchiveFromHg) archive, user);
@@ -58,6 +68,41 @@ public abstract class Importer {
 		
 	}
 	
+	/**
+	 * Gets an importer corresponding to the given type
+	 * 
+	 * @param type
+	 * @param remoteUrl
+	 * @param user
+	 * @return
+	 * @throws ImporterException
+	 */
+	public static Importer getImporter( String type, String remoteUrl, UserManager user ) throws ImporterException {
+		
+		if( type == null || type.isEmpty() )
+			throw new IllegalArgumentException("Type is empty");
+		if( remoteUrl == null || remoteUrl.isEmpty() ) 
+			throw new IllegalArgumentException("remoteUrl is empty");
+		if( user == null )
+			throw new IllegalArgumentException("No UserManager provided");
+		
+		if( type.equals(IMPORT_HG) )
+			return new HgImporter(remoteUrl, user);
+		else if( type.equals(IMPORT_GIT) )
+			return new GitImporter(remoteUrl, user);
+		else if( type.equals(IMPORT_HTTP) ) 
+			return new HttpImporter(remoteUrl, user);
+		else
+			throw new ImporterException("No suiting importer found.");
+		
+	}
+	
+	/**
+	 * Checks if the given archive contains import information
+	 * 
+	 * @param archive
+	 * @return
+	 */
 	public static boolean isImportable( Archive archive ) {
 		
 		if( archive instanceof ArchiveFromHg || archive instanceof ArchiveFromGit || archive instanceof ArchiveFromHttp )
@@ -69,6 +114,7 @@ public abstract class Importer {
 	
 	// ----------------------------------------
 	
+	protected String remoteUrl = null;
 	protected File tempFile = null;
 	protected UserManager user = null;
 	
@@ -80,9 +126,25 @@ public abstract class Importer {
 		return tempFile;
 	}
 	
-	public abstract Importer importRepo() throws ImporterException;
-	public abstract void cleanUp();
+	public String getRemoteUrl() {
+		return remoteUrl;
+	}
 	
+	public abstract Importer importRepo() throws ImporterException;
+	public abstract void close();
+	
+	public String getSuggestedName() {
+		
+		String[] urlParts = remoteUrl.split("/");
+		return urlParts[ urlParts.length-1 ];
+		
+	}
+	
+	/**
+	 * creates a temporary directory, should be cleaned in close
+	 * @return
+	 * @throws ImporterException
+	 */
 	protected File createTempDir() throws ImporterException {
 		File tempDir = null;
 		
@@ -108,6 +170,10 @@ public abstract class Importer {
 	 */
 	protected class ImportVCard extends VCard {
 		
+		/**
+		 * Generates a VCard from a JGit PersonIdent
+		 * @param person
+		 */
 		public ImportVCard( PersonIdent person ) {
 			super(	GitNameTransformer.getFamilyName( person.getName() ),
 					GitNameTransformer.getGivenName( person.getName() ),
@@ -115,6 +181,14 @@ public abstract class Importer {
 					"" );
 		}
 		
+		/**
+		 * Generates a VCard from a default mail string (used by hg) <br>
+		 * 
+		 * Given-Name Family-Name &lt;mail@example.org&gt; <br>
+		 * Given-Name Family-Name
+		 * 
+		 * @param hgUserString
+		 */
 		public ImportVCard( String hgUserString ) {
 			super(	HgNameTransformer.getFamilyName( hgUserString ),
 					HgNameTransformer.getGivenName( hgUserString ),

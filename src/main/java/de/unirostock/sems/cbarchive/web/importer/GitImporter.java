@@ -34,7 +34,6 @@ import de.unirostock.sems.cbext.Formatizer;
 
 public class GitImporter extends Importer {
 	
-	private String gitUrl = null;
 	private File tempDir = null;
 	private Git repo = null;
 	
@@ -42,24 +41,20 @@ public class GitImporter extends Importer {
 		this( archive.getGitLink(), user );
 	}
 	
-	public GitImporter( String gitUrl, UserManager user ) {
+	public GitImporter( String remoteUrl, UserManager user ) {
 		super(user);
-		this.gitUrl = gitUrl;
+		this.remoteUrl = remoteUrl;
 	}
 	
-	public GitImporter( String gitUrl ) {
-		this(gitUrl, null);
-	}
-	
-	public String getGitUrl() {
-		return gitUrl;
+	public GitImporter( String remoteUrl ) {
+		this(remoteUrl, null);
 	}
 	
 	public GitImporter importRepo() throws ImporterException {
 		
 		// remove leading "git clone"
-		if( gitUrl.toLowerCase().startsWith("git clone") )
-			gitUrl = gitUrl.substring(10);
+		if( remoteUrl.toLowerCase().startsWith("git clone") )
+			remoteUrl = remoteUrl.substring(10);
 		
 		cloneGit();
 		buildArchive();
@@ -67,7 +62,7 @@ public class GitImporter extends Importer {
 		return this;
 	}
 	
-	public void cleanUp() {
+	public void close() {
 		
 		repo.close();
 		
@@ -88,14 +83,14 @@ public class GitImporter extends Importer {
 		try {
 			// clone the repo
 			repo = Git.cloneRepository()
-					.setURI( gitUrl )
+					.setURI( remoteUrl )
 					.setDirectory( tempDir )
 					.setCloneSubmodules(true)		// include all submodules -> important for PMR2-Project
 					.call();
 			
 		} catch (GitAPIException e) {
-			LOGGER.error(e, "Cannot clone git repository: ", gitUrl);
-			throw new ImporterException("Cannot clone git repository: " + gitUrl, e);
+			LOGGER.error(e, "Cannot clone git repository: ", remoteUrl);
+			throw new ImporterException("Cannot clone git repository: " + remoteUrl, e);
 		}
 		
 	}

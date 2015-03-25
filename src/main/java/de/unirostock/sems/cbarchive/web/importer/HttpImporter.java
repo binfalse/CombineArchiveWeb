@@ -46,7 +46,7 @@ public class HttpImporter extends Importer {
 	
 	private HttpClient client = null;
 	
-	private String remoteUrl = null;
+	
 	private String suggestedName = Tools.DATE_FORMATTER.format( new Date() );;
 	private long length = 0;
 	
@@ -71,7 +71,7 @@ public class HttpImporter extends Importer {
 		return this;
 	}
 	
-	public void cleanUp() {
+	public void close() {
 		// nothing todo
 	}
 	
@@ -196,14 +196,11 @@ public class HttpImporter extends Importer {
 		
 	}
 
-	public String getRemoteUrl() {
-		return remoteUrl;
-	}
-
 	public long getLength() {
 		return length;
 	}
-
+	
+	@Override
 	public String getSuggestedName() {
 		return suggestedName;
 	}

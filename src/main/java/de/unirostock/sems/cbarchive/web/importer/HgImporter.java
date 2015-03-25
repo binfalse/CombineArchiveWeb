@@ -61,13 +61,12 @@ import de.unirostock.sems.cbext.Formatizer;
  */
 public class HgImporter extends Importer {
 	
-	private String hgLink = null;
 	private File tempDir = null;
 	private Repository repo = null;
 	
-	public HgImporter(String hgLink, UserManager user) {
+	public HgImporter(String remoteUrl, UserManager user) {
 		super(user);
-		this.hgLink = hgLink;
+		this.remoteUrl = remoteUrl;
 	}
 	
 	public HgImporter( ArchiveFromHg archive, UserManager user ) {
@@ -78,8 +77,8 @@ public class HgImporter extends Importer {
 	public HgImporter importRepo() throws ImporterException {
 		
 		// is it a link to New Zealand!? (models.cellml or physiome)
-		if (hgLink.contains ("cellml.org/") || hgLink.contains ("physiomeproject.org/"))
-			hgLink = processNzRepoLink (hgLink);
+		if (remoteUrl.contains ("cellml.org/") || remoteUrl.contains ("physiomeproject.org/"))
+			remoteUrl = processNzRepoLink (remoteUrl);
 		
 		cloneHg();
 		buildArchive();
@@ -88,7 +87,7 @@ public class HgImporter extends Importer {
 	}
 
 	@Override
-	public void cleanUp() {
+	public void close() {
 		
 		repo.close();
 		
@@ -106,10 +105,10 @@ public class HgImporter extends Importer {
 		// create a temp dir
 		tempDir = createTempDir();
 		
-		repo = Repository.clone(tempDir, hgLink);
+		repo = Repository.clone(tempDir, remoteUrl);
 		if( repo == null ) {	
-			LOGGER.error ("Cannot clone Mercurial Repository ", hgLink, " into ", tempDir);
-			throw new ImporterException("Cannot clone Mercurial Repository " + hgLink + " into " + tempDir);
+			LOGGER.error ("Cannot clone Mercurial Repository ", remoteUrl, " into ", tempDir);
+			throw new ImporterException("Cannot clone Mercurial Repository " + remoteUrl + " into " + tempDir);
 		}
 		
 	}

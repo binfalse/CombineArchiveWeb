@@ -471,7 +471,7 @@ public class RestApi extends RestHelper {
 					// import stuff
 					Importer importer = Importer.getImporter(archive, user);
 					archiveFile = importer.importRepo().getTempFile();
-					importer.cleanUp();
+					importer.close();
 					
 					long repoFileSize = archiveFile.length();
 					// max workspace size

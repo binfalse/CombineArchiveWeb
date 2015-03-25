@@ -48,8 +48,9 @@ import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 import de.unirostock.sems.cbarchive.web.importer.GitImporter;
-import de.unirostock.sems.cbarchive.web.importer.HttpImporter;
 import de.unirostock.sems.cbarchive.web.importer.HgImporter;
+import de.unirostock.sems.cbarchive.web.importer.HttpImporter;
+import de.unirostock.sems.cbarchive.web.importer.Importer;
 
 @Path( "/" )
 public class ShareApi extends RestHelper {
@@ -121,10 +122,6 @@ public class ShareApi extends RestHelper {
 		
 	}
 	
-	private static final String IMPORT_HTTP = "http";
-	private static final String IMPORT_HG = "hg";
-	private static final String IMPORT_GIT = "git";
-	
 	@GET
 	@Path("/import")
 	@Produces( MediaType.TEXT_PLAIN )
@@ -146,7 +143,7 @@ public class ShareApi extends RestHelper {
 		}
 		
 		if( remoteType == null || remoteType.isEmpty() )
-			remoteType = IMPORT_HTTP;
+			remoteType = Importer.IMPORT_HTTP;
 		else
 			remoteType = remoteType.toLowerCase();
 		
@@ -154,40 +151,17 @@ public class ShareApi extends RestHelper {
 		String archiveId = null;
 		File tempFile = null;
 		try {
-			if( remoteType.equals(IMPORT_HTTP) ) {
-				HttpImporter importer = new HttpImporter(remoteUrl, user);
-				importer.importRepo();
-				importer.cleanUp();
-				
-				if( archiveName == null || archiveName.isEmpty() )
-					archiveName = importer.getSuggestedName();
-				
-				tempFile = importer.getTempFile();
-			}
-			else if( remoteType.equals(IMPORT_HG) ) {
-				HgImporter importer = new HgImporter(remoteUrl, user);
-				tempFile = importer.importRepo().getTempFile();
-				importer.cleanUp();
-				
-				String[] urlParts = remoteUrl.split("/");
-				archiveName = urlParts[ urlParts.length-1 ];
-				if( archiveName == null || archiveName.isEmpty() )
-					archiveName = "unknown";
-					
-			}
-			else if( remoteType.equals(IMPORT_GIT) ) {
-				GitImporter importer = new GitImporter(remoteUrl, user);
-				tempFile = importer.importRepo().getTempFile();
-				importer.cleanUp();
-				
-				String[] urlParts = remoteUrl.split("/");
-				archiveName = urlParts[ urlParts.length-1 ];
-				if( archiveName == null || archiveName.isEmpty() )
-					archiveName = "unknown";
-			}
+			
+			Importer importer = Importer.getImporter(remoteType, remoteUrl, user);
+			importer.importRepo();
+			
+			if( archiveName == null || archiveName.isEmpty() )
+				archiveName = importer.getSuggestedName();
 			
 			// add archive to workspace
 			archiveId = user.createArchive( archiveName, tempFile );
+			
+			importer.close();
 			
 		} catch (ImporterException e) {
 			LOGGER.warn(e, "Cannot import remote archive!");

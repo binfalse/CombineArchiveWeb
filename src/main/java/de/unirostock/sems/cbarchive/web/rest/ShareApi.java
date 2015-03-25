@@ -47,9 +47,6 @@ import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
-import de.unirostock.sems.cbarchive.web.importer.GitImporter;
-import de.unirostock.sems.cbarchive.web.importer.HgImporter;
-import de.unirostock.sems.cbarchive.web.importer.HttpImporter;
 import de.unirostock.sems.cbarchive.web.importer.Importer;
 
 @Path( "/" )

@@ -17,11 +17,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
@@ -38,17 +45,27 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.jdom2.JDOMException;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
+import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.ImportRequest;
+import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
+import de.unirostock.sems.cbarchive.web.dataholder.OmexMetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
+import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 import de.unirostock.sems.cbarchive.web.importer.Importer;
 
@@ -249,8 +266,10 @@ public class ShareApi extends RestHelper {
 		}
 		else {
 			// just create an empty archive
+			
+			// set default name, if necessary
 			if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
-				request.setArchiveName( "" );
+				request.setArchiveName( Fields.NEW_ARCHIVE_NAME );
 			
 			try {
 				archiveId = user.createArchive( request.getArchiveName() );
@@ -262,7 +281,119 @@ public class ShareApi extends RestHelper {
 			}
 		}
 		
+		try ( Archive archive = user.getArchive(archiveId) ) {
+			// TODO quota
+			
+			// set own VCard
+			if( request.isOwnVCard() ) {
+				setOwnVCard(user, request, archive);
+			}
+			
+			// import additional files
+			if( request.getAdditionalFiles() != null && request.getAdditionalFiles().size() > 0 ) {
+				addAdditionalFiles(user, request, archive);
+			}
+				
+			
+		} catch (IOException | CombineArchiveWebException e) {
+			LOGGER.error(e, "Cannot open newly created archive");
+			return buildTextErrorResponse(500, user, "Cannot open newly created archive: ", e.getMessage() );
+		} catch (ImporterException e) {
+			LOGGER.error(e, "Something went wrong with the extended import");
+			return buildTextErrorResponse(500, user, "Error while applying additional data to the archive");
+		}
+		
+		
+		
+		
 		return null;
+	}
+	
+	private void setOwnVCard( UserManager user, ImportRequest request, Archive archive ) throws ImporterException {
+		
+		VCard vcard = request.getVcard();
+		
+		// check if any VCard info is available
+		// (either from cookies of from the request it self)
+		if( vcard == null ) {
+			if( user.getData() != null ) 
+				vcard = user.getData().getVCard();
+			else 
+				throw new ImporterException("No vcard information provided for archive annotation");
+		}
+		
+		// get root element
+		ArchiveEntryDataholder root = archive.getEntries().get("/");
+		if( root != null ) {
+			// look for existing omex meta information
+			OmexMetaObjectDataholder omexMeta = null;
+			for( MetaObjectDataholder meta : root.getMeta() )
+				if( meta instanceof OmexMetaObjectDataholder ) {
+					omexMeta = (OmexMetaObjectDataholder) meta;
+					break;
+				}
+			
+			if( omexMeta != null ) {
+				// if there is already an omex entry,
+				// just add our VCard and add a modified date
+				omexMeta.getCreators().add(vcard);
+				omexMeta.getModified().add( new Date() );
+			}
+			else {
+				// create a new dataholder and fill it with some information
+				omexMeta = new OmexMetaObjectDataholder();
+				omexMeta.setCreators( new ArrayList<VCard>(1) );
+				omexMeta.setModified( new ArrayList<Date>(1) );
+				omexMeta.setCreated( new Date() );
+				
+				omexMeta.getCreators().add(vcard);
+				omexMeta.getModified().add( new Date() );
+				
+				root.addMetaEntry(omexMeta);
+			}
+		}
+	}
+	
+	private void addAdditionalFiles( UserManager user, ImportRequest request, Archive archive ) {
+		
+		for( ImportRequest.AdditionalFile addFile : request.getAdditionalFiles() ) {
+			java.nio.file.Path temp = null;
+			try {
+				URL remoteUrl = new URL( addFile.getRemoteUrl() );
+				
+				// copy the stream to a temp file
+				temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, FilenameUtils.getBaseName(remoteUrl.toString()) );
+				// write file to disk
+				OutputStream output = new FileOutputStream( temp.toFile() );
+				InputStream input = remoteUrl.openStream();
+				long uploadedFileSize = IOUtils.copy( input, output);
+				
+				output.flush();
+				output.close();
+				input.close();
+				
+				String path = addFile.getArchivePath();
+				if( path == null || path.isEmpty() )
+					path = FilenameUtils.getBaseName( remoteUrl.toString() );
+				// remove leading slash
+				if( path.startsWith("/") )
+					path = path.substring(1);
+				
+				// add it
+				ArchiveEntry entry = archive.addArchiveEntry(path, temp, ReplaceStrategy.RENAME);
+				// add all meta data objects
+				for( MetaObjectDataholder meta : addFile.getMetaData() ) {
+					entry.addDescription( meta.getCombineArchiveMetaObject() );
+				}
+				
+			} catch(IOException | CombineArchiveWebException e) {
+				LOGGER.error(e, "Cannot download an additional file.", addFile.getRemoteUrl());
+			} finally {
+				if( temp != null )
+					temp.toFile().delete();
+			}
+		}
+		
 	}
 	
 }

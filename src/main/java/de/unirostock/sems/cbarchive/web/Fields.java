@@ -69,6 +69,9 @@ public class Fields {
 	
 	/** Timeout for locks on archives */
 	public static final long LOCK_ARCHIVE_TIMEOUT = 5;
+	
+	/** Default name for new combine archives */
+	public static final String NEW_ARCHIVE_NAME = "New CombineArchive";
 
 	// ------------------------------------------------------------------------
 	// Quotas

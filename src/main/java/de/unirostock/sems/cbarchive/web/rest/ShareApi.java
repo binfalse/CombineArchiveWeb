@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -194,23 +193,7 @@ public class ShareApi extends RestHelper {
 		}
 		
 		// redirect to workspace
-		URI newLocation = null;
-		try {
-			if( requestContext != null ) {
-				String uri = requestContext.getRequestURL().toString();
-				uri = uri.substring(0, uri.indexOf("rest/"));
-				LOGGER.info("redirect to ", requestContext.getRequestURL(), " to ", uri);
-				newLocation = new URI( uri + "#archive/" + archiveId );
-			}
-			else
-				newLocation = new URI( "../#archive/" + archiveId );
-			
-		} catch (URISyntaxException e) {
-			LOGGER.error(e, "Cannot generate relative URL to main app");
-			return null;
-		}
-		
-		return buildResponse(302, user).entity(archiveId + "\n" + archiveName).location(newLocation).build();
+		return buildResponse(302, user).entity(archiveId + "\n" + archiveName).location( generateRedirectUri(requestContext, archiveId) ).build();
 	}
 	
 	@POST
@@ -303,10 +286,8 @@ public class ShareApi extends RestHelper {
 			return buildTextErrorResponse(500, user, "Error while applying additional data to the archive");
 		}
 		
-		
-		
-		
-		return null;
+		// redirect to workspace
+		return buildResponse(302, user).entity(archiveId + "\n" + request.getArchiveName()).location( generateRedirectUri(requestContext, archiveId) ).build();
 	}
 	
 	private void setOwnVCard( UserManager user, ImportRequest request, Archive archive ) throws ImporterException {
@@ -394,6 +375,26 @@ public class ShareApi extends RestHelper {
 			}
 		}
 		
+	}
+	
+	private URI generateRedirectUri( HttpServletRequest requestContext, String archiveId ) {
+		URI newLocation = null;
+		try {
+			if( requestContext != null ) {
+				String uri = requestContext.getRequestURL().toString();
+				uri = uri.substring(0, uri.indexOf("rest/"));
+				LOGGER.info("redirect to ", requestContext.getRequestURL(), " to ", uri);
+				newLocation = new URI( uri + "#archive/" + archiveId );
+			}
+			else
+				newLocation = new URI( "../#archive/" + archiveId );
+			
+		} catch (URISyntaxException e) {
+			LOGGER.error(e, "Cannot generate relative URL to main app");
+			return null;
+		}
+		
+		return newLocation;
 	}
 	
 }

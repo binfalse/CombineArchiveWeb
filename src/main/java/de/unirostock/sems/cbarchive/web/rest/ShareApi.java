@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,6 +45,8 @@ import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
+import de.unirostock.sems.cbarchive.web.dataholder.ImportRequest;
+import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
@@ -146,19 +149,17 @@ public class ShareApi extends RestHelper {
 		
 		
 		String archiveId = null;
-		File tempFile = null;
+		Importer importer = null;
 		try {
 			
-			Importer importer = Importer.getImporter(remoteType, remoteUrl, user);
+			importer = Importer.getImporter(remoteType, remoteUrl, user);
 			importer.importRepo();
 			
 			if( archiveName == null || archiveName.isEmpty() )
 				archiveName = importer.getSuggestedName();
 			
 			// add archive to workspace
-			archiveId = user.createArchive( archiveName, tempFile );
-			
-			importer.close();
+			archiveId = user.createArchive( archiveName, importer.getTempFile() );
 			
 		} catch (ImporterException e) {
 			LOGGER.warn(e, "Cannot import remote archive!");
@@ -169,8 +170,10 @@ public class ShareApi extends RestHelper {
 			LOGGER.error(e, "Cannot read downloaded archive");
 			return buildTextErrorResponse(400, user, "Cannot read/parse downloaded archive", e.getMessage(), "URL: " + remoteUrl);
 		} finally {
-			if( tempFile != null && tempFile.exists() )
-				tempFile.delete();
+			if( importer != null && importer.getTempFile().exists() )
+				importer.getTempFile().delete();
+			
+			importer.close();
 		}
 		
 		// redirect to workspace
@@ -191,6 +194,75 @@ public class ShareApi extends RestHelper {
 		}
 		
 		return buildResponse(302, user).entity(archiveId + "\n" + archiveName).location(newLocation).build();
+	}
+	
+	@POST
+	@Path("/import")
+	@Produces( MediaType.TEXT_PLAIN )
+	public Response importRemoteArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, ImportRequest request, @Context HttpServletRequest requestContext ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildTextErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if( request == null || request.isValid() == false )
+			return buildTextErrorResponse(400, user, "import request is not set properly");
+		
+		
+		String archiveId = null;
+		
+		// try to import (if requested)
+		if( request.isArchiveImport() ) {
+			Importer importer = null;
+			try {
+				
+				importer = Importer.getImporter(request.getType(), request.getRemoteUrl(), user);
+				importer.importRepo();
+				
+				if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
+					request.setArchiveName( importer.getSuggestedName() );
+				
+				// add archive to workspace
+				archiveId = user.createArchive( request.getArchiveName(), importer.getTempFile() );
+				
+			} catch (ImporterException e) {
+				LOGGER.warn(e, "Cannot import remote archive!");
+				return buildTextErrorResponse(400, user, e.getMessage(), "URL: " + request.getRemoteUrl() );
+				
+			} catch (IOException | JDOMException | ParseException
+					| CombineArchiveException | TransformerException e) {
+				
+				LOGGER.error(e, "Cannot read downloaded archive");
+				return buildTextErrorResponse(400, user, "Cannot read/parse downloaded archive", e.getMessage(), "URL: " + request.getRemoteUrl() );
+			} finally {
+				if( importer != null && importer.getTempFile().exists() )
+					importer.getTempFile().delete();
+				
+				importer.close();
+			}
+		}
+		else {
+			// just create an empty archive
+			if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
+				request.setArchiveName( "" );
+			
+			try {
+				archiveId = user.createArchive( request.getArchiveName() );
+			} catch (IOException | JDOMException | ParseException
+					| CombineArchiveException | TransformerException e) {
+				
+				LOGGER.error(e, "Cannot create new archive");
+				return buildTextErrorResponse(400, user, "Cannot create new archive", e.getMessage() );
+			}
+		}
+		
+		return null;
 	}
 	
 }

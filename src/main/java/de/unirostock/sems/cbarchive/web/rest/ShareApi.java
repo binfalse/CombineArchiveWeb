@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -199,6 +200,7 @@ public class ShareApi extends RestHelper {
 	@POST
 	@Path("/import")
 	@Produces( MediaType.TEXT_PLAIN )
+	@Consumes( MediaType.APPLICATION_JSON )
 	public Response importRemoteArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, ImportRequest request, @Context HttpServletRequest requestContext ) {
 		// user stuff
 		UserManager user = null;

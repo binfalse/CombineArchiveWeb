@@ -33,7 +33,7 @@ public class ImportRequest implements Serializable {
 	/** List of additional files, to be added to the CombineArchive */
 	private List<AdditionalFile> additionalFiles = null;
 	
-	public class AdditionalFile implements Serializable {
+	public static class AdditionalFile implements Serializable {
 		
 		private static final long serialVersionUID = 74409915064851457L;
 		

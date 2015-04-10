@@ -243,7 +243,7 @@ public class ShareApi extends RestHelper {
 				LOGGER.error(e, "Cannot read downloaded archive");
 				return buildTextErrorResponse(400, user, "Cannot read/parse downloaded archive", e.getMessage(), "URL: " + request.getRemoteUrl() );
 			} finally {
-				if( importer != null && importer.getTempFile().exists() )
+				if( importer != null && importer.getTempFile() != null && importer.getTempFile().exists() )
 					importer.getTempFile().delete();
 				
 				importer.close();
@@ -278,7 +278,8 @@ public class ShareApi extends RestHelper {
 			if( request.getAdditionalFiles() != null && request.getAdditionalFiles().size() > 0 ) {
 				addAdditionalFiles(user, request, archive);
 			}
-				
+			
+			archive.getArchive().pack();
 			
 		} catch (IOException | CombineArchiveWebException e) {
 			LOGGER.error(e, "Cannot open newly created archive");
@@ -286,6 +287,9 @@ public class ShareApi extends RestHelper {
 		} catch (ImporterException e) {
 			LOGGER.error(e, "Something went wrong with the extended import");
 			return buildTextErrorResponse(500, user, "Error while applying additional data to the archive");
+		} catch (TransformerException e) {
+			LOGGER.error(e, "Something went wrong while packing the archive");
+			return buildTextErrorResponse(500, user, "Something went wrong while packing the archive");
 		}
 		
 		// redirect to workspace
@@ -365,9 +369,10 @@ public class ShareApi extends RestHelper {
 				// add it
 				ArchiveEntry entry = archive.addArchiveEntry(path, temp, ReplaceStrategy.RENAME);
 				// add all meta data objects
-				for( MetaObjectDataholder meta : addFile.getMetaData() ) {
-					entry.addDescription( meta.getCombineArchiveMetaObject() );
-				}
+				if( addFile.getMetaData() != null )
+					for( MetaObjectDataholder meta : addFile.getMetaData() ) {
+						entry.addDescription( meta.getCombineArchiveMetaObject() );
+					}
 				
 			} catch(IOException | CombineArchiveWebException e) {
 				LOGGER.error(e, "Cannot download an additional file.", addFile.getRemoteUrl());

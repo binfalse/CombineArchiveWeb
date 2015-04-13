@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -220,6 +222,7 @@ public class WorkspaceManager {
 	public synchronized void storeSettings() {
 		
 		Properties properties = new Properties();
+		Date savedDate = new Date();
 		
 		LOGGER.info("store settings to disk");
 		
@@ -238,15 +241,20 @@ public class WorkspaceManager {
 		}
 		
 		try {
-			OutputStream output = new FileOutputStream( Fields.SETTINGS_FILE );
+			// first write settings to temp file
+			File temp = File.createTempFile( Fields.TEMP_FILE_PREFIX, "settings.conf");
+			OutputStream output = new FileOutputStream( temp );
 			properties.store(output, null);
 
 			// flush'n'close
 			output.flush();
 			output.close();
 			
+			// replace actual settings file, with newly written one
+			Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE );
+			
 			// set time of last store to now
-			lastSaved = new Date();
+			lastSaved = savedDate;
 		} catch (IOException e) {
 			LOGGER.error(e, "Cannot write central properties file");
 		}

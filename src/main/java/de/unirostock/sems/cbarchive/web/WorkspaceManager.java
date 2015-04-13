@@ -38,7 +38,7 @@ public class WorkspaceManager {
 	
 	// Singleton stuff
 	
-	private static WorkspaceManager instance = null;
+	private static volatile WorkspaceManager instance = null;
 	
 	public static final WorkspaceManager getInstance() {
 		

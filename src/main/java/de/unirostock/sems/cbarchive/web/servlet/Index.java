@@ -59,6 +59,15 @@ public class Index extends HttpServlet {
 		WorkspaceManager.getInstance();
 		QuotaManager.getInstance().forceAsyncScan(true);
 	}
+	
+	@Override
+	public void destroy() {
+		
+		LOGGER.info("Destroying Index-Servlet.");
+		// store settings to disk
+		WorkspaceManager.getInstance().storeSettings();
+		
+	}
 
 	private void run (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		

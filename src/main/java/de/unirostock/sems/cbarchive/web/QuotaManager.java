@@ -31,7 +31,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 public class QuotaManager {
 
 	// Singleton stuff
-	private static QuotaManager instance = null;
+	private static volatile QuotaManager instance = null;
 	
 	/**
 	 * Returns the Singleton instance

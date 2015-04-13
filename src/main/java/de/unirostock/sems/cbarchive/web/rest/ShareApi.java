@@ -353,7 +353,7 @@ public class ShareApi extends RestHelper {
 				// write file to disk
 				OutputStream output = new FileOutputStream( temp.toFile() );
 				InputStream input = remoteUrl.openStream();
-				long uploadedFileSize = IOUtils.copy( input, output);
+				long downloadedFileSize = IOUtils.copy( input, output );
 				
 				output.flush();
 				output.close();
@@ -368,6 +368,11 @@ public class ShareApi extends RestHelper {
 				
 				// add it
 				ArchiveEntry entry = archive.addArchiveEntry(path, temp, ReplaceStrategy.RENAME);
+				
+				// set file format uri
+				if( addFile.getFileFormat() != null )
+					entry.setFormat( addFile.getFileFormat() );
+				
 				// add all meta data objects
 				if( addFile.getMetaData() != null )
 					for( MetaObjectDataholder meta : addFile.getMetaData() ) {

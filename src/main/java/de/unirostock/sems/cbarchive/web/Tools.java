@@ -51,8 +51,32 @@ public class Tools
 
 	/** The Constant DATE_FORMATTER. */
 	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS");
-
+	
+	/**
+	 * Tries to obtain user instance (workspace), if fails it crates a new one
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws CombineArchiveWebException
+	 * @throws CombineArchiveWebCriticalException
+	 */
 	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
+		return doLogin(request, response, true);
+	}
+	
+	/**
+	 * Tries to obtain user instance (workspace) <br>
+	 * if createNew is true, it also tries to create a new user instance.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param createNew
+	 * @return
+	 * @throws CombineArchiveWebException
+	 * @throws CombineArchiveWebCriticalException
+	 */
+	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response, boolean createNew ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
 		// find Cookies
 //		HttpSession session = request.getSession (true);
 		CookieManager cookieManagement = new CookieManager (request, response);
@@ -61,7 +85,7 @@ public class Tools
 		UserManager user = null;
 		try {
 			user = getUser(cookieManagement);
-			if( user == null ) {
+			if( user == null && createNew == true ) {
 				user = new UserManager();
 				storeUserCookies(cookieManagement, user);
 			}

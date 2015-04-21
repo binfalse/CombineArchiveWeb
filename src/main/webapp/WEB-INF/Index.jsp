@@ -21,6 +21,7 @@
 	<title>CombineArchiveWeb</title>
 	<script type="text/javascript">
 		var RestRoot = 'rest/v1/';
+		var SedMlWebToolsUrl = 'http://bqfbergmann.dyndns.org/SED-ML_Web_Tools/Home/SimulateUrl?url=';
 	</script>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
@@ -251,6 +252,7 @@
 					</div>
 						
 					<div class="edit-link">
+						<a class="archive-info-simulate on-not-edit" href="{{# print(SedMlWebToolsUrl); print(baseUrl); }}download/archive/{{# print(workspace.workspaceId); }}/{{# print(archive.id); }}.omex" target="_blank">[Simulate]</a>
 						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
 						<a class="archive-info-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-info-delete on-not-edit" href="#">[Delete]</a>

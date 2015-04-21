@@ -40,6 +40,7 @@ import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
+import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
@@ -60,7 +61,7 @@ public class DownloadServlet extends HttpServlet {
 		// login stuff
 		UserManager user = null;
 		try {
-			user = Tools.doLogin(request, response);
+			user = Tools.doLogin(request, response, false);
 		} catch (CombineArchiveWebCriticalException e) {
 			LOGGER.error(e, "Exception while getting User");
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -74,7 +75,20 @@ public class DownloadServlet extends HttpServlet {
 		String[] requestUrl =  request.getRequestURI().substring(request.getContextPath().length()).split ("/");
 		
 		// check entry points
-		if( requestUrl.length >= 4 && requestUrl[2].equals("archive") ) {
+		if( requestUrl.length >= 5 && requestUrl[2].equals("archive") ) {
+			// request to download an archive from *any* workspace
+			// without necessarily obtained this workspace before
+			
+			UserManager targetUser = null;
+			if( requestUrl[3] != null && !requestUrl[3].isEmpty() )
+				targetUser = new UserManager( requestUrl[3] );
+			else
+				return;
+			
+			if( requestUrl[4] != null && !requestUrl[4].isEmpty() && targetUser != null )
+				downloadArchive(request, response, targetUser, URLDecoder.decode( requestUrl[4], Fields.CHARSET ) );
+		}
+		else if( requestUrl.length >= 4 && requestUrl[2].equals("archive") ) {
 			// request to download an archive from the workspace
 			if( requestUrl[3] != null && !requestUrl[3].isEmpty() )
 				downloadArchive(request, response, user, URLDecoder.decode( requestUrl[3], Fields.CHARSET ) );

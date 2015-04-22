@@ -354,7 +354,7 @@ public class ShareApi extends RestHelper {
 		}
 	}
 	
-	private void addAdditionalFiles( UserManager user, ImportRequest request, Archive archive ) {
+	private void addAdditionalFiles( UserManager user, ImportRequest request, Archive archive ) throws ImporterException {
 		
 		for( ImportRequest.AdditionalFile addFile : request.getAdditionalFiles() ) {
 			java.nio.file.Path temp = null;
@@ -371,6 +371,28 @@ public class ShareApi extends RestHelper {
 				output.flush();
 				output.close();
 				input.close();
+				
+				// quota stuff
+				// max size for upload
+				if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(downloadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
+					LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
+					throw new ImporterException("The additional file is to big: " + addFile.getRemoteUrl());
+				}
+				// max archive size
+				if( user != null && Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getArchiveSize(archive.getId()) + downloadedFileSize, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
+					LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId(), " while trying to adv import archive");
+					throw new ImporterException("The maximum size of the archive is reached, while adding " + addFile.getRemoteUrl());
+				}
+				// max workspace size
+				if( user != null && Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + downloadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+					LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
+					throw new ImporterException("The maximum size of the workspace is reached, while adding " + addFile.getRemoteUrl());
+				}
+				// max total size
+				if( user != null && Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + downloadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
+					LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
+					throw new ImporterException("The maximum size is reached, while adding " + addFile.getRemoteUrl());
+				}
 				
 				String path = addFile.getArchivePath();
 				if( path == null || path.isEmpty() )
@@ -394,6 +416,7 @@ public class ShareApi extends RestHelper {
 				
 			} catch(IOException | CombineArchiveWebException e) {
 				LOGGER.error(e, "Cannot download an additional file.", addFile.getRemoteUrl());
+				throw new ImporterException("Cannot download and add an additional file: " + addFile.getRemoteUrl(), e);
 			} finally {
 				if( temp != null )
 					temp.toFile().delete();

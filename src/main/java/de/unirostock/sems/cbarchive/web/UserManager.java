@@ -287,6 +287,16 @@ public class UserManager {
 		// save the settings
 		workspaceManager.storeSettings();
 	}
+	
+	public void deleteArchiveSilent( String archiveId ) {
+		
+		try {
+			deleteArchive(archiveId);
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot delete archive ", archiveId, " in workspace ", workspace.getWorkspaceId(), " silently");
+		}
+		
+	}
 
 	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException {
 		

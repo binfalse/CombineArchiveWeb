@@ -295,19 +295,23 @@ public class ShareApi extends RestHelper {
 			}
 			catch (ImporterException e) {
 				// catch quota-exceeding-exception (Logging already done)
-				return buildTextErrorResponse(507, user, e.getMessage());
+				user.deleteArchiveSilent(archiveId);
+				return buildTextErrorResponse(507, user, e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : null );
 			}
 			
 			archive.getArchive().pack();
 			
 		} catch (IOException | CombineArchiveWebException e) {
 			LOGGER.error(e, "Cannot open newly created archive");
+			user.deleteArchiveSilent(archiveId);
 			return buildTextErrorResponse(500, user, "Cannot open newly created archive: ", e.getMessage() );
 		} catch (ImporterException e) {
 			LOGGER.error(e, "Something went wrong with the extended import");
+			user.deleteArchiveSilent(archiveId);
 			return buildTextErrorResponse(500, user, "Error while applying additional data to the archive");
 		} catch (TransformerException e) {
 			LOGGER.error(e, "Something went wrong while packing the archive");
+			user.deleteArchiveSilent(archiveId);
 			return buildTextErrorResponse(500, user, "Something went wrong while packing the archive");
 		}
 		
@@ -421,7 +425,7 @@ public class ShareApi extends RestHelper {
 					}
 				
 			} catch(IOException | CombineArchiveWebException e) {
-				LOGGER.error(e, "Cannot download an additional file.", addFile.getRemoteUrl());
+				LOGGER.error(e, "Cannot download an additional file. ", addFile.getRemoteUrl());
 				throw new ImporterException("Cannot download and add an additional file: " + addFile.getRemoteUrl(), e);
 			} finally {
 				if( temp != null )

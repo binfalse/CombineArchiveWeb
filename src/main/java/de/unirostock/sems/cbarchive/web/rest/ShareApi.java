@@ -287,9 +287,15 @@ public class ShareApi extends RestHelper {
 				setOwnVCard(user, request, archive);
 			}
 			
-			// import additional files
-			if( request.getAdditionalFiles() != null && request.getAdditionalFiles().size() > 0 ) {
-				addAdditionalFiles(user, request, archive);
+			try {
+				// import additional files
+				if( request.getAdditionalFiles() != null && request.getAdditionalFiles().size() > 0 ) {
+					addAdditionalFiles(user, request, archive);
+				}
+			}
+			catch (ImporterException e) {
+				// catch quota-exceeding-exception (Logging already done)
+				return buildTextErrorResponse(507, user, e.getMessage());
 			}
 			
 			archive.getArchive().pack();

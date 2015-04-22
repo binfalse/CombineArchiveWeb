@@ -69,6 +69,9 @@ public class Fields {
 	
 	/** Timeout for locks on archives */
 	public static final long LOCK_ARCHIVE_TIMEOUT = 5;
+	
+	/** Link to the sedML WebTools for starting a simulation */
+	public static String SEDML_WEBTOOLS_URL = null;
 
 	// ------------------------------------------------------------------------
 	// Quotas
@@ -131,6 +134,13 @@ public class Fields {
 
 			LOGGER.info("Set storage to ", Fields.STORAGE);
 		}
+		
+		// sedML WebTools
+		String sedMlWebTools = context.getInitParameter("SEDML_WEBTOOLS");
+		if( sedMlWebTools != null && sedMlWebTools.isEmpty() == false )
+			Fields.SEDML_WEBTOOLS_URL = sedMlWebTools;
+		else
+			Fields.SEDML_WEBTOOLS_URL = null;
 		
 		// Quotas
 		

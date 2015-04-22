@@ -827,7 +827,9 @@ var ArchiveView = Backbone.View.extend({
 		
 		var json = {
 				"archive": this.model.toJSON(),
-				"entries": this.collection.toJSON()
+				"entries": this.collection.toJSON(),
+				"workspace": startView.getCurrentWorkspace().toJSON(),
+				"baseUrl": startView.getBaseUrl()
 			};
 		
 		this.$el.html( this.template(json) );
@@ -1883,11 +1885,9 @@ var StartView = Backbone.View.extend({
 		this.fetch();
 	},
 	render: function() {
-		var current = this.collection.find(function( element ) {
-			return element.get("current") == true;
-		});
+		var current = this.getCurrentWorkspace();
 		
-		var json = { "history": this.collection.toJSON(), "current": current.toJSON(), "baseUrl": location.protocol+"//"+location.host+location.pathname+(location.search?location.search:"") };
+		var json = { "history": this.collection.toJSON(), "current": current.toJSON(), "baseUrl": this.getBaseUrl() };
 		this.$el.html( this.template(json) );
 	},
 	fetch: function() {
@@ -1915,6 +1915,15 @@ var StartView = Backbone.View.extend({
 	
 	events: {
 		"click .start-history-rename": "renameHistoryEntry"
+	},
+	
+	getCurrentWorkspace: function() {
+		return this.collection.find(function( element ) {
+			return element.get("current") == true;
+		});
+	},
+	getBaseUrl: function() {
+		return location.protocol+"//"+location.host+location.pathname+(location.search?location.search:"");
 	},
 	renameHistoryEntry: function(event) {
 		

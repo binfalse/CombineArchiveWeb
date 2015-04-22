@@ -1,3 +1,4 @@
+<%@page import="de.unirostock.sems.cbarchive.web.Fields"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix='fn' uri='http://java.sun.com/jsp/jstl/functions'%>
 <!DOCTYPE html>
@@ -21,6 +22,7 @@
 	<title>CombineArchiveWeb</title>
 	<script type="text/javascript">
 		var RestRoot = 'rest/v1/';
+		var SedMlWebToolsUrl = '<%= Fields.SEDML_WEBTOOLS_URL %>';
 	</script>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
@@ -251,6 +253,9 @@
 					</div>
 						
 					<div class="edit-link">
+						<% if( Fields.SEDML_WEBTOOLS_URL != null && Fields.SEDML_WEBTOOLS_URL.isEmpty() == false ) { %>
+						<a class="archive-info-simulate on-not-edit" href="{{# print(SedMlWebToolsUrl); print(baseUrl); }}download/archive/{{# print(workspace.workspaceId); }}/{{# print(archive.id); }}.omex" target="_blank">[Simulate]</a>
+						<% } %>
 						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
 						<a class="archive-info-edit on-not-edit" href="#">[Edit]</a>
 						<a class="archive-info-delete on-not-edit" href="#">[Delete]</a>

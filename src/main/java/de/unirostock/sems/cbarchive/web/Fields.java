@@ -72,6 +72,9 @@ public class Fields {
 	
 	/** Default name for new combine archives */
 	public static final String NEW_ARCHIVE_NAME = "New CombineArchive";
+	
+	/** Link to the sedML WebTools for starting a simulation */
+	public static String SEDML_WEBTOOLS_URL = null;
 
 	// ------------------------------------------------------------------------
 	// Quotas

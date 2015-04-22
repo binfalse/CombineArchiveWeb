@@ -54,6 +54,8 @@ import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.Fields;
+import de.unirostock.sems.cbarchive.web.QuotaManager;
+import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
 import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
@@ -152,13 +154,19 @@ public class ShareApi extends RestHelper {
 			return buildTextErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
-		LOGGER.info(remoteUrl);
+		LOGGER.info("got import request for: ", remoteUrl);
 		
 		if( remoteUrl == null || remoteUrl.isEmpty() ) {
 			LOGGER.warn("empty remote url provided");
 			return buildTextErrorResponse(400, user, "empty remote url provided");
 		}
 		
+		// check maximum archives
+		if( Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
+			LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
+			return buildTextErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
+		}
+				
 		if( remoteType == null || remoteType.isEmpty() )
 			remoteType = Importer.IMPORT_HTTP;
 		else
@@ -216,6 +224,11 @@ public class ShareApi extends RestHelper {
 		if( request == null || request.isValid() == false )
 			return buildTextErrorResponse(400, user, "import request is not set properly");
 		
+		// check maximum archives
+		if( Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
+			LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
+			return buildTextErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
+		}
 		
 		String archiveId = null;
 		

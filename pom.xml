@@ -189,13 +189,6 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			<!-- <plugin> <artifactId>maven-war-plugin</artifactId> <version>2.1.1</version> 
-				<configuration> <attachClasses>true</attachClasses> <descriptorRefs> <descriptorRef>war-with-dependencies</descriptorRef> 
-				</descriptorRefs> <finalName>${project.artifactId}-${project.version}-fat</finalName> 
-				<appendAssemblyId>false</appendAssemblyId> <archive> <manifest> <mainClass>de.unirostock.sems.bives.Main</mainClass> 
-				</manifest> </archive> </configuration> - <executions> <execution> <id>make-assembly</id> 
-				<phase>package</phase> <goals> <goal>single</goal> </goals> </execution> 
-				</executions> </plugin> -->
 		</plugins>
 	</build>
 
@@ -229,6 +222,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -237,6 +231,9 @@
 								</goals>
 							</execution>
 						</executions>
+						<configuration>
+							<failOnError>false</failOnError>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

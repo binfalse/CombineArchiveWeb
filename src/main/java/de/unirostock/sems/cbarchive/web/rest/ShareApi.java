@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -47,7 +48,11 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -70,6 +75,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
 import de.unirostock.sems.cbarchive.web.importer.Importer;
+import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
 @Path( "/" )
 public class ShareApi extends RestHelper {
@@ -317,6 +323,50 @@ public class ShareApi extends RestHelper {
 		
 		// redirect to workspace
 		return buildResponse(302, user).entity(archiveId + "\n" + request.getArchiveName()).location( generateRedirectUri(requestContext, archiveId) ).build();
+	}
+	
+	@POST
+	@Path( "/import" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.MULTIPART_FORM_DATA )
+	public Response uploadArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, @Context HttpServletRequest requestContext,
+									@FormDataParam("request") String serializedRequest, @FormDataParam("archive") FormDataBodyPart archiveFile, @FormDataParam("additionalFile") List<FormDataBodyPart> additionalFiles ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildTextErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		ImportRequest request = null;
+		try {
+			
+			ObjectMapper mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
+			request = mapper.readValue(serializedRequest, ImportRequest.class);
+			
+			if( request == null ) {
+				LOGGER.error("Cannot deserialize import request");
+				return buildTextErrorResponse(500, user, "Cannot deserialize import request");
+			}
+			else if( request.isValid() == false )
+				return buildTextErrorResponse(400, user, "import request is not set properly");
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot deserialize import request");
+			return buildTextErrorResponse(500, user, "Cannot deserialize import request", e.getMessage());
+		}
+		
+		// check maximum archives
+		if( Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
+			LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
+			return buildTextErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
+		}
+				
+		return null;
 	}
 	
 	private void setOwnVCard( UserManager user, ImportRequest request, Archive archive ) throws ImporterException {

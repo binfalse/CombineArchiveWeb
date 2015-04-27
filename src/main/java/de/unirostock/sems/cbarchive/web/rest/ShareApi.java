@@ -244,17 +244,14 @@ public class ShareApi extends RestHelper {
 		}
 
 		try ( Archive archive = user.getArchive(archiveId) ) {
-			// TODO quota
-
 			// set own VCard
-			if( request.isOwnVCard() ) {
+			if( request.isOwnVCard() )
 				setOwnVCard(user, request, archive);
-			}
 
 			try {
 				// import additional files
 				if( request.getAdditionalFiles() != null && request.getAdditionalFiles().size() > 0 ) {
-					addAdditionalFiles(user, request, archive);
+					addAdditionalFiles(user, request, archive, null);
 				}
 			}
 			catch (ImporterException e) {
@@ -266,7 +263,7 @@ public class ShareApi extends RestHelper {
 			archive.getArchive().pack();
 
 		} catch (IOException | CombineArchiveWebException e) {
-			LOGGER.error(e, "Cannot open newly created archive");
+			LOGGER.error(e, "Cannot open/pack newly created archive");
 			user.deleteArchiveSilent(archiveId);
 			return buildTextErrorResponse(500, user, "Cannot open newly created archive: ", e.getMessage() );
 		} catch (ImporterException e) {
@@ -331,7 +328,41 @@ public class ShareApi extends RestHelper {
 			return buildTextErrorResponse(400, user, e.getMessage(), e.getCause().getMessage());
 		}
 
-		return null;
+		try ( Archive archive = user.getArchive(archiveId) ) {
+			// set own VCard
+			if( request.isOwnVCard() )
+				setOwnVCard(user, request, archive);
+
+			try {
+				// import additional files
+				if( request.getAdditionalFiles() != null && request.getAdditionalFiles().size() > 0 ) {
+					addAdditionalFiles(user, request, archive, additionalFiles);
+				}
+			}
+			catch (ImporterException e) {
+				// catch quota-exceeding-exception (Logging already done)
+				user.deleteArchiveSilent(archiveId);
+				return buildTextErrorResponse(507, user, e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : null );
+			}
+
+			archive.getArchive().pack();
+
+		} catch (IOException | CombineArchiveWebException e) {
+			LOGGER.error(e, "Cannot open/pack newly created archive");
+			user.deleteArchiveSilent(archiveId);
+			return buildTextErrorResponse(500, user, "Cannot open newly created archive: ", e.getMessage() );
+		} catch (ImporterException e) {
+			LOGGER.error(e, "Something went wrong with the extended import");
+			user.deleteArchiveSilent(archiveId);
+			return buildTextErrorResponse(500, user, "Error while applying additional data to the archive");
+		} catch (TransformerException e) {
+			LOGGER.error(e, "Something went wrong while packing the archive");
+			user.deleteArchiveSilent(archiveId);
+			return buildTextErrorResponse(500, user, "Something went wrong while packing the archive");
+		}
+
+		// redirect to workspace
+		return buildResponse(302, user).entity(archiveId + "\n" + request.getArchiveName()).location( generateRedirectUri(requestContext, archiveId) ).build();
 	}
 
 	private String importOrCreateArchive( UserManager user, ImportRequest request, FormDataBodyPart archiveFile ) throws ImporterException {
@@ -480,7 +511,7 @@ public class ShareApi extends RestHelper {
 		}
 	}
 
-	private void addAdditionalFiles( UserManager user, ImportRequest request, Archive archive ) throws ImporterException {
+	private void addAdditionalFiles( UserManager user, ImportRequest request, Archive archive, List<FormDataBodyPart> uploadedFiles ) throws ImporterException {
 
 		for( ImportRequest.AdditionalFile addFile : request.getAdditionalFiles() ) {
 			java.nio.file.Path temp = null;
@@ -491,7 +522,28 @@ public class ShareApi extends RestHelper {
 				temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, FilenameUtils.getBaseName(remoteUrl.toString()) );
 				// write file to disk
 				OutputStream output = new FileOutputStream( temp.toFile() );
-				InputStream input = remoteUrl.openStream();
+				InputStream input = null;
+				
+				String protocol = remoteUrl.getProtocol().toLowerCase();
+				if( protocol.equals("http") || protocol.equals("https") ) {
+					input = remoteUrl.openStream();
+				}
+				else if( protocol.equals("post") && uploadedFiles != null && uploadedFiles.size() > 0 ) {
+					// use a file from the post
+					String fileName = remoteUrl.getPath();
+					for( FormDataBodyPart file : uploadedFiles ) {
+						if( file.getFormDataContentDisposition().getFileName().equals(fileName) ) {
+							input = file.getEntityAs(InputStream.class);
+							break;
+						}
+					}
+				}
+				else
+					throw new ImporterException("Unknown protocol " + protocol + " while adding "  + remoteUrl.toString());
+				
+				if( input == null )
+					throw new ImporterException("Cannot open stream to import file: " + remoteUrl.toString());
+				
 				long downloadedFileSize = IOUtils.copy( input, output );
 
 				output.flush();

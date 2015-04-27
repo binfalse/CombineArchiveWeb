@@ -238,7 +238,7 @@ public class ShareApi extends RestHelper {
 
 		String archiveId = null;
 		try {
-			archiveId = importOrCreateArchive(user, request);
+			archiveId = importOrCreateArchive(user, request, null);
 		} catch (ImporterException e) {
 			return buildTextErrorResponse(400, user, e.getMessage(), e.getCause().getMessage());
 		}
@@ -326,12 +326,7 @@ public class ShareApi extends RestHelper {
 		
 		String archiveId = null;
 		try {
-			// only perform import/creation, when no archive is provided via post
-			if( archiveFile == null )
-				archiveId = importOrCreateArchive(user, request);
-			else {
-				
-			}
+			archiveId = importOrCreateArchive(user, request, archiveFile);
 		} catch (ImporterException e) {
 			return buildTextErrorResponse(400, user, e.getMessage(), e.getCause().getMessage());
 		}
@@ -339,12 +334,59 @@ public class ShareApi extends RestHelper {
 		return null;
 	}
 
-	private String importOrCreateArchive( UserManager user, ImportRequest request ) throws ImporterException {
+	private String importOrCreateArchive( UserManager user, ImportRequest request, FormDataBodyPart archiveFile ) throws ImporterException {
 		
 		String archiveId = null;
 		
-		// try to import (if requested)
-		if( request.isArchiveImport() ) {
+		if( archiveFile != null ) {
+			// import via post data
+			java.nio.file.Path temp = null;
+			try {
+				// write uploaded file to temp
+				// copy the stream to a temp file
+				temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, archiveFile.getFormDataContentDisposition().getFileName() );
+				// write file to disk
+				OutputStream output = new FileOutputStream( temp.toFile() );
+				InputStream input = archiveFile.getEntityAs(InputStream.class);
+				long uploadedFileSize = IOUtils.copy( input, output);
+				
+				output.flush();
+				output.close();
+				input.close();
+				
+				// quota stuff
+				// max size for upload
+				if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(uploadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
+					LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
+					throw new ImporterException("The new archive is to big.");
+				}
+				// max workspace size
+				if( user != null && Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+					LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
+					throw new ImporterException("The maximum size of the workspace is reached, while importing new archive.");
+				}
+				// max total size
+				if( user != null && Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
+					LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
+					throw new ImporterException("The maximum size is reached, while importing new archive.");
+				}
+				
+				// set default name, if necessary
+				if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
+					request.setArchiveName( Fields.NEW_ARCHIVE_NAME );
+				
+				archiveId = user.createArchive( request.getArchiveName(), temp.toFile());
+			} catch (IOException e) {
+				
+			} catch (JDOMException | ParseException | CombineArchiveException | TransformerException e) {
+				
+			} finally {
+				if( temp != null && temp.toFile().exists() )
+					temp.toFile().delete();
+			}
+		}
+		else if( request.isArchiveImport() ) {
+			// try to import (if requested)
 			Importer importer = null;
 			try {
 

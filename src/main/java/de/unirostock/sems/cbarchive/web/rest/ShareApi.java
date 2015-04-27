@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -79,7 +79,7 @@ import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
 @Path( "/" )
 public class ShareApi extends RestHelper {
-	
+
 	@GET
 	@Path("/share/{user_path}")
 	@Produces( MediaType.TEXT_PLAIN )
@@ -92,61 +92,61 @@ public class ShareApi extends RestHelper {
 			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
-		
+
 		WorkspaceHistory history = null;
 		try {
 			if( historyCookie != null && !historyCookie.isEmpty() ) {
 				history = WorkspaceHistory.fromCookieJson(historyCookie);
 			}
-			
+
 			if( history == null )
 				history = new WorkspaceHistory();
-			
+
 			// puts current workspace into history
 			if( history.containsWorkspace(user.getWorkspaceId()) == false )
 				history.getRecentWorkspaces().add( user.getWorkspace() );
 			history.setCurrentWorkspace( user.getWorkspaceId() );
-			
+
 			if( oldUserPath != null && !oldUserPath.isEmpty() && history.containsWorkspace( oldUserPath ) == false ) {
 				Workspace workspace = WorkspaceManager.getInstance().getWorkspace(oldUserPath);
 				if( workspace != null )
 					history.getRecentWorkspaces().add( workspace );
 			}
-			
+
 			history.setCurrentWorkspace( user.getWorkspaceId() );
 			historyCookie = history.toCookieJson();
-			
+
 		} catch (IOException e) {
 			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
 			return buildErrorResponse(500, user, "Error parsing workspace history cookie ", historyCookie, e.getMessage());
 		}
-		
+
 		String result = "setted " + user.getWorkspaceId();
 		URI newLocation = null;
 		try {
 			if( requestContext != null ) {
 				String uri = requestContext.getRequestURL().toString();
-//				String uri = requestContext.getRequestURI();
+				//				String uri = requestContext.getRequestURI();
 				uri = uri.substring(0, uri.indexOf("rest/"));
 				LOGGER.info("redirect sharing link ", requestContext.getRequestURL(), " to ", uri);
 				newLocation = new URI( uri );
-//				newLocation = new URI(requestContext.getScheme(), null, requestContext.getServerName(),
-//						requestContext.getServerPort(), uri, requestContext.getQueryString(), null);
+				//				newLocation = new URI(requestContext.getScheme(), null, requestContext.getServerName(),
+				//						requestContext.getServerPort(), uri, requestContext.getQueryString(), null);
 			}
 			else
 				newLocation = new URI("../");
-			
+
 		} catch (URISyntaxException e) {
 			LOGGER.error(e, "Cannot generate relative URL to main app");
 			return null;
 		}
-		
+
 		return buildResponse(302, user)
 				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
 				.entity(result).location(newLocation).build();
-		
+
 	}
-	
+
 	@GET
 	@Path("/import")
 	@Produces( MediaType.TEXT_PLAIN )
@@ -159,58 +159,58 @@ public class ShareApi extends RestHelper {
 			LOGGER.error(e, "Cannot create user");
 			return buildTextErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
-		
+
 		LOGGER.info("got import request for: ", remoteUrl);
-		
+
 		if( remoteUrl == null || remoteUrl.isEmpty() ) {
 			LOGGER.warn("empty remote url provided");
 			return buildTextErrorResponse(400, user, "empty remote url provided");
 		}
-		
+
 		// check maximum archives
 		if( Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
 			LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
 			return buildTextErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
 		}
-				
+
 		if( remoteType == null || remoteType.isEmpty() )
 			remoteType = Importer.IMPORT_HTTP;
 		else
 			remoteType = remoteType.toLowerCase();
-		
-		
+
+
 		String archiveId = null;
 		Importer importer = null;
 		try {
-			
+
 			importer = Importer.getImporter(remoteType, remoteUrl, user);
 			importer.importRepo();
-			
+
 			if( archiveName == null || archiveName.isEmpty() )
 				archiveName = importer.getSuggestedName();
-			
+
 			// add archive to workspace
 			archiveId = user.createArchive( archiveName, importer.getTempFile() );
-			
+
 		} catch (ImporterException e) {
 			LOGGER.warn(e, "Cannot import remote archive!");
 			return buildTextErrorResponse(400, user, e.getMessage(), "URL: " + remoteUrl);
 		} catch (IOException | JDOMException | ParseException
 				| CombineArchiveException | TransformerException e) {
-			
+
 			LOGGER.error(e, "Cannot read downloaded archive");
 			return buildTextErrorResponse(400, user, "Cannot read/parse downloaded archive", e.getMessage(), "URL: " + remoteUrl);
 		} finally {
 			if( importer != null && importer.getTempFile().exists() )
 				importer.getTempFile().delete();
-			
+
 			importer.close();
 		}
-		
+
 		// redirect to workspace
 		return buildResponse(302, user).entity(archiveId + "\n" + archiveName).location( generateRedirectUri(requestContext, archiveId) ).build();
 	}
-	
+
 	@POST
 	@Path("/import")
 	@Produces( MediaType.TEXT_PLAIN )
@@ -226,73 +226,31 @@ public class ShareApi extends RestHelper {
 			LOGGER.error(e, "Cannot create user");
 			return buildTextErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
-		
+
 		if( request == null || request.isValid() == false )
 			return buildTextErrorResponse(400, user, "import request is not set properly");
-		
+
 		// check maximum archives
 		if( Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
 			LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
 			return buildTextErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
 		}
-		
+
 		String archiveId = null;
-		
-		// try to import (if requested)
-		if( request.isArchiveImport() ) {
-			Importer importer = null;
-			try {
-				
-				importer = Importer.getImporter(request.getType(), request.getRemoteUrl(), user);
-				importer.importRepo();
-				
-				if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
-					request.setArchiveName( importer.getSuggestedName() );
-				
-				// add archive to workspace
-				archiveId = user.createArchive( request.getArchiveName(), importer.getTempFile() );
-				
-			} catch (ImporterException e) {
-				LOGGER.warn(e, "Cannot import remote archive!");
-				return buildTextErrorResponse(400, user, e.getMessage(), "URL: " + request.getRemoteUrl() );
-				
-			} catch (IOException | JDOMException | ParseException
-					| CombineArchiveException | TransformerException e) {
-				
-				LOGGER.error(e, "Cannot read downloaded archive");
-				return buildTextErrorResponse(400, user, "Cannot read/parse downloaded archive", e.getMessage(), "URL: " + request.getRemoteUrl() );
-			} finally {
-				if( importer != null && importer.getTempFile() != null && importer.getTempFile().exists() )
-					importer.getTempFile().delete();
-				
-				importer.close();
-			}
+		try {
+			archiveId = importOrCreateArchive(user, request);
+		} catch (ImporterException e) {
+			return buildTextErrorResponse(400, user, e.getMessage(), e.getCause().getMessage());
 		}
-		else {
-			// just create an empty archive
-			
-			// set default name, if necessary
-			if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
-				request.setArchiveName( Fields.NEW_ARCHIVE_NAME );
-			
-			try {
-				archiveId = user.createArchive( request.getArchiveName() );
-			} catch (IOException | JDOMException | ParseException
-					| CombineArchiveException | TransformerException e) {
-				
-				LOGGER.error(e, "Cannot create new archive");
-				return buildTextErrorResponse(400, user, "Cannot create new archive", e.getMessage() );
-			}
-		}
-		
+
 		try ( Archive archive = user.getArchive(archiveId) ) {
 			// TODO quota
-			
+
 			// set own VCard
 			if( request.isOwnVCard() ) {
 				setOwnVCard(user, request, archive);
 			}
-			
+
 			try {
 				// import additional files
 				if( request.getAdditionalFiles() != null && request.getAdditionalFiles().size() > 0 ) {
@@ -304,9 +262,9 @@ public class ShareApi extends RestHelper {
 				user.deleteArchiveSilent(archiveId);
 				return buildTextErrorResponse(507, user, e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : null );
 			}
-			
+
 			archive.getArchive().pack();
-			
+
 		} catch (IOException | CombineArchiveWebException e) {
 			LOGGER.error(e, "Cannot open newly created archive");
 			user.deleteArchiveSilent(archiveId);
@@ -320,17 +278,17 @@ public class ShareApi extends RestHelper {
 			user.deleteArchiveSilent(archiveId);
 			return buildTextErrorResponse(500, user, "Something went wrong while packing the archive");
 		}
-		
+
 		// redirect to workspace
 		return buildResponse(302, user).entity(archiveId + "\n" + request.getArchiveName()).location( generateRedirectUri(requestContext, archiveId) ).build();
 	}
-	
+
 	@POST
 	@Path( "/import" )
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
 	public Response uploadArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, @Context HttpServletRequest requestContext,
-									@FormDataParam("request") String serializedRequest, @FormDataParam("archive") FormDataBodyPart archiveFile, @FormDataParam("additionalFile") List<FormDataBodyPart> additionalFiles ) {
+			@FormDataParam("request") String serializedRequest, @FormDataParam("archive") FormDataBodyPart archiveFile, @FormDataParam("additionalFile") List<FormDataBodyPart> additionalFiles ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -341,38 +299,104 @@ public class ShareApi extends RestHelper {
 			LOGGER.error(e, "Cannot create user");
 			return buildTextErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
-		
+
 		ImportRequest request = null;
 		try {
-			
+
 			ObjectMapper mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
 			request = mapper.readValue(serializedRequest, ImportRequest.class);
-			
+
 			if( request == null ) {
 				LOGGER.error("Cannot deserialize import request");
 				return buildTextErrorResponse(500, user, "Cannot deserialize import request");
 			}
 			else if( request.isValid() == false )
 				return buildTextErrorResponse(400, user, "import request is not set properly");
-			
+
 		} catch (IOException e) {
 			LOGGER.error(e, "Cannot deserialize import request");
 			return buildTextErrorResponse(500, user, "Cannot deserialize import request", e.getMessage());
 		}
-		
+
 		// check maximum archives
 		if( Tools.checkQuota( user.getWorkspace().getArchives().size(), Fields.QUOTA_ARCHIVE_LIMIT) == false ) {
 			LOGGER.warn("QUOTA_ARCHIVE_LIMIT reached in workspace ", user.getWorkspaceId());
 			return buildTextErrorResponse(507, user, "Maximum number of archives in one workspace reached!");
 		}
+		
+		String archiveId = null;
+		try {
+			// only perform import/creation, when no archive is provided via post
+			if( archiveFile == null )
+				archiveId = importOrCreateArchive(user, request);
+			else {
 				
+			}
+		} catch (ImporterException e) {
+			return buildTextErrorResponse(400, user, e.getMessage(), e.getCause().getMessage());
+		}
+
 		return null;
 	}
-	
+
+	private String importOrCreateArchive( UserManager user, ImportRequest request ) throws ImporterException {
+		
+		String archiveId = null;
+		
+		// try to import (if requested)
+		if( request.isArchiveImport() ) {
+			Importer importer = null;
+			try {
+
+				importer = Importer.getImporter(request.getType(), request.getRemoteUrl(), user);
+				importer.importRepo();
+
+				if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
+					request.setArchiveName( importer.getSuggestedName() );
+
+				// add archive to workspace
+				archiveId = user.createArchive( request.getArchiveName(), importer.getTempFile() );
+
+			} catch (ImporterException e) {
+				LOGGER.warn(e, "Cannot import remote archive!");
+				throw new ImporterException("Cannot import remote archive", e);
+			} catch (IOException | JDOMException | ParseException
+					| CombineArchiveException | TransformerException e) {
+
+				LOGGER.error(e, "Cannot read downloaded archive");
+				throw new ImporterException("Cannot read downlaoded archive. URL: " + request.getRemoteUrl(), e);
+			} finally {
+				if( importer != null && importer.getTempFile() != null && importer.getTempFile().exists() )
+					importer.getTempFile().delete();
+
+				importer.close();
+			}
+		}
+		else {
+			// just create an empty archive
+
+			// set default name, if necessary
+			if( request.getArchiveName() == null || request.getArchiveName().isEmpty() )
+				request.setArchiveName( Fields.NEW_ARCHIVE_NAME );
+
+			try {
+				archiveId = user.createArchive( request.getArchiveName() );
+			} catch (IOException | JDOMException | ParseException
+					| CombineArchiveException | TransformerException e) {
+
+				LOGGER.error(e, "Cannot create new archive");
+				throw new ImporterException("Cannot create new archive.", e);
+			}
+		}
+		
+		return archiveId;
+
+	}
+
 	private void setOwnVCard( UserManager user, ImportRequest request, Archive archive ) throws ImporterException {
-		
+
 		VCard vcard = request.getVcard();
-		
+
 		// check if any VCard info is available
 		// (either from cookies of from the request it self)
 		if( vcard == null ) {
@@ -381,7 +405,7 @@ public class ShareApi extends RestHelper {
 			else 
 				throw new ImporterException("No vcard information provided for archive annotation");
 		}
-		
+
 		// get root element
 		ArchiveEntryDataholder root = archive.getEntries().get("/");
 		if( root != null ) {
@@ -392,7 +416,7 @@ public class ShareApi extends RestHelper {
 					omexMeta = (OmexMetaObjectDataholder) meta;
 					break;
 				}
-			
+
 			if( omexMeta != null ) {
 				// if there is already an omex entry,
 				// just add our VCard and add a modified date
@@ -405,33 +429,33 @@ public class ShareApi extends RestHelper {
 				omexMeta.setCreators( new ArrayList<VCard>(1) );
 				omexMeta.setModified( new ArrayList<Date>(1) );
 				omexMeta.setCreated( new Date() );
-				
+
 				omexMeta.getCreators().add(vcard);
 				omexMeta.getModified().add( new Date() );
-				
+
 				root.addMetaEntry(omexMeta);
 			}
 		}
 	}
-	
+
 	private void addAdditionalFiles( UserManager user, ImportRequest request, Archive archive ) throws ImporterException {
-		
+
 		for( ImportRequest.AdditionalFile addFile : request.getAdditionalFiles() ) {
 			java.nio.file.Path temp = null;
 			try {
 				URL remoteUrl = new URL( addFile.getRemoteUrl() );
-				
+
 				// copy the stream to a temp file
 				temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, FilenameUtils.getBaseName(remoteUrl.toString()) );
 				// write file to disk
 				OutputStream output = new FileOutputStream( temp.toFile() );
 				InputStream input = remoteUrl.openStream();
 				long downloadedFileSize = IOUtils.copy( input, output );
-				
+
 				output.flush();
 				output.close();
 				input.close();
-				
+
 				// quota stuff
 				// max size for upload
 				if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(downloadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
@@ -453,27 +477,27 @@ public class ShareApi extends RestHelper {
 					LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
 					throw new ImporterException("The maximum size is reached, while adding " + addFile.getRemoteUrl());
 				}
-				
+
 				String path = addFile.getArchivePath();
 				if( path == null || path.isEmpty() )
 					path = FilenameUtils.getBaseName( remoteUrl.toString() );
 				// remove leading slash
 				if( path.startsWith("/") )
 					path = path.substring(1);
-				
+
 				// add it
 				ArchiveEntry entry = archive.addArchiveEntry(path, temp, ReplaceStrategy.RENAME);
-				
+
 				// set file format uri
 				if( addFile.getFileFormat() != null )
 					entry.setFormat( addFile.getFileFormat() );
-				
+
 				// add all meta data objects
 				if( addFile.getMetaData() != null )
 					for( MetaObjectDataholder meta : addFile.getMetaData() ) {
 						entry.addDescription( meta.getCombineArchiveMetaObject() );
 					}
-				
+
 			} catch(IOException | CombineArchiveWebException e) {
 				LOGGER.error(e, "Cannot download an additional file. ", addFile.getRemoteUrl());
 				throw new ImporterException("Cannot download and add an additional file: " + addFile.getRemoteUrl(), e);
@@ -482,9 +506,9 @@ public class ShareApi extends RestHelper {
 					temp.toFile().delete();
 			}
 		}
-		
+
 	}
-	
+
 	private URI generateRedirectUri( HttpServletRequest requestContext, String archiveId ) {
 		URI newLocation = null;
 		try {
@@ -496,13 +520,13 @@ public class ShareApi extends RestHelper {
 			}
 			else
 				newLocation = new URI( "../#archive/" + archiveId );
-			
+
 		} catch (URISyntaxException e) {
 			LOGGER.error(e, "Cannot generate relative URL to main app");
 			return null;
 		}
-		
+
 		return newLocation;
 	}
-	
+
 }

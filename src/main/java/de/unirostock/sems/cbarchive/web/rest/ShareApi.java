@@ -23,12 +23,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -206,9 +207,11 @@ public class ShareApi extends RestHelper {
 
 			importer.close();
 		}
-
+		
 		// redirect to workspace
-		return buildResponse(302, user).entity(archiveId + "\n" + archiveName).location( generateRedirectUri(requestContext, archiveId) ).build();
+		ImportRequest req = new ImportRequest();
+		req.setArchiveName(archiveName);
+		return buildSuccesResponse(user, req, archiveId, requestContext);
 	}
 
 	@POST
@@ -275,14 +278,15 @@ public class ShareApi extends RestHelper {
 			user.deleteArchiveSilent(archiveId);
 			return buildTextErrorResponse(500, user, "Something went wrong while packing the archive");
 		}
-
+		
+		
 		// redirect to workspace
-		return buildResponse(302, user).entity(archiveId + "\n" + request.getArchiveName()).location( generateRedirectUri(requestContext, archiveId) ).build();
+		return buildSuccesResponse(user, request, archiveId, requestContext);
 	}
 
 	@POST
 	@Path( "/import" )
-	@Produces( MediaType.APPLICATION_JSON )
+	@Produces( MediaType.TEXT_PLAIN )
 	@Consumes( MediaType.MULTIPART_FORM_DATA )
 	public Response uploadArchive( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, @Context HttpServletRequest requestContext,
 			@FormDataParam("request") String serializedRequest, @FormDataParam("archive") FormDataBodyPart archiveFile, @FormDataParam("additionalFile") List<FormDataBodyPart> additionalFiles ) {
@@ -298,9 +302,10 @@ public class ShareApi extends RestHelper {
 		}
 
 		ImportRequest request = null;
+		ObjectMapper mapper = null;
 		try {
 
-			ObjectMapper mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
+			mapper = ((ObjectMapperProvider) providers.getContextResolver(ObjectMapper.class, MediaType.WILDCARD_TYPE)).getContext( null );
 			request = mapper.readValue(serializedRequest, ImportRequest.class);
 
 			if( request == null ) {
@@ -360,9 +365,9 @@ public class ShareApi extends RestHelper {
 			user.deleteArchiveSilent(archiveId);
 			return buildTextErrorResponse(500, user, "Something went wrong while packing the archive");
 		}
-
+		
 		// redirect to workspace
-		return buildResponse(302, user).entity(archiveId + "\n" + request.getArchiveName()).location( generateRedirectUri(requestContext, archiveId) ).build();
+		return buildSuccesResponse(user, request, archiveId, requestContext);
 	}
 
 	private String importOrCreateArchive( UserManager user, ImportRequest request, FormDataBodyPart archiveFile ) throws ImporterException {
@@ -516,21 +521,21 @@ public class ShareApi extends RestHelper {
 		for( ImportRequest.AdditionalFile addFile : request.getAdditionalFiles() ) {
 			java.nio.file.Path temp = null;
 			try {
-				URL remoteUrl = new URL( addFile.getRemoteUrl() );
+				URI remoteUri = new URI( addFile.getRemoteUrl() );
 
 				// copy the stream to a temp file
-				temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, FilenameUtils.getBaseName(remoteUrl.toString()) );
+				temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, FilenameUtils.getBaseName(remoteUri.toString()) );
 				// write file to disk
 				OutputStream output = new FileOutputStream( temp.toFile() );
 				InputStream input = null;
 				
-				String protocol = remoteUrl.getProtocol().toLowerCase();
+				String protocol = remoteUri.getScheme().toLowerCase();
 				if( protocol.equals("http") || protocol.equals("https") ) {
-					input = remoteUrl.openStream();
+					input = remoteUri.toURL().openStream();
 				}
 				else if( protocol.equals("post") && uploadedFiles != null && uploadedFiles.size() > 0 ) {
 					// use a file from the post
-					String fileName = remoteUrl.getPath();
+					String fileName = remoteUri.getAuthority();
 					for( FormDataBodyPart file : uploadedFiles ) {
 						if( file.getFormDataContentDisposition().getFileName().equals(fileName) ) {
 							input = file.getEntityAs(InputStream.class);
@@ -539,10 +544,10 @@ public class ShareApi extends RestHelper {
 					}
 				}
 				else
-					throw new ImporterException("Unknown protocol " + protocol + " while adding "  + remoteUrl.toString());
+					throw new ImporterException("Unknown protocol " + protocol + " while adding "  + remoteUri.toString());
 				
 				if( input == null )
-					throw new ImporterException("Cannot open stream to import file: " + remoteUrl.toString());
+					throw new ImporterException("Cannot open stream to import file: " + remoteUri.toString());
 				
 				long downloadedFileSize = IOUtils.copy( input, output );
 
@@ -574,7 +579,7 @@ public class ShareApi extends RestHelper {
 
 				String path = addFile.getArchivePath();
 				if( path == null || path.isEmpty() )
-					path = FilenameUtils.getBaseName( remoteUrl.toString() );
+					path = FilenameUtils.getBaseName( remoteUri.toString() );
 				// remove leading slash
 				if( path.startsWith("/") )
 					path = path.substring(1);
@@ -592,6 +597,9 @@ public class ShareApi extends RestHelper {
 						entry.addDescription( meta.getCombineArchiveMetaObject() );
 					}
 
+			} catch (URISyntaxException e) {
+				LOGGER.error(e, "Wrong defined remoteUrl");
+				throw new ImporterException("Cannot parse remote URL: " + addFile.getRemoteUrl(), e);
 			} catch(IOException | CombineArchiveWebException e) {
 				LOGGER.error(e, "Cannot download an additional file. ", addFile.getRemoteUrl());
 				throw new ImporterException("Cannot download and add an additional file: " + addFile.getRemoteUrl(), e);
@@ -602,25 +610,24 @@ public class ShareApi extends RestHelper {
 		}
 
 	}
-
-	private URI generateRedirectUri( HttpServletRequest requestContext, String archiveId ) {
-		URI newLocation = null;
-		try {
-			if( requestContext != null ) {
-				String uri = requestContext.getRequestURL().toString();
-				uri = uri.substring(0, uri.indexOf("rest/"));
-				LOGGER.info("redirect to ", requestContext.getRequestURL(), " to ", uri);
-				newLocation = new URI( uri + "#archive/" + archiveId );
-			}
-			else
-				newLocation = new URI( "../#archive/" + archiveId );
-
-		} catch (URISyntaxException e) {
-			LOGGER.error(e, "Cannot generate relative URL to main app");
-			return null;
+	
+	private Response buildSuccesResponse( UserManager user, ImportRequest request, String archiveId, HttpServletRequest requestContext ) {
+		
+		Map<String, String> response = new HashMap<String, String>();
+		response.put( "workspaceId", user.getWorkspaceId() );
+		response.put( "shareLink", Tools.generateWorkspaceRedirectUri(requestContext, user.getWorkspaceId()).toString() );
+		response.put( "archiveId", archiveId );
+		response.put( "archiveName", request.getArchiveName() );
+		
+		StringBuilder respString = new StringBuilder();
+		for( String key : response.keySet() ) {
+			respString.append(key);
+			respString.append(": ");
+			respString.append( response.get(key) );
+			respString.append("\n");
 		}
-
-		return newLocation;
+		
+		return buildResponse(302, user).entity( respString.toString() ).location( Tools.generateArchiveRedirectUri(requestContext, archiveId) ).build();
 	}
 
 }

@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -199,4 +201,57 @@ public class Tools
 			return true;
 	}
 	
+	/**
+	 * Generates a redirect URI to an archive
+	 * 
+	 * @param requestContext
+	 * @param archiveId
+	 * @return
+	 */
+	public static URI generateArchiveRedirectUri( HttpServletRequest requestContext, String archiveId ) {
+		URI newLocation = null;
+		try {
+			if( requestContext != null ) {
+				String uri = requestContext.getRequestURL().toString();
+				uri = uri.substring(0, uri.indexOf("rest/"));
+				LOGGER.info("redirect to ", requestContext.getRequestURL(), " to ", uri);
+				newLocation = new URI( uri + "#archive/" + archiveId );
+			}
+			else
+				newLocation = new URI( "../#archive/" + archiveId );
+
+		} catch (URISyntaxException e) {
+			LOGGER.error(e, "Cannot generate relative URL to main app");
+			return null;
+		}
+
+		return newLocation;
+	}
+	
+	/**
+	 * Generates Share URI to a workspace
+	 * 
+	 * @param requestContext
+	 * @param workspaceId
+	 * @return
+	 */
+	public static URI generateWorkspaceRedirectUri( HttpServletRequest requestContext, String workspaceId ) {
+		URI newLocation = null;
+		try {
+			if( requestContext != null ) {
+				String uri = requestContext.getRequestURL().toString();
+				uri = uri.substring(0, uri.indexOf("rest/"));
+				LOGGER.info("redirect to ", requestContext.getRequestURL(), " to ", uri);
+				newLocation = new URI( uri + "rest/share/import/" + workspaceId );
+			}
+			else
+				newLocation = new URI( "../rest/share/import/" + workspaceId );
+
+		} catch (URISyntaxException e) {
+			LOGGER.error(e, "Cannot generate relative URL to main app");
+			return null;
+		}
+
+		return newLocation;
+	}
 }

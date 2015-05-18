@@ -250,6 +250,9 @@ public class WorkspaceManager {
 			output.flush();
 			output.close();
 			
+			// create directories (just in case...)
+			Files.createDirectories( Fields.SETTINGS_FILE.toPath().getParent() );
+			
 			// replace actual settings file, with newly written one
 			Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE );
 			

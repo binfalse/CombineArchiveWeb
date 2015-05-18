@@ -138,6 +138,13 @@ public class Fields {
 			LOGGER.info("Set storage to ", Fields.STORAGE);
 		}
 		
+		// sedML WebTools
+		String sedMlWebTools = context.getInitParameter("SEDML_WEBTOOLS");
+		if( sedMlWebTools != null && sedMlWebTools.isEmpty() == false )
+			Fields.SEDML_WEBTOOLS_URL = sedMlWebTools;
+		else
+			Fields.SEDML_WEBTOOLS_URL = null;
+		
 		// Quotas
 		
 		QUOTA_TOTAL_SIZE		= parseQuotaFromString( context.getInitParameter("QUOTA_TOTAL_SIZE") );

@@ -151,7 +151,7 @@
 			<uniqueVersion>false</uniqueVersion>
 			<id>sems-maven-repository</id>
 			<name>SEMS Maven Release Repository</name>
-			<url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
+			<url>scp://mvn.sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
 			<layout>default</layout>
 		</snapshotRepository>
 
@@ -159,7 +159,7 @@
 			<uniqueVersion>false</uniqueVersion>
 			<id>sems-maven-repository</id>
 			<name>Enterprise Systems Maven Repository</name>
-			<url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>
+			<url>scp://mvn.sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>
 			<layout>default</layout>
 		</repository>
 	</distributionManagement>

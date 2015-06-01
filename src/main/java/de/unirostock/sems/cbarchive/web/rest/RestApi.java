@@ -981,7 +981,7 @@ public class RestApi extends RestHelper {
 				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Cannot delete meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
-				combineArchive.close();
+				archive.close();
 			}
 			
 		} catch (FileNotFoundException | CombineArchiveWebException e) {
@@ -1273,7 +1273,7 @@ public class RestApi extends RestHelper {
 				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Cannot delete meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
 			} finally {
-				combineArchive.close();
+				archive.close();
 			}
 			
 		} catch (CombineArchiveWebException | IOException e) {

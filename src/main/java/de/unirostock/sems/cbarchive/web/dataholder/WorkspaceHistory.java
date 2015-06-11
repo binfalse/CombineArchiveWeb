@@ -138,6 +138,17 @@ public class WorkspaceHistory {
 		throw new CombineArchiveWebException("No such workspace available");
 	}
 	
+	public void removeWorkspaceFromHistory(String workspaceId) {
+		
+		Iterator<Workspace> workspaceIterator = recentWorkspaces.iterator();
+		while( workspaceIterator.hasNext() ) {
+			Workspace elem = workspaceIterator.next();
+			if( elem.getWorkspaceId().equals(workspaceId) )
+				workspaceIterator.remove();
+		}
+		
+	}
+	
 	@JsonIgnore
 	public String toCookieJson() throws JsonProcessingException {
 		

@@ -306,6 +306,57 @@ public class RestApi extends RestHelper {
 		}
 	}
 	
+	@DELETE
+	@Path("/workspaces/{workspace_id}")
+	@Produces( MediaType.TEXT_PLAIN )
+	public Response deleteWorkspace( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @PathParam("workspace_id") String workspaceId ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+			
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			// puts current workspace into history
+			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+				history.getRecentWorkspaces().add( user.getWorkspace() );
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			
+			if( workspaceId == null || workspaceId.isEmpty() )
+				return buildErrorResponse(400, user, "No workspace ID provided");
+			
+			// removes workspace
+			history.removeWorkspaceFromHistory(workspaceId);
+			
+			// removed the current workspace?
+			if( user.getWorkspaceId().equals(workspaceId) ) {
+				String newCurrent = history.getRecentWorkspaces().size() > 0 ? history.getRecentWorkspaces().get(0).getWorkspaceId() : "new-workspace";
+				user = new UserManager(newCurrent);
+			}
+			
+			historyCookie = history.toCookieJson();
+			return buildResponse(200, user)
+					.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+					.entity("ok")
+					.build();
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie " + historyCookie, e.getMessage());
+		}
+	}
+	
 	// --------------------------------------------------------------------------------
 	// own VCard
 	

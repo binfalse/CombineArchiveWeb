@@ -120,6 +120,7 @@
 						</span>
 						<span class="edit-link">
 							<a class="start-history-rename" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Rename]</a>
+							<a class="start-history-delete" data-workspace-id="{{# print(element.workspaceId); }}" href="#">[Delete]</a>
 							<a href="mailto:?subject=Share%20CombineArchiveWeb%20Workspace:%20{{# print(encodeURIComponent( element.name )); }}&body=To%20take%20a%20look%20into%20the%20'{{# print(encodeURIComponent( element.name )); }}'%20Workspace,%20visit%20following%20link:%0D%0A%0D%0A{{# print(encodeURIComponent( baseUrl + 'rest/share/' + element.workspaceId )); }}">[Share]</a>
 						</span>
 					</li>

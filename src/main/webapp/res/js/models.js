@@ -1914,7 +1914,8 @@ var StartView = Backbone.View.extend({
 	},
 	
 	events: {
-		"click .start-history-rename": "renameHistoryEntry"
+		"click .start-history-rename": "renameHistoryEntry",
+		"click .start-history-delete": "deleteHistoryEntry"
 	},
 	
 	getCurrentWorkspace: function() {
@@ -1937,22 +1938,57 @@ var StartView = Backbone.View.extend({
 		
 		workspace.set("name", newName);
 		
-		messageView.removeMessages("workspace-history");
+		messageView.removeMessages("workspace-history-rename");
 		var self = this;
 		workspace.save({}, {
 			success: function(model, response, options) {
 				// everything ok
 				self.render();
-				messageView.success( undefined, "Workspace successfully renamed", "workspace-history" );
+				messageView.success( undefined, "Workspace successfully renamed", "workspace-history-rename" );
 			},
 			error: function(model, response, options) {
 				console.log("error while renaming workspace");
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
 					var text = response.responseJSON.errors;
-					messageView.error( "Cannot rename workspace", text, "workspace-history" );
+					messageView.error( "Cannot rename workspace", text, "workspace-history-rename" );
 				}
 				else
-					messageView.error( "Unknown Error", "Cannot rename workspace", "workspace-history" );
+					messageView.error( "Unknown Error", "Cannot rename workspace", "workspace-history-rename" );
+			}
+		});
+		
+		return false;
+	},
+	deleteHistoryEntry: function(event) {
+		
+		var workspace = this.collection.get( $(event.target).attr("data-workspace-id") );
+		if( workspace == null || workspace == undefined )
+			return false;
+		
+		var dialog = window.confirm("Do you really want to delete workspace '" + workspace.get("name") + "' from your history?");
+		if( dialog != true )
+			return false;
+		
+		messageView.removeMessages("workspace-history-delete");
+		//var self = this;
+		workspace.destroy({
+			dataType: "text",
+			success: function(model, response, options) {
+				// everything ok
+				//self.render();
+				messageView.success( undefined, "Workspace successfully removed from history.", "workspace-history-delete" );
+				
+				// reload page
+				location.reload();
+			},
+			error: function(model, response, options) {
+				console.log("error while removing workspace");
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Cannot remove workspace", text, "workspace-history-delete" );
+				}
+				else
+					messageView.error( "Unknown Error", "Cannot remove workspace", "workspace-history-delete" );
 			}
 		});
 		

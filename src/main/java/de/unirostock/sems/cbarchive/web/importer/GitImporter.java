@@ -273,7 +273,7 @@ public class GitImporter extends Importer {
 			
 			for( File file : fileList ) {
 				// add entry
-				ZipEntry entry = new ZipEntry( file.toPath().relativize(basePath).toString() );
+				ZipEntry entry = new ZipEntry( basePath.relativize(file.toPath()).toString() );
 				zipOutput.putNextEntry(entry);
 				
 				// copy data
@@ -300,7 +300,7 @@ public class GitImporter extends Importer {
 		if( node.isFile() ) {
 			fileList.add(node);
 		}
-		else if( node.isDirectory() ) {
+		else if( node.isDirectory() && !(node.getName().equals(".") || node.getName().equals("..")) ) {
 			// node is a directory -> dive into
 			String[] subNode = node.list();
 			for( String name : subNode ) {

@@ -1,8 +1,11 @@
 package de.unirostock.sems.cbarchive.web.importer;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.ParseException;
@@ -13,6 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.transform.TransformerException;
 
@@ -69,7 +74,19 @@ public class GitImporter extends Importer {
 			remoteUrl = processNzRepoLink( remoteUrl );
 		
 		cloneGit();
-		buildArchive();
+		
+		// check for existing manifest.xml
+		File manifest = new File(tempDir, "manifest.xml");
+		if( manifest.exists() && manifest.length() > 0 ) {
+			// there is a manifest.xml
+			// -> zip it and check if valid CombineArchive
+			zipArchive();
+		}
+		else {
+			// no manifest.xml found
+			// -> build Archive from scratch
+			buildArchive();
+		}
 		
 		return this;
 	}
@@ -196,6 +213,101 @@ public class GitImporter extends Importer {
 					new ArrayList<VCard>( contributors ),
 					modified, created
 				);
+	}
+	
+	private void zipArchive() throws ImporterException {
+		
+		try {
+			tempFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, ".omex");
+			tempFile.delete(); // delete tmp file, if it exists already
+			
+			// do it!
+			zipIt(tempFile, tempDir);
+			
+			// try to open it as CA
+			CombineArchive archive = null;
+			try {
+				archive = new CombineArchive(tempFile, true);
+				// check for errors
+				if( archive.hasErrors() ) {
+					List<String> errors = archive.getErrors();
+					StringBuilder errorString = new StringBuilder("Errors while parsing the manifest.xml:\n");
+					for( String error : errors ) {
+						errorString.append("- ");
+						errorString.append(error);
+						errorString.append("\n");
+					}
+					LOGGER.warn( errorString.toString() );
+					throw new ImporterException( errorString.toString() );
+				}
+				
+			} catch (IOException | JDOMException | ParseException | CombineArchiveException e) {
+				LOGGER.error(e, "Cannot open zipped CombineArchive!");
+				throw new ImporterException("Cannot open zipped CombineArchive!", e);
+			} finally {
+				if( archive != null )
+					archive.close();
+			}
+			
+		} catch(IOException e) {
+			LOGGER.error(e, "IOException while build CombineArchive from Git Repository");
+			throw new ImporterException(e);
+		}
+		
+	}
+	
+	private void zipIt(File output, File baseDir) throws ImporterException {
+		
+		Path basePath = baseDir.toPath();
+		List<File> fileList = new LinkedList<File>();
+		OutputStream fileOutput = null;
+		ZipOutputStream zipOutput = null;
+		
+		try {
+			// list directory content
+			generateFileList(baseDir, fileList);
+			
+			// prepare output streams
+			fileOutput = new FileOutputStream(output);
+			zipOutput = new ZipOutputStream(fileOutput);
+			
+			for( File file : fileList ) {
+				// add entry
+				ZipEntry entry = new ZipEntry( file.toPath().relativize(basePath).toString() );
+				zipOutput.putNextEntry(entry);
+				
+				// copy data
+				InputStream entryInput = new FileInputStream(file);
+				IOUtils.copy(entryInput, zipOutput);
+				
+				entryInput.close();
+				zipOutput.closeEntry();
+			}
+			
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot zip folder");
+			throw new ImporterException("Cannot zip folder", e);
+		} finally {
+			IOUtils.closeQuietly(zipOutput);
+			IOUtils.closeQuietly(fileOutput);
+		}
+		
+	}
+	
+	private void generateFileList(File node, List<File> fileList) {
+		
+		// node is a file -> just add it
+		if( node.isFile() ) {
+			fileList.add(node);
+		}
+		else if( node.isDirectory() ) {
+			// node is a directory -> dive into
+			String[] subNode = node.list();
+			for( String name : subNode ) {
+				generateFileList( new File(node, name), fileList );
+			}
+		}
+		
 	}
 	
 	private String processNzRepoLink (String link) throws ImporterException {

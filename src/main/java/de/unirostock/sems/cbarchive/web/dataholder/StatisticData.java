@@ -15,39 +15,42 @@ public class StatisticData implements Serializable, Cloneable {
 	public static final long IGNORE_LONG = -1L;
 	
 	/** total number of workspaces hosted on this instance */
-	private long workspaceCount = IGNORE_LONG;
+	private long totalWorkspaceCount = IGNORE_LONG;
 	/** total size in bytes of all workspaces combined */
 	private long totalSize = IGNORE_LONG;
+	/** total number of archives hosted on this instance */
+	private long totalArchiveCount = IGNORE_LONG;
 	/** average size per workspace */
-	private double sizePerWorkspace = IGNORE_DOUBLE;
+	private double averageWorkspaceSize = IGNORE_DOUBLE;
 	/** average amount of archives per workspace */
-	private double archivesPerWorkspace = IGNORE_DOUBLE;
+	private double averageArchiveCount = IGNORE_DOUBLE;
 	/** average age of the workspaces in seconds */
-	private double avgWorkspaceAge = IGNORE_DOUBLE;
+	private double averageWorkspaceAge = IGNORE_DOUBLE;
 	
 	/** relative usage of the total size quota (0.0 - 1.0) */
-	private double totalQuota = IGNORE_DOUBLE;
+	private double totalSizeQuota = IGNORE_DOUBLE;
 	/** average usage of space per Workspace quota (0.0 - 1.0) */
-	private double avgWorkspaceSizeQuota = IGNORE_DOUBLE;
+	private double averageWorkspaceSizeQuota = IGNORE_DOUBLE;
 	/** average usage of archives per workspace (0.0 - 1.0) */
-	private double avgArchiveCountQuota = IGNORE_DOUBLE;
+	private double averageArchiveCountQuota = IGNORE_DOUBLE;
 	
+	// user stats
 	/** relative usage of space for the current workspace (0.0 - 1.0) */
-	private double workspaceSizeQuota = IGNORE_DOUBLE;
+	private double userWorkspaceSizeQuota = IGNORE_DOUBLE;
 	/** relative usage of archives per workspace quota (0.0 - 1.0) */
-	private double archiveCountQuota = IGNORE_DOUBLE;
+	private double userArchiveCountQuota = IGNORE_DOUBLE;
 	
 	/** Timestamp of generation */
 	private Date generated = new Date();
 	
 	public StatisticData() {}
-
-	public long getWorkspaceCount() {
-		return workspaceCount;
+	
+	public long getTotalWorkspaceCount() {
+		return totalWorkspaceCount;
 	}
 
-	public void setWorkspaceCount(long workspaceCount) {
-		this.workspaceCount = workspaceCount;
+	public void setTotalWorkspaceCount(long totalWorkspaceCount) {
+		this.totalWorkspaceCount = totalWorkspaceCount;
 	}
 
 	public long getTotalSize() {
@@ -58,60 +61,68 @@ public class StatisticData implements Serializable, Cloneable {
 		this.totalSize = totalSize;
 	}
 
-	public double getSizePerWorkspace() {
-		return sizePerWorkspace;
+	public double getAverageWorkspaceSize() {
+		return averageWorkspaceSize;
 	}
 
-	public void setSizePerWorkspace(double sizePerWorkspace) {
-		this.sizePerWorkspace = sizePerWorkspace;
+	public void setAverageWorkspaceSize(double averageWorkspaceSize) {
+		this.averageWorkspaceSize = averageWorkspaceSize;
 	}
 
-	public double getTotalQuota() {
-		return totalQuota;
+	public double getAverageArchiveCount() {
+		return averageArchiveCount;
 	}
 
-	public void setTotalQuota(double totalQuota) {
-		this.totalQuota = totalQuota;
+	public void setAverageArchiveCount(double averageArchiveCount) {
+		this.averageArchiveCount = averageArchiveCount;
 	}
 
-	public double getAvgWorkspaceSizeQuota() {
-		return avgWorkspaceSizeQuota;
+	public double getAverageWorkspaceAge() {
+		return averageWorkspaceAge;
 	}
 
-	public void setAvgWorkspaceSizeQuota(double avgWorkspaceSizeQuota) {
-		this.avgWorkspaceSizeQuota = avgWorkspaceSizeQuota;
+	public void setAverageWorkspaceAge(double averageWorkspaceAge) {
+		this.averageWorkspaceAge = averageWorkspaceAge;
 	}
 
-	public double getAvgArchiveCountQuota() {
-		return avgArchiveCountQuota;
+	public double getTotalSizeQuota() {
+		return totalSizeQuota;
 	}
 
-	public void setAvgArchiveCountQuota(double avgArchiveCountQuota) {
-		this.avgArchiveCountQuota = avgArchiveCountQuota;
+	public void setTotalSizeQuota(double totalSizeQuota) {
+		this.totalSizeQuota = totalSizeQuota;
 	}
 
-	public double getAvgWorkspaceAge() {
-		return avgWorkspaceAge;
+	public double getAverageWorkspaceSizeQuota() {
+		return averageWorkspaceSizeQuota;
 	}
 
-	public void setAvgWorkspaceAge(double d) {
-		this.avgWorkspaceAge = d;
+	public void setAverageWorkspaceSizeQuota(double averageWorkspaceSizeQuota) {
+		this.averageWorkspaceSizeQuota = averageWorkspaceSizeQuota;
 	}
 
-	public double getWorkspaceSizeQuota() {
-		return workspaceSizeQuota;
+	public double getAverageArchiveCountQuota() {
+		return averageArchiveCountQuota;
 	}
 
-	public void setWorkspaceSizeQuota(double workspaceSizeQuota) {
-		this.workspaceSizeQuota = workspaceSizeQuota;
+	public void setAverageArchiveCountQuota(double averageArchiveCountQuota) {
+		this.averageArchiveCountQuota = averageArchiveCountQuota;
 	}
 
-	public double getArchiveCountQuota() {
-		return archiveCountQuota;
+	public double getUserWorkspaceSizeQuota() {
+		return userWorkspaceSizeQuota;
 	}
 
-	public void setArchiveCountQuota(double archiveCountQuota) {
-		this.archiveCountQuota = archiveCountQuota;
+	public void setUserWorkspaceSizeQuota(double userWorkspaceSizeQuota) {
+		this.userWorkspaceSizeQuota = userWorkspaceSizeQuota;
+	}
+
+	public double getUserArchiveCountQuota() {
+		return userArchiveCountQuota;
+	}
+
+	public void setUserArchiveCountQuota(double userArchiveCountQuota) {
+		this.userArchiveCountQuota = userArchiveCountQuota;
 	}
 
 	public Date getGenerated() {
@@ -121,29 +132,30 @@ public class StatisticData implements Serializable, Cloneable {
 	public void setGenerated(Date generated) {
 		this.generated = generated;
 	}
-
-	public double getArchivesPerWorkspace() {
-		return archivesPerWorkspace;
-	}
-
-	public void setArchivesPerWorkspace(double archivesPerWorkspace) {
-		this.archivesPerWorkspace = archivesPerWorkspace;
-	}
 	
+	public long getTotalArchiveCount() {
+		return totalArchiveCount;
+	}
+
+	public void setTotalArchiveCount(long totalArchiveCount) {
+		this.totalArchiveCount = totalArchiveCount;
+	}
+
 	@Override
 	public StatisticData clone() {
 		StatisticData clone = new StatisticData();
 		
-		clone.archiveCountQuota = archiveCountQuota;
-		clone.archivesPerWorkspace = clone.archivesPerWorkspace;
-		clone.avgArchiveCountQuota = avgArchiveCountQuota;
-		clone.avgWorkspaceAge = avgWorkspaceAge;
-		clone.avgWorkspaceSizeQuota = avgWorkspaceSizeQuota;
-		clone.sizePerWorkspace = sizePerWorkspace;
-		clone.totalQuota = totalQuota;
+		clone.userArchiveCountQuota = userArchiveCountQuota;
+		clone.averageArchiveCount = averageArchiveCount;
+		clone.averageArchiveCountQuota = averageArchiveCountQuota;
+		clone.averageWorkspaceAge = averageWorkspaceAge;
+		clone.averageWorkspaceSizeQuota = averageWorkspaceSizeQuota;
+		clone.averageWorkspaceSize = averageWorkspaceSize;
+		clone.totalSizeQuota = totalSizeQuota;
 		clone.totalSize = totalSize;
-		clone.workspaceCount = workspaceCount;
-		clone.workspaceSizeQuota = workspaceSizeQuota;
+		clone.totalWorkspaceCount = totalWorkspaceCount;
+		clone.totalArchiveCount = totalArchiveCount;
+		clone.userWorkspaceSizeQuota = userWorkspaceSizeQuota;
 		
 		clone.generated = new Date(generated.getTime());
 		

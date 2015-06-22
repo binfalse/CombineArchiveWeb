@@ -131,9 +131,9 @@ public class QuotaManager {
 		if( user != null ) {
 			// add user stats
 			if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED )
-				stats.setWorkspaceSizeQuota( (double) Fields.QUOTA_WORKSPACE_SIZE / (double) getWorkspaceSize( user.getWorkspace() ) );
+				stats.setUserWorkspaceSizeQuota( (double) getWorkspaceSize( user.getWorkspace() ) / (double) Fields.QUOTA_WORKSPACE_SIZE );
 			if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED)
-				stats.setArchiveCountQuota( (double) Fields.QUOTA_ARCHIVE_LIMIT / (double) user.getArchives().size() );
+				stats.setUserArchiveCountQuota( (double) user.getArchives().size() / (double) Fields.QUOTA_ARCHIVE_LIMIT );
 		}
 		
 		return stats;
@@ -257,17 +257,18 @@ public class QuotaManager {
 			stats.setGenerated(now);
 			
 			stats.setTotalSize(totalSize);
-			stats.setWorkspaceCount(workspaceCount);
-			stats.setSizePerWorkspace( (double) totalSize / (double) workspaceCount );
-			stats.setArchivesPerWorkspace( (double) totalArchiveCount / (double) workspaceCount );
-			stats.setAvgWorkspaceAge( (double) totalWorkspaceAge / (double) workspaceCount );
+			stats.setTotalWorkspaceCount(workspaceCount);
+			stats.setTotalArchiveCount(totalArchiveCount);
+			stats.setAverageWorkspaceSize( (double) totalSize / (double) workspaceCount );
+			stats.setAverageArchiveCount( (double) totalArchiveCount / (double) workspaceCount );
+			stats.setAverageWorkspaceAge( (double) totalWorkspaceAge / (double) workspaceCount );
 			
 			if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED )
-				stats.setAvgWorkspaceSizeQuota( (double) Fields.QUOTA_WORKSPACE_SIZE / stats.getSizePerWorkspace() );
+				stats.setAverageWorkspaceSizeQuota( stats.getAverageWorkspaceSize() / (double) Fields.QUOTA_WORKSPACE_SIZE );
 			if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED )
-				stats.setTotalQuota( (double) Fields.QUOTA_TOTAL_SIZE / (double) totalSize );
+				stats.setTotalSizeQuota( (double) totalSize / (double) Fields.QUOTA_TOTAL_SIZE );
 			if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED )
-				stats.setAvgArchiveCountQuota( (double) Fields.QUOTA_ARCHIVE_LIMIT / stats.getArchivesPerWorkspace() );
+				stats.setAverageArchiveCountQuota( stats.getAverageArchiveCount() / (double) Fields.QUOTA_ARCHIVE_LIMIT );
 			
 			// tranfer the results to the main class
 			quotaManager.workspaceCache = cache;

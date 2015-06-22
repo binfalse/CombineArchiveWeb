@@ -75,6 +75,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
+import de.unirostock.sems.cbarchive.web.dataholder.StatisticData;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
@@ -171,6 +172,23 @@ public class RestApi extends RestHelper {
 		
 		String result = "ok";
 		return buildResponse(200, user).entity(result).build();
+	}
+	
+	@GET
+	@Path("/stats")
+	@Produces( MediaType.APPLICATION_JSON )
+	public Response getStats( @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		StatisticData stats = QuotaManager.getInstance().getUserStats(user);
+		return buildResponse(200, user).entity(stats).build();
 	}
 	
 	@GET

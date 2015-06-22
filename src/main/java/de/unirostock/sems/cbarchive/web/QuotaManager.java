@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -78,8 +79,9 @@ public class QuotaManager {
 	 */
 	public void forceAsyncScan( boolean storeSettingsAfterwards ) {
 		
-		if( workerThread == null || workerThread.isAlive() == false ) {
+		if( (workerThread == null || workerThread.isAlive() == false) && workerLock.tryLock() ) {
 			workerThread = new Thread( new Worker(this, storeSettingsAfterwards) );
+			workerLock.unlock();
 			workerThread.start();
 		}
 		
@@ -141,17 +143,16 @@ public class QuotaManager {
 	
 	private void generateStats() {
 		
-		if( (workerThread == null || workerThread.isAlive() == false) && workerLock.tryLock() ) {
-			workerThread = new Thread( new Worker(this, true) );
-			workerLock.unlock();
-			workerThread.start();
-		}
+		// start new thread
+		forceAsyncScan(false);
 		
 		// wait for the thread to finish
-		while( workerThread.isAlive() ) {
-			workerLock.lock();
-		}
-		workerLock.unlock();
+		try {
+			if( workerThread.isAlive() ) {
+				if( workerLock.tryLock(workerExecutionTime * 4, TimeUnit.MILLISECONDS) )
+					workerLock.unlock();
+			}
+		} catch (InterruptedException e) {}
 	}
 	
 	/**
@@ -280,10 +281,9 @@ public class QuotaManager {
 			if( storeSettings )
 				quotaManager.workspaceManager.storeSettings();
 			
-			LOGGER.info("finished full quota scan");
-			
 			// save duration of execution
 			quotaManager.workerExecutionTime = new Date().getTime() - startTime;
+			LOGGER.info("finished full quota scan in ", quotaManager.workerExecutionTime, "ms");
 			// give dobby a sock
 			quotaManager.workerLock.unlock();
 		}

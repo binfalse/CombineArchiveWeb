@@ -26,6 +26,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.web.dataholder.StatisticData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
 
 public class QuotaManager {
@@ -49,6 +50,12 @@ public class QuotaManager {
 	protected Map<String, Long> workspaceCache = new HashMap<String, Long>();
 	protected WorkspaceManager workspaceManager = null;
 	protected long totalSize = 0L;
+	
+	protected Thread workerThread = null;
+	protected long workerExecutionTime = 0L;
+	
+	protected StatisticData stats = null;
+	protected Date statsTimestamp = null;
 
 	private QuotaManager() {
 
@@ -71,7 +78,10 @@ public class QuotaManager {
 	 */
 	public void forceAsyncScan( boolean storeSettingsAfterwards ) {
 		
-		new Thread( new Worker(this, storeSettingsAfterwards) ).start();
+		if( workerThread == null || workerThread.isAlive() == false ) {
+			workerThread = new Thread( new Worker(this, storeSettingsAfterwards) );
+			workerThread.start();
+		}
 		
 	}
 	
@@ -103,7 +113,33 @@ public class QuotaManager {
 		else
 			return updateWorkspace( workspace );
 	}
-
+	
+	public StatisticData getStats() {
+		
+		// if cache is ok
+		if( stats != null && statsTimestamp != null && (new Date().getTime() - statsTimestamp.getTime() + workerExecutionTime)/1000 < Fields.MAX_STATS_AGE )
+			return stats;
+		else {
+			generateStats();
+			return stats;
+		}
+	}
+	
+	private void generateStats() {
+		
+		if( (workerThread == null || workerThread.isAlive() == false) && workerLock.tryLock() ) {
+			workerThread = new Thread( new Worker(this, true) );
+			workerLock.unlock();
+			workerThread.start();
+		}
+		
+		// wait for the thread to finish
+		while( workerThread.isAlive() ) {
+			workerLock.lock();
+		}
+		workerLock.unlock();
+	}
+	
 	/**
 	 * Updates the size of the workspace
 	 * @param workspace
@@ -170,6 +206,7 @@ public class QuotaManager {
 		
 		@Override
 		public void run() {
+			long startTime = new Date().getTime();
 			
 			// runs only once per time
 			if( quotaManager.workerLock.tryLock() == false )
@@ -178,29 +215,60 @@ public class QuotaManager {
 			LOGGER.info("start full quota scan");
 			
 			// scan all workspaces
-			long totalSize = 0;
-			long size = 0;
+			long totalSize = 0L;
+			long totalArchiveCount = 0L;
+			long totalWorkspaceAge = 0L;
+			long workspaceCount = 0L;
 			Map<String, Long> cache = new HashMap<String, Long>();
+			Date now = new Date();
+			long nowTime = now.getTime();
 			
 			// clone collection in order to not get the iterator broken by some manipulations form other threads
 			List<Workspace> collection = new ArrayList<Workspace>( quotaManager.workspaceManager.workspaces.values() ); 
 			for( Workspace workspace : collection ) {
 				
-				size = quotaManager.scanWorkspace(workspace);
-				if( size > 0 )
+				long size = quotaManager.scanWorkspace(workspace);
+				if( size > 0 ) {
 					cache.put( workspace.getWorkspaceId(), size );
-				totalSize += size;
+					
+					totalSize += size;
+					totalArchiveCount += workspace.getArchives().size();
+					totalWorkspaceAge += (nowTime - workspace.getLastseen().getTime())/1000;
+					workspaceCount++;
+				}
 			}
+			
+			// generate stats
+			StatisticData stats = new StatisticData();
+			stats.setGenerated(now);
+			
+			stats.setTotalSize(totalSize);
+			stats.setWorkspaceCount(workspaceCount);
+			stats.setSizePerWorkspace( (double) totalSize / (double) workspaceCount );
+			stats.setArchivesPerWorkspace( (double) totalArchiveCount / (double) workspaceCount );
+			stats.setAvgWorkspaceAge( (double) totalWorkspaceAge / (double) workspaceCount );
+			
+			if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED )
+				stats.setAvgWorkspaceSizeQuota( (double) Fields.QUOTA_WORKSPACE_SIZE / stats.getSizePerWorkspace() );
+			if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED )
+				stats.setTotalQuota( (double) Fields.QUOTA_TOTAL_SIZE / (double) totalSize );
+			if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED )
+				stats.setAvgArchiveCountQuota( (double) Fields.QUOTA_ARCHIVE_LIMIT / stats.getArchivesPerWorkspace() );
 			
 			// tranfer the results to the main class
 			quotaManager.workspaceCache = cache;
 			quotaManager.totalSize = totalSize;
+			quotaManager.stats = stats;
+			quotaManager.statsTimestamp = now;
 			
 			// store settings to disk, if needed
 			if( storeSettings )
 				quotaManager.workspaceManager.storeSettings();
 			
 			LOGGER.info("finished full quota scan");
+			
+			// save duration of execution
+			quotaManager.workerExecutionTime = new Date().getTime() - startTime;
 			// give dobby a sock
 			quotaManager.workerLock.unlock();
 		}

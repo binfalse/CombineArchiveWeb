@@ -75,6 +75,9 @@ public class Fields {
 	
 	/** Link to the sedML WebTools for starting a simulation */
 	public static String SEDML_WEBTOOLS_URL = null;
+	
+	/** max time for caching statistic data */
+	public static long MAX_STATS_AGE = 180;
 
 	// ------------------------------------------------------------------------
 	// Quotas
@@ -145,6 +148,9 @@ public class Fields {
 		else
 			Fields.SEDML_WEBTOOLS_URL = null;
 		
+		// max stats age
+		MAX_STATS_AGE = parseLong( context.getInitParameter("MAX_STATS_AGE"), MAX_STATS_AGE );
+		
 		// Quotas
 		
 		QUOTA_TOTAL_SIZE		= parseQuotaFromString( context.getInitParameter("QUOTA_TOTAL_SIZE") );
@@ -172,15 +178,19 @@ public class Fields {
 	}
 	
 	private static long parseQuotaFromString( String string ) {
+		return parseLong(string, QUOTA_UNLIMITED);
+	}
+	
+	private static long parseLong( String string, long defaultValue ) {
 		
 		if( string == null || string.isEmpty() )
-			return QUOTA_UNLIMITED;
+			return defaultValue;
 		
 		try {
 			return Long.parseLong(string);
 		} catch (NumberFormatException e) {
-			LOGGER.warn("Bad format for quota in the context settings: ", string);
-			return QUOTA_UNLIMITED;
+			LOGGER.warn("Bad number format in the context settings: ", string);
+			return defaultValue;
 		}
 	}
 

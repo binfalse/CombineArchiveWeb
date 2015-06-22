@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_DEFAULT)
-public class StatisticData implements Serializable {
+public class StatisticData implements Serializable, Cloneable {
 	
 	private static final long serialVersionUID = -3935699299597297002L;
 	
@@ -128,6 +128,26 @@ public class StatisticData implements Serializable {
 
 	public void setArchivesPerWorkspace(double archivesPerWorkspace) {
 		this.archivesPerWorkspace = archivesPerWorkspace;
+	}
+	
+	@Override
+	public StatisticData clone() {
+		StatisticData clone = new StatisticData();
+		
+		clone.archiveCountQuota = archiveCountQuota;
+		clone.archivesPerWorkspace = clone.archivesPerWorkspace;
+		clone.avgArchiveCountQuota = avgArchiveCountQuota;
+		clone.avgWorkspaceAge = avgWorkspaceAge;
+		clone.avgWorkspaceSizeQuota = avgWorkspaceSizeQuota;
+		clone.sizePerWorkspace = sizePerWorkspace;
+		clone.totalQuota = totalQuota;
+		clone.totalSize = totalSize;
+		clone.workspaceCount = workspaceCount;
+		clone.workspaceSizeQuota = workspaceSizeQuota;
+		
+		clone.generated = new Date(generated.getTime());
+		
+		return clone;
 	}
 	
 }

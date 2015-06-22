@@ -125,6 +125,20 @@ public class QuotaManager {
 		}
 	}
 	
+	public StatisticData getUserStats(UserManager user) {
+		StatisticData stats = getStats().clone();
+		
+		if( user != null ) {
+			// add user stats
+			if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED )
+				stats.setWorkspaceSizeQuota( (double) Fields.QUOTA_WORKSPACE_SIZE / (double) getWorkspaceSize( user.getWorkspace() ) );
+			if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED)
+				stats.setArchiveCountQuota( (double) Fields.QUOTA_ARCHIVE_LIMIT / (double) user.getArchives().size() );
+		}
+		
+		return stats;
+	}
+	
 	private void generateStats() {
 		
 		if( (workerThread == null || workerThread.isAlive() == false) && workerLock.tryLock() ) {

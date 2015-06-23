@@ -33,6 +33,16 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>MAX_STATS_AGE</param-name>
+		<param-value>180</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>FEEDBACK_URL</param-name>
+		<param-value>https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE</param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>SEDML-WEBTOOLS</param-name>
 		<param-value></param-value>
 	</context-param>

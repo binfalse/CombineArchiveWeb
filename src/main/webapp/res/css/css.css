@@ -112,7 +112,44 @@ div.nav-container
 .error-element {
 	background-color: #FF9696
 }
-
+/* -------- Feedback Button -------- */
+#feedback {
+	display: block;
+	position: fixed;
+	top: 35%;
+	left: 0;
+}
+#feedback a {
+	display: block;
+	width: 22px;
+	height: 81px;
+	padding: 5px;
+	
+	background: no-repeat scroll center #EEE;
+	background-image: url('../feedback.png');
+	border: 2px dashed #555;
+	border-radius: 5px;
+	border-left: none;
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+	
+	text-decoration: none;
+	color: #c00;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+#feedback a:hover {
+	background-color: #c00;
+	background-image: url('../feedback-highlight.png');
+	color: #EEE;
+}
+#feedback span {
+	max-width: 1ch;
+	display: block;
+	word-wrap: break-word;
+	line-height: 0.9em;
+}
+ 
 /* -------- Message Bar -------- */
 #message-bar {
 	width: 100%;

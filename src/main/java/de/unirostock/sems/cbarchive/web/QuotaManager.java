@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -119,12 +118,11 @@ public class QuotaManager {
 	public StatisticData getStats() {
 		
 		// if cache is ok
-		if( stats != null && statsTimestamp != null && (new Date().getTime() - statsTimestamp.getTime() + workerExecutionTime)/1000 < Fields.MAX_STATS_AGE )
-			return stats;
-		else {
+		if( stats == null || statsTimestamp == null || (new Date().getTime() - statsTimestamp.getTime() + workerExecutionTime)/1000 > Fields.MAX_STATS_AGE )
 			generateStats();
-			return stats;
-		}
+		
+		LOGGER.debug( "return stats, generated at ", stats.getGenerated() );
+		return stats;
 	}
 	
 	public StatisticData getUserStats(UserManager user) {
@@ -143,16 +141,19 @@ public class QuotaManager {
 	
 	private void generateStats() {
 		
+		LOGGER.debug( "start generation of new stats, old are generated at: ", stats.getGenerated() );
+		
 		// start new thread
 		forceAsyncScan(false);
 		
 		// wait for the thread to finish
 		try {
-			if( workerThread.isAlive() ) {
-				if( workerLock.tryLock(workerExecutionTime * 4, TimeUnit.MILLISECONDS) )
-					workerLock.unlock();
-			}
-		} catch (InterruptedException e) {}
+			workerThread.join( workerExecutionTime > 5 ? workerExecutionTime * 2 : 250 );
+		} catch (InterruptedException e) {
+			LOGGER.debug(e, "Aborted waiting for background task");
+		}
+		
+		LOGGER.debug( "stop waiting for generation, new stats are from: ", stats.getGenerated() );
 	}
 	
 	/**

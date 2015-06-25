@@ -12,7 +12,11 @@
 	<Parameter name="STORAGE" value="/tmp/CombineArchiveWeb" override="false" />
 	<!-- URL to the SedML WebTools to enable the simulate Link, leave blank to disable -->
 	<Parameter name="SEDML_WEBTOOLS" value="http://bqfbergmann.dyndns.org/SED-ML_Web_Tools/Home/SimulateUrl?url=" override="false" />
-	
+	<!-- max age for stats data in seconds-->
+	<Parameter name="MAX_STATS_AGE" value="10" override="false" />
+	<!-- Feedback Button URL, set to empty value to disable button -->
+<!-- 	<Parameter name="FEEDBACK_URL" value="https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE" override="false" /> -->
+
 	<!-- Quotas -->
 	
 	<!-- Maximum size in bytes of all workspaces together. 0 means unlimited -->

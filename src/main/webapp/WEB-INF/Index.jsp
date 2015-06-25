@@ -62,9 +62,11 @@
 		Internet Explorer. Since we're fighting for open systems and
 		reproducibility we're unwilling to buy and install proprietary
 		software that is nothing but a big bug.</div>
-	<div id="feedback">
-		<a href="https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE" alt="feedback"></a>
-	</div>
+	<% if( Fields.FEEDBACK_URL != null ) { %>
+		<div id="feedback">
+			<a href="<%= Fields.FEEDBACK_URL %>" title="feedback"></a>
+		</div>
+	<% } %>
 	<div id="templates" style="display: none;">
 		<div id="template-navigation">
 			

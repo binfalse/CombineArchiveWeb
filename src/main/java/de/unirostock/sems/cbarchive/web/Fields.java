@@ -78,6 +78,9 @@ public class Fields {
 	
 	/** max time for caching statistic data */
 	public static long MAX_STATS_AGE = 180;
+	
+	/** Link to a feedback form */
+	public static String FEEDBACK_URL = "https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE";
 
 	// ------------------------------------------------------------------------
 	// Quotas
@@ -150,6 +153,15 @@ public class Fields {
 		
 		// max stats age
 		MAX_STATS_AGE = parseLong( context.getInitParameter("MAX_STATS_AGE"), MAX_STATS_AGE );
+		
+		// feedback Url
+		String feedbackUrl = context.getInitParameter("FEEDBACK_URL");
+		if( feedbackUrl != null && feedbackUrl.isEmpty() == true )
+			// disable feedback button
+			Fields.FEEDBACK_URL = null;
+		else if( feedbackUrl != null && feedbackUrl.isEmpty() == false )
+			// set another URL
+			Fields.FEEDBACK_URL = feedbackUrl;
 		
 		// Quotas
 		

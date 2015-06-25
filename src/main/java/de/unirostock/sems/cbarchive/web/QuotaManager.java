@@ -272,6 +272,8 @@ public class QuotaManager {
 			if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED )
 				stats.setAverageArchiveCountQuota( stats.getAverageArchiveCount() / (double) Fields.QUOTA_ARCHIVE_LIMIT );
 			
+			stats.setMaxStatsAge( Fields.MAX_STATS_AGE );
+			
 			// tranfer the results to the main class
 			quotaManager.workspaceCache = cache;
 			quotaManager.totalSize = totalSize;

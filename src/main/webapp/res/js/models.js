@@ -140,6 +140,13 @@ var ArchiveEntryCollection = Backbone.Collection.extend({
 	}
 });
 
+var StatsModel = Backbone.Model.extend({
+	urlRoot: RestRoot + "stats",
+	defaults: {
+		"generated": 0
+	}
+});
+
 // views
 var NavigationView = Backbone.View.extend({
 	
@@ -1874,10 +1881,59 @@ var CreateView = Backbone.View.extend({
 	
 });
 
+var StatsView = Backbone.View.extend({
+	
+	el: null,
+	model: null,
+	
+	initialize: function() {
+		this.template = templateCache["template-stats"];
+		this.model = new StatsModel();
+		this.fetch();
+		
+//		var self = this;
+		//setInterval( function() { self.fetch(); }, 10000 );
+	},
+	render: function() {
+		
+		var json = { "stats": this.model.toJSON() };
+		this.$el.html( this.template(json) );
+		
+		// show if not already is shown
+		if( this.$el.is(":visible") == false )
+			this.$el.fadeIn();
+	},
+	fetch: function() {
+		
+		if( this.model == null )
+			return;
+		
+		var self = this;
+		this.model.fetch({
+			success: function(model, response, options) {
+				self.render();
+				setTimeout( function() { self.fetch(); }, model.has("maxStatsAge") ? (model.get("maxStatsAge")+5) * 1000 : 30000 );
+			},
+			error: function(model, response, options) {
+				self.$el.fadeOut();
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" )
+					console.log("Error while fetching stats: " + response.responseJSON.errors);
+				else
+					console.log("Error while fetching stats!");
+			}
+		});
+		
+	},
+	
+	events: {
+	}
+});
+
 var StartView = Backbone.View.extend({
 	
 	el: "#start-page",
 	collection: null,
+	statsView: null,
 	
 	initialize: function() {
 		this.template = templateCache["template-start"];
@@ -1889,6 +1945,10 @@ var StartView = Backbone.View.extend({
 		
 		var json = { "history": this.collection.toJSON(), "current": current.toJSON(), "baseUrl": this.getBaseUrl() };
 		this.$el.html( this.template(json) );
+		
+		this.statsView = new StatsView({
+			el: this.$el.find(".stats-div")
+		});
 	},
 	fetch: function() {
 		

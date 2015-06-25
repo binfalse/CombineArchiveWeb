@@ -137,7 +137,113 @@
 				This is a web based interface to read, create, modify, and share CombineArchives. <br />
 				<strong>We are not responsible for any loss of data.</strong>
 			</p>
+			
+			<div class="stats-div"></div>
 		</div>
+		<!-- **** -->
+		<div id="template-stats">
+			<h2>Statistics</h2>
+			<div class="stats-par">
+				
+				{{# if( stats.generated != undefined ) { }}
+				<div class="stats-line stat-generated">
+					<div class="attribute-name">timestamp:</div>
+					<div class="attribute-detail">{{# print( new XDate(stats.generated).toLocaleString() ); }}</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+			
+				{{# if( stats.averageArchiveCount != undefined ) { }}
+				<div class="stats-line stat-averageArchiveCount">
+					<div class="attribute-name">average archives per workspace:</div>
+					<div class="attribute-detail">{{# print( Math.round(stats.averageArchiveCount*100)/100 ); }}</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.averageArchiveCountQuota != undefined ) { }}
+				<div class="stats-line stat-averageArchiveCountQuota">
+					<div class="attribute-name">average usage of 'archives per workspace' quota:</div>
+					<div class="attribute-detail">{{# print( Math.round(stats.averageArchiveCountQuota*10000)/100 ); }}%</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.averageWorkspaceAge != undefined ) { }}
+				<div class="stats-line stat-averageWorkspaceAge">
+					<div class="attribute-name">average age of workspace:</div>
+					<div class="attribute-detail">{{# print( Math.round(stats.averageWorkspaceAge*100)/100 ); }} sec</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.averageWorkspaceSize != undefined ) { }}
+				<div class="stats-line stat-averageWorkspaceSize">
+					<div class="attribute-name">average size per workspace:</div>
+					<div class="attribute-detail">{{# print( bytesToSize(Math.round(stats.averageWorkspaceSize*100)/100) ); }}</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.averageWorkspaceSizeQuota != undefined ) { }}
+				<div class="stats-line stat-averageWorkspaceSizeQuota">
+					<div class="attribute-name">average usage of 'size per workspace' quota:</div>
+					<div class="attribute-detail">{{# print( Math.round(stats.averageWorkspaceSizeQuota*10000)/100 ); }}%</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.totalArchiveCount != undefined ) { }}
+				<div class="stats-line stat-totalArchiveCount">
+					<div class="attribute-name">total number of hosted archives:</div>
+					<div class="attribute-detail">{{# print(stats.totalArchiveCount); }}</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.totalSize != undefined ) { }}
+				<div class="stats-line stat-totalSize">
+					<div class="attribute-name">total size of all hosted archives:</div>
+					<div class="attribute-detail">{{# print( bytesToSize(stats.totalSize) ); }}</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.totalSizeQuota != undefined ) { }}
+				<div class="stats-line stat-totalSizeQuota">
+					<div class="attribute-name">usage of 'total size' quota:</div>
+					<div class="attribute-detail">{{# print( Math.round(stats.totalSizeQuota*10000)/100 ); }}%</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.totalWorkspaceCount != undefined ) { }}
+				<div class="stats-line stat-totalWorkspaceCount">
+					<div class="attribute-name">total number of hosted workspaces:</div>
+					<div class="attribute-detail">{{# print(stats.totalWorkspaceCount); }}</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.userArchiveCountQuota != undefined ) { }}
+				<div class="stats-line stat-userArchiveCountQuota">
+					<div class="attribute-name">usage of 'archives per workspace' quota:</div>
+					<div class="attribute-detail">{{# print( Math.round(stats.userArchiveCountQuota*10000)/100 ); }}%</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				{{# if( stats.userWorkspaceSizeQuota != undefined ) { }}
+				<div class="stats-line stat-userWorkspaceSizeQuota">
+					<div class="attribute-name">usage of 'workspace size' quota:</div>
+					<div class="attribute-detail">{{# print( Math.round(stats.userWorkspaceSizeQuota*10000)/100 ); }}%</div>
+					<div class="clearer"></div>
+				</div>
+				{{# } }}
+				
+				<div class="clearer"></div>		
+			</div>
+		</div>		
 		<!-- **** -->
 		<div id="template-create">
 			<h2>MetaData</h2>

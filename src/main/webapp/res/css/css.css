@@ -312,6 +312,17 @@ ul.start-history-list > li.current-workspace {
 /* 	list-style-image: url("listarrow.png"); */
 }
 
+/* -------- Stats View -------- */
+.stats-line .attribute-name {
+	width: calc(65% - 5px);
+}
+.stats-line .attribute-detail {
+	width: calc(35% - 5px);
+}
+.stats-par {
+	margin-bottom: 1.1em;
+}
+
 /* -------- Archive View -------- */
 
 a.jstree-anchor > i.jstree-icon {

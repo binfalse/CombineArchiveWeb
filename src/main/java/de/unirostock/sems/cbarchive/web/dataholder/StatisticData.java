@@ -40,6 +40,9 @@ public class StatisticData implements Serializable, Cloneable {
 	/** relative usage of archives per workspace quota (0.0 - 1.0) */
 	private double userArchiveCountQuota = IGNORE_DOUBLE;
 	
+	// server stuff
+	private long maxStatsAge = IGNORE_LONG;
+	
 	/** Timestamp of generation */
 	private Date generated = new Date();
 	
@@ -140,6 +143,14 @@ public class StatisticData implements Serializable, Cloneable {
 	public void setTotalArchiveCount(long totalArchiveCount) {
 		this.totalArchiveCount = totalArchiveCount;
 	}
+	
+	public long getMaxStatsAge() {
+		return maxStatsAge;
+	}
+
+	public void setMaxStatsAge(long maxStatsAge) {
+		this.maxStatsAge = maxStatsAge;
+	}
 
 	@Override
 	public StatisticData clone() {
@@ -157,6 +168,7 @@ public class StatisticData implements Serializable, Cloneable {
 		clone.totalArchiveCount = totalArchiveCount;
 		clone.userWorkspaceSizeQuota = userWorkspaceSizeQuota;
 		
+		clone.maxStatsAge = maxStatsAge;
 		clone.generated = new Date(generated.getTime());
 		
 		return clone;

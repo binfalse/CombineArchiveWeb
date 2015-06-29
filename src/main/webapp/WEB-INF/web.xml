@@ -43,7 +43,7 @@
 	</context-param>
 	
 	<context-param>
-		<param-name>SEDML-WEBTOOLS</param-name>
+		<param-name>SEDML_WEBTOOLS</param-name>
 		<param-value></param-value>
 	</context-param>
 	

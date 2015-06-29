@@ -3,6 +3,8 @@
 	It can be inserted into the context.xml, but it highly recommended to store it in
 	
 	$CATALINA_BASE/conf/[enginename]/[hostname]/CombineArchiveWeb.xml
+	
+	For further explanation please refer to: http://sems.uni-rostock.de/trac/combinearchive-web/wiki/Config
 -->
 <Context>
 	

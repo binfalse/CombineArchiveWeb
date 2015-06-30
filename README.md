@@ -8,7 +8,7 @@ A demo is currently hosted on our server. *No need for registration!*
 [Just start to explore](http://webcat.sems.uni-rostock.de)
 
 ## Development
-The development is currently coordinated at our [trac project management]((https://sems.uni-rostock.de/trac/combinearchive-web).
+The development is currently coordinated at our [trac project management](https://sems.uni-rostock.de/trac/combinearchive-web).
 
 ## Licence
 CombineArchiveWeb - a WebInterface to read/create/write/manipulate/... COMBINE archives

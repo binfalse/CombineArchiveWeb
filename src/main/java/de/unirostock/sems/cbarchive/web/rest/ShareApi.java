@@ -202,7 +202,7 @@ public class ShareApi extends RestHelper {
 			LOGGER.error(e, "Cannot read downloaded archive");
 			return buildTextErrorResponse(400, user, "Cannot read/parse downloaded archive", e.getMessage(), "URL: " + remoteUrl);
 		} finally {
-			if( importer != null && importer.getTempFile().exists() )
+			if( importer != null && importer.getTempFile() != null && importer.getTempFile().exists() )
 				importer.getTempFile().delete();
 
 			importer.close();
@@ -604,7 +604,7 @@ public class ShareApi extends RestHelper {
 				LOGGER.error(e, "Cannot download an additional file. ", addFile.getRemoteUrl());
 				throw new ImporterException("Cannot download and add an additional file: " + addFile.getRemoteUrl(), e);
 			} finally {
-				if( temp != null )
+				if( temp != null && temp.toFile().exists() )
 					temp.toFile().delete();
 			}
 		}

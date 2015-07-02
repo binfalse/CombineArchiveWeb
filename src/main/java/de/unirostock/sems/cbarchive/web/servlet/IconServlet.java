@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,10 +49,11 @@ public class IconServlet extends HttpServlet {
 		
 		if( requestUrl != null && !requestUrl.isEmpty() ) {
 			
+			String formatString = null;
 			try {
 				response.setContentType( "image/png" );
 				
-				String formatString = requestUrl.substring( requestUrl.indexOf("res/icon/") + 9 );
+				formatString = requestUrl.substring( requestUrl.indexOf("res/icon/") + 9 );
 				LOGGER.debug("format: ", formatString);
 				
 				URI format = new URI( formatString );
@@ -71,24 +71,11 @@ public class IconServlet extends HttpServlet {
 				response.flushBuffer();
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error(e, "IOException while loading icon");
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.warn(e, "Not able to generate URL for Iconizer: ", formatString);
 			}
 			
-			
-		}
-		
-		try {
-			OutputStream output = response.getOutputStream();
-			new OutputStreamWriter(output).append("Hello World");
-			output.close();
-			response.flushBuffer();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 	}

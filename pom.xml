@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>
 			<artifactId>CombineExt</artifactId>
-			<version>0.3.4</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>de.binfalse</groupId>

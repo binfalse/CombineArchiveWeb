@@ -4,7 +4,7 @@
 	<groupId>de.unirostock.sems</groupId>
 	<artifactId>CombineArchiveWeb</artifactId>
 	<packaging>war</packaging>
-	<version>0.4.6</version>
+	<version>0.4.7</version>
 	<name>CombineArchiveWeb</name>
 	<description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
 	<url>http://sems.uni-rostock.de/projects/combinearchive/</url>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>
 			<artifactId>CombineExt</artifactId>
-			<version>1.0.2</version>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.binfalse</groupId>

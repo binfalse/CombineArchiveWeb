@@ -172,9 +172,10 @@
 				{{# } }}
 				
 				{{# if( stats.averageWorkspaceAge != undefined ) { }}
+					{{# var avgAge = stats.averageWorkspaceAge/3600; }}
 				<div class="stats-line stat-averageWorkspaceAge">
 					<div class="attribute-name">average age of workspace:</div>
-					<div class="attribute-detail">{{# print( Math.round(stats.averageWorkspaceAge*100)/100 ); }} sec</div>
+					<div class="attribute-detail">{{# print( Math.round(avgAge*100)/100 ); }}h</div>
 					<div class="clearer"></div>
 				</div>
 				{{# } }}

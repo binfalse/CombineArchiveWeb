@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
@@ -254,7 +255,13 @@ public class WorkspaceManager {
 			Files.createDirectories( Fields.SETTINGS_FILE.toPath().getParent() );
 			
 			// replace actual settings file, with newly written one
-			Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE );
+			try {
+				Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE );
+			}
+			catch (AtomicMoveNotSupportedException e) {
+				LOGGER.warn(e, "Atomic move of settings file failed. Fallback to normal operation. This is normal in a Virtualisation Container");
+				Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING );
+			}
 			
 			// set time of last store to now
 			lastSaved = savedDate;

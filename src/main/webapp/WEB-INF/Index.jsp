@@ -47,11 +47,12 @@
 	<link rel="stylesheet" href="res/css/jquery-impromptu.min.css" type="text/css">
 	
 	<!-- main scripts -->
-	<script type="text/javascript" src="res/js/models.js"></script>
-	<script type="text/javascript" src="res/js/router.js"></script>
-	<script type="text/javascript" src="res/js/js.js"></script>
+	<% int scriptVersion = 2; %>
+	<script type="text/javascript" src="res/js/models.js?version=<%= scriptVersion %>"></script>
+	<script type="text/javascript" src="res/js/router.js?version=<%= scriptVersion %>"></script>
+	<script type="text/javascript" src="res/js/js.js?version=<%= scriptVersion %>"></script>
 	
-	<link rel="stylesheet" href="res/css/css.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="res/css/css.css?version=<%= scriptVersion %>" type="text/css" media="all" />
 	<link rel="stylesheet" href="res/css/jstree/style.css" type="text/css" />
 </head>
 <body>

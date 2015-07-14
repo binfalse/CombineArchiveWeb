@@ -43,6 +43,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -177,17 +178,27 @@ public class RestApi extends RestHelper {
 	@GET
 	@Path("/stats")
 	@Produces( MediaType.APPLICATION_JSON )
-	public Response getStats( @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+	public Response getStats( @CookieParam(Fields.COOKIE_PATH) String userPath, @QueryParam("secret") String secret ) {
 		// user stuff
 		UserManager user = null;
 		try {
-			user = new UserManager( userPath );
+			if( userPath != null && !userPath.isEmpty() )
+				user = new UserManager( userPath );
 		} catch (IOException e) {
 			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
-		StatisticData stats = QuotaManager.getInstance().getUserStats(user);
+		StatisticData stats = null;
+		if( user != null )
+			stats = QuotaManager.getInstance().getUserStats(user);
+		else
+			stats = QuotaManager.getInstance().getStats();
+		
+		// if secret is corret -> enable full stats
+		if( secret != null && Fields.STATS_SECRET != null && secret.equals(Fields.STATS_SECRET) )
+			stats.setFullStats(true);
+		
 		return buildResponse(200, user).entity(stats).build();
 	}
 	

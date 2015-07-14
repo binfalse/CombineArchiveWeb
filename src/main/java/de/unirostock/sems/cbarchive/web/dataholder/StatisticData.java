@@ -3,6 +3,7 @@ package de.unirostock.sems.cbarchive.web.dataholder;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -43,11 +44,26 @@ public class StatisticData implements Serializable, Cloneable {
 	// server stuff
 	private long maxStatsAge = IGNORE_LONG;
 	
+	// internal stuff
+	/** if set to true, all stats are returned */
+	@JsonIgnore
+	private boolean fullStats = false;
+	
 	/** Timestamp of generation */
 	private Date generated = new Date();
 	
 	public StatisticData() {}
+
+	@JsonIgnore
+	public boolean isFullStats() {
+		return fullStats;
+	}
 	
+	@JsonIgnore
+	public void setFullStats(boolean fullStats) {
+		this.fullStats = fullStats;
+	}
+
 	public long getTotalWorkspaceCount() {
 		return totalWorkspaceCount;
 	}
@@ -81,7 +97,7 @@ public class StatisticData implements Serializable, Cloneable {
 	}
 
 	public double getAverageWorkspaceAge() {
-		return averageWorkspaceAge;
+		return fullStats ? averageWorkspaceAge : IGNORE_DOUBLE ;
 	}
 
 	public void setAverageWorkspaceAge(double averageWorkspaceAge) {
@@ -89,7 +105,7 @@ public class StatisticData implements Serializable, Cloneable {
 	}
 
 	public double getTotalSizeQuota() {
-		return totalSizeQuota;
+		return fullStats ? totalSizeQuota : IGNORE_DOUBLE ;
 	}
 
 	public void setTotalSizeQuota(double totalSizeQuota) {
@@ -97,7 +113,7 @@ public class StatisticData implements Serializable, Cloneable {
 	}
 
 	public double getAverageWorkspaceSizeQuota() {
-		return averageWorkspaceSizeQuota;
+		return fullStats ? averageWorkspaceSizeQuota : IGNORE_DOUBLE ;
 	}
 
 	public void setAverageWorkspaceSizeQuota(double averageWorkspaceSizeQuota) {
@@ -105,7 +121,7 @@ public class StatisticData implements Serializable, Cloneable {
 	}
 
 	public double getAverageArchiveCountQuota() {
-		return averageArchiveCountQuota;
+		return fullStats ? averageArchiveCountQuota : IGNORE_DOUBLE ;
 	}
 
 	public void setAverageArchiveCountQuota(double averageArchiveCountQuota) {

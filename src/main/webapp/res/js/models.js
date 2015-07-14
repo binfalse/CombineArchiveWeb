@@ -2046,10 +2046,19 @@ var StatsView = Backbone.View.extend({
 			},
 			error: function(model, response, options) {
 				self.$el.fadeOut();
-				if( response.responseJSON !== undefined && response.responseJSON.status == "error" )
-					console.log("Error while fetching stats: " + response.responseJSON.errors);
+				var msg = "";
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					msg = "<b>Error while fetching stats:</b> <ul>";
+					_.each(response.responseJSON.errors, function (text) {
+						msg += "<li>" + text + "</li>";
+					});
+					msg += "</ul>";
+				}
 				else
-					console.log("Error while fetching stats!");
+					msg = "Error while fetching stats!";
+				
+				console.log(msg);
+				self.$el.html(msg).fadeIn();
 			}
 		});
 		

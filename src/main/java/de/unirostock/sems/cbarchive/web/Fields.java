@@ -76,11 +76,17 @@ public class Fields {
 	/** Link to the sedML WebTools for starting a simulation */
 	public static String SEDML_WEBTOOLS_URL = null;
 	
-	/** max time for caching statistic data */
-	public static long MAX_STATS_AGE = 180;
-	
 	/** Link to a feedback form */
 	public static String FEEDBACK_URL = "https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE";
+	
+	/** max time for caching statistic data */
+	public static long STATS_MAX_AGE = 180;
+	
+	/** switch the open stats page on or off, also limits the access to the rest-endpoint, when set to false */
+	public static boolean STATS_PUBLIC = true;
+	
+	/** is set to something != null, it enables the full access to all stats, when added as URL-Parameter */
+	public static String STATS_SECRET = null;
 
 	// ------------------------------------------------------------------------
 	// Quotas
@@ -152,7 +158,7 @@ public class Fields {
 			Fields.SEDML_WEBTOOLS_URL = null;
 		
 		// max stats age
-		MAX_STATS_AGE = parseLong( context.getInitParameter("MAX_STATS_AGE"), MAX_STATS_AGE );
+		STATS_MAX_AGE = parseLong( context.getInitParameter("MAX_STATS_AGE"), STATS_MAX_AGE );
 		
 		// feedback Url
 		String feedbackUrl = context.getInitParameter("FEEDBACK_URL");

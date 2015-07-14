@@ -6,6 +6,7 @@ var navigationView = null;
 var archiveView = null;
 var startView = null;
 var createView = null;
+var statsView = null;
 var aboutView = null;
 var messageView = null;
 var templateCache = {};
@@ -67,7 +68,6 @@ $(document).ready(function () {
 		var html = $el.html();
 		
 		if( id != undefined && html != undefined && html.length > 1) {
-			console.log(html);
 			html = html.replace(__deescape.amp, "&").replace(__deescape.lt, "<").replace(__deescape.gt, ">");
 			templateCache[ id ] = _.template(html);
 		}

@@ -213,7 +213,7 @@ var NavigationView = Backbone.View.extend({
 	doNavigation: function ($target, setHistory) {
 		
 		// hide current page
-		$(".subPage").hide();
+		$(".subPage").trigger("hide").hide();
 		// do highlighting
 		this.$el.find(".mainLinks").removeClass("highlight");
 		$target.addClass("highlight");
@@ -226,8 +226,6 @@ var NavigationView = Backbone.View.extend({
 			var archiveId = $target.data("archiveid");
 			var archiveModel = this.collection.get(archiveId);
 			
-			console.log( archiveId );
-			
 			if( archiveModel ) {
 				archiveView.setArchive( archiveModel );
 				if( setHistory == true )
@@ -238,7 +236,7 @@ var NavigationView = Backbone.View.extend({
 		}
 		else if( linkType == "page" ) {
 			var page = $target.data("page"); 
-			$( "#" + page ).show();
+			$( "#" + page ).trigger("show").show();
 			
 			if( setHistory == true )
 				pageRouter.navigate( page.split("-")[0] );
@@ -247,7 +245,7 @@ var NavigationView = Backbone.View.extend({
 		}
 		else {
 			// seems to be no valid navlink
-			$("#start-page").show();
+			$("#start-page").trigger("show").show();
 			if( setHistory == true )
 				pageRouter.navigate( "start" );
 			
@@ -1875,59 +1873,10 @@ var CreateView = Backbone.View.extend({
 	
 });
 
-var StatsView = Backbone.View.extend({
-	
-	el: null,
-	model: null,
-	
-	initialize: function() {
-		this.template = templateCache["template-stats"];
-		this.model = new StatsModel();
-		this.fetch();
-		
-//		var self = this;
-		//setInterval( function() { self.fetch(); }, 10000 );
-	},
-	render: function() {
-		
-		var json = { "stats": this.model.toJSON() };
-		this.$el.html( this.template(json) );
-		
-		// show if not already is shown
-		if( this.$el.is(":visible") == false )
-			this.$el.fadeIn();
-	},
-	fetch: function() {
-		
-		if( this.model == null )
-			return;
-		
-		var self = this;
-		this.model.fetch({
-			success: function(model, response, options) {
-				self.render();
-				setTimeout( function() { self.fetch(); }, model.has("maxStatsAge") ? (model.get("maxStatsAge")+5) * 1000 : 30000 );
-			},
-			error: function(model, response, options) {
-				self.$el.fadeOut();
-				if( response.responseJSON !== undefined && response.responseJSON.status == "error" )
-					console.log("Error while fetching stats: " + response.responseJSON.errors);
-				else
-					console.log("Error while fetching stats!");
-			}
-		});
-		
-	},
-	
-	events: {
-	}
-});
-
 var StartView = Backbone.View.extend({
 	
 	el: "#start-page",
 	collection: null,
-	statsView: null,
 	
 	initialize: function() {
 		this.template = templateCache["template-start"];
@@ -1940,9 +1889,6 @@ var StartView = Backbone.View.extend({
 		var json = { "history": this.collection.toJSON(), "current": current.toJSON(), "baseUrl": this.getBaseUrl() };
 		this.$el.html( this.template(json) );
 		
-		this.statsView = new StatsView({
-			el: this.$el.find(".stats-div")
-		});
 	},
 	fetch: function() {
 		
@@ -2047,6 +1993,69 @@ var StartView = Backbone.View.extend({
 		});
 		
 		return false;
+	}
+});
+
+var StatsView = Backbone.View.extend({
+	
+	el: "#stats-page",
+	model: null,
+	timeout: null,
+	
+	initialize: function() {
+		
+		if( this.$el.length <= 0 )
+			return;
+		
+		this.template = templateCache["template-stats"];
+		this.model = new StatsModel();
+		
+		var self = this;
+		this.$el.on( "show", function() {
+			console.log("show stats");
+			self.fetch();
+		}).on( "hide", function() {
+			// cancel fetching
+			if( self.timeout != null ) {
+				clearTimeout(self.timeout);
+				self.timeout = null;
+			}
+		});
+		
+		this.fetch();
+		
+	},
+	render: function() {
+		
+		var json = { "stats": this.model.toJSON() };
+		this.$el.html( this.template(json) );
+		
+	},
+	fetch: function() {
+		
+		if( this.model == null )
+			return;
+		
+		this.timeout = null;
+		var self = this;
+		this.model.fetch({
+			success: function(model, response, options) {
+				self.render();
+				if( self.$el.is(":visible") && self.timeout == null )
+					self.timeout = setTimeout( function() { self.fetch(); }, model.has("maxStatsAge") ? (model.get("maxStatsAge")+5) * 1000 : 30000 );
+			},
+			error: function(model, response, options) {
+				self.$el.fadeOut();
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" )
+					console.log("Error while fetching stats: " + response.responseJSON.errors);
+				else
+					console.log("Error while fetching stats!");
+			}
+		});
+		
+	},
+	
+	events: {
 	}
 });
 

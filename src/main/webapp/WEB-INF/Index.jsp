@@ -74,14 +74,17 @@
 			<div class="nav-container">
 				<small>The current workspace contains the following archives:</small>
 				<div style="clear: both;"></div>
-				<ul id="nav-workspace" style="float: left; width: 70%;">
+				<ul id="nav-workspace" style="float: left; width: 65%;">
 					{{#	_.each(entries, function(entry) { }}
 					<li><a class="mainLinks archive-link archives" data-linktype="archive" data-archiveid="{{# print(entry.id); }}" id="nav-archivelink-{{# print(entry.id); }}" title="Archive {{# print(escape(entry.name)); }} in current Workspace">{{# print(escape(entry.name)); }}</a></li>
 					{{# }); }}
 				</ul>
-				<ul id="nav-main" style="float: right; width: 29%;">
+				<ul id="nav-main" style="float: right; width: 34%;">
 					<li><a class="mainLinks command-link highlight" data-linktype="page" data-page="start-page" id="nav-startlink">start</a></li>
 					<li><a class="mainLinks command-link" data-linktype="page" data-page="about-page" id="nav-aboutlink">about</a></li>
+					<% if( Fields.STATS_PUBLIC ) { %>
+					<li><a class="mainLinks command-link" data-linktype="page" data-page="stats-page" id="nav-statslink">stats</a></li>
+					<% } %>
 					<li><a class="mainLinks command-link" data-linktype="page" data-page="create-page" id="nav-createlink">create</a></li> 
 				</ul>
 				<div style="clear: both;"></div>
@@ -660,6 +663,9 @@
 		<div id="start-page" class="subPage"></div>
 		
 		<div id="about-page" class="subPage" style="display: none;"></div>
+		<% if( Fields.STATS_PUBLIC ) { %>
+		<div id="stats-page" class="subPage" style="display: none;"></div>
+		<% } %>
 		<div id="create-page" class="subPage" style="display: none;"></div>	
 		<div id="archivePage" class="subPage" style="display: none;"></div>
 	</div>

@@ -5,6 +5,7 @@ var PageRouter = Backbone.Router.extend({
 		"":								"start",
 		"start":						"start",
 		"create":						"create",
+		"stats":						"stats",
 		"about":						"about",
 		"archive/:archiveId":			"archive",
 	},
@@ -17,6 +18,7 @@ var PageRouter = Backbone.Router.extend({
 		archiveView = new ArchiveView();
 		startView = new StartView();
 		createView = new CreateView();
+		statsView = new StatsView();
 		aboutView = new AboutView();
 		messageView = new MessageView();
 		
@@ -48,6 +50,9 @@ var PageRouter = Backbone.Router.extend({
 	},
 	create: function() {
 		navigationView.goToPage("create-page", false);
+	},
+	stats: function() {
+		navigationView.goToPage("stats-page", false);
 	},
 	about: function() {
 		navigationView.goToPage("about-page", false);

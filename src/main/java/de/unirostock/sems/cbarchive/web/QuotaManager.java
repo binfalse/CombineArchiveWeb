@@ -118,7 +118,7 @@ public class QuotaManager {
 	public StatisticData getStats() {
 		
 		// if cache is ok
-		if( stats == null || statsTimestamp == null || (new Date().getTime() - statsTimestamp.getTime() + workerExecutionTime)/1000 > Fields.MAX_STATS_AGE )
+		if( stats == null || statsTimestamp == null || (new Date().getTime() - statsTimestamp.getTime() + workerExecutionTime)/1000 > Fields.STATS_MAX_AGE )
 			generateStats();
 		
 		LOGGER.debug( "return stats, generated at ", stats.getGenerated() );
@@ -272,7 +272,7 @@ public class QuotaManager {
 			if( Fields.QUOTA_ARCHIVE_LIMIT != Fields.QUOTA_UNLIMITED )
 				stats.setAverageArchiveCountQuota( stats.getAverageArchiveCount() / (double) Fields.QUOTA_ARCHIVE_LIMIT );
 			
-			stats.setMaxStatsAge( Fields.MAX_STATS_AGE );
+			stats.setMaxStatsAge( Fields.STATS_MAX_AGE );
 			
 			// tranfer the results to the main class
 			quotaManager.workspaceCache = cache;

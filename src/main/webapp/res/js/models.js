@@ -1,11 +1,5 @@
 // see http://backbonejs.org/
 
-//Underscore template interpolate character to {{# ... }}
-_.templateSettings =  {
-		evaluate: /\{\{#(.+?)\}\}/g,
-		interpolate: /\{\{([^#].*?)\}\}/g
-};
-
 var ArchiveEntryModel = Backbone.Model.extend({
 	urlRoot: RestRoot + "archives/0/entries",
 	defaults: {

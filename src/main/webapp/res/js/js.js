@@ -23,11 +23,22 @@ function bytesToSize(bytes) {
 	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
 }
 
+//Underscore template interpolate character to {{# ... }}
+_.templateSettings =  {
+		evaluate: /\{\{#(.+?)\}\}/g,
+		interpolate: /\{\{([^#].*?)\}\}/g
+};
 var __escape = {
 		lt: new RegExp("<", "g"),
 		gt: new RegExp(">", "g"),
 		br: new RegExp("\n", "g")
 };
+var __deescape = {
+		amp: new RegExp("&amp;", "g"),
+		lt: new RegExp("&lt;", "g"),
+		gt: new RegExp("&gt;", "g")
+};
+
 function escape(string, brline) {
 	if( string == null || string == undefined )
 		return string;
@@ -55,8 +66,11 @@ $(document).ready(function () {
 		var id = $el.attr("id");
 		var html = $el.html();
 		
-		if( id != undefined && html != undefined && html.length > 1)
+		if( id != undefined && html != undefined && html.length > 1) {
+			console.log(html);
+			html = html.replace(__deescape.amp, "&").replace(__deescape.lt, "<").replace(__deescape.gt, ">");
 			templateCache[ id ] = _.template(html);
+		}
 		$el.remove();
 	});
 	

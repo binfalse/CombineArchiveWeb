@@ -156,7 +156,7 @@
 				</div>
 				{{# } }}
 			
-				{{# if( stats.averageArchiveCount != undefined ) { }}
+				{{# if( stats.averageArchiveCount != undefined && !isNaN(stats.averageArchiveCount) ) { }}
 				<div class="stats-line stat-averageArchiveCount">
 					<div class="attribute-name">average archives per workspace:</div>
 					<div class="attribute-detail">{{# print( Math.round(stats.averageArchiveCount*100)/100 ); }}</div>
@@ -164,7 +164,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.averageArchiveCountQuota != undefined ) { }}
+				{{# if( stats.averageArchiveCountQuota != undefined && !isNaN(stats.averageArchiveCountQuota) ) { }}
 				<div class="stats-line stat-averageArchiveCountQuota">
 					<div class="attribute-name">average usage of 'archives per workspace' quota:</div>
 					<div class="attribute-detail">{{# print( Math.round(stats.averageArchiveCountQuota*10000)/100 ); }}%</div>
@@ -172,7 +172,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.averageWorkspaceAge != undefined ) { }}
+				{{# if( stats.averageWorkspaceAge != undefined && !isNaN(stats.averageWorkspaceAge) ) { }}
 					{{# var avgAge = stats.averageWorkspaceAge/3600; }}
 				<div class="stats-line stat-averageWorkspaceAge">
 					<div class="attribute-name">average age of workspace:</div>
@@ -181,7 +181,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.averageWorkspaceSize != undefined ) { }}
+				{{# if( stats.averageWorkspaceSize != undefined && !isNaN(stats.averageWorkspaceSize) ) { }}
 				<div class="stats-line stat-averageWorkspaceSize">
 					<div class="attribute-name">average size per workspace:</div>
 					<div class="attribute-detail">{{# print( bytesToSize(Math.round(stats.averageWorkspaceSize*100)/100) ); }}</div>
@@ -189,7 +189,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.averageWorkspaceSizeQuota != undefined ) { }}
+				{{# if( stats.averageWorkspaceSizeQuota != undefined && !isNaN(stats.averageWorkspaceSizeQuota) ) { }}
 				<div class="stats-line stat-averageWorkspaceSizeQuota">
 					<div class="attribute-name">average usage of 'size per workspace' quota:</div>
 					<div class="attribute-detail">{{# print( Math.round(stats.averageWorkspaceSizeQuota*10000)/100 ); }}%</div>
@@ -197,7 +197,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.totalArchiveCount != undefined ) { }}
+				{{# if( stats.totalArchiveCount != undefined && !isNaN(stats.totalArchiveCount) ) { }}
 				<div class="stats-line stat-totalArchiveCount">
 					<div class="attribute-name">total number of hosted archives:</div>
 					<div class="attribute-detail">{{# print(stats.totalArchiveCount); }}</div>
@@ -205,7 +205,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.totalSize != undefined ) { }}
+				{{# if( stats.totalSize != undefined && !isNaN(stats.totalSize) ) { }}
 				<div class="stats-line stat-totalSize">
 					<div class="attribute-name">total size of all hosted archives:</div>
 					<div class="attribute-detail">{{# print( bytesToSize(stats.totalSize) ); }}</div>
@@ -213,7 +213,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.totalSizeQuota != undefined ) { }}
+				{{# if( stats.totalSizeQuota != undefined && !isNaN(stats.totalSizeQuota) ) { }}
 				<div class="stats-line stat-totalSizeQuota">
 					<div class="attribute-name">usage of 'total size' quota:</div>
 					<div class="attribute-detail">{{# print( Math.round(stats.totalSizeQuota*10000)/100 ); }}%</div>
@@ -221,7 +221,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.totalWorkspaceCount != undefined ) { }}
+				{{# if( stats.totalWorkspaceCount != undefined && !isNaN(stats.totalWorkspaceCount) ) { }}
 				<div class="stats-line stat-totalWorkspaceCount">
 					<div class="attribute-name">total number of hosted workspaces:</div>
 					<div class="attribute-detail">{{# print(stats.totalWorkspaceCount); }}</div>
@@ -229,7 +229,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.userArchiveCountQuota != undefined ) { }}
+				{{# if( stats.userArchiveCountQuota != undefined && !isNaN(stats.userArchiveCountQuota) ) { }}
 				<div class="stats-line stat-userArchiveCountQuota">
 					<div class="attribute-name">usage of 'archives per workspace' quota:</div>
 					<div class="attribute-detail">{{# print( Math.round(stats.userArchiveCountQuota*10000)/100 ); }}%</div>
@@ -237,7 +237,7 @@
 				</div>
 				{{# } }}
 				
-				{{# if( stats.userWorkspaceSizeQuota != undefined ) { }}
+				{{# if( stats.userWorkspaceSizeQuota != undefined && !isNaN(stats.userWorkspaceSizeQuota) ) { }}
 				<div class="stats-line stat-userWorkspaceSizeQuota">
 					<div class="attribute-name">usage of 'workspace size' quota:</div>
 					<div class="attribute-detail">{{# print( Math.round(stats.userWorkspaceSizeQuota*10000)/100 ); }}%</div>

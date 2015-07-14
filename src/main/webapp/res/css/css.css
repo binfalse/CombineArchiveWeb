@@ -313,11 +313,20 @@ ul.start-history-list > li.current-workspace {
 }
 
 /* -------- Stats View -------- */
+.stats-line {
+/* 	line-height: 1em; */
+	padding: 0.3em 1em;
+}
+.stats-line:nth-of-type(2n) {
+	background-color: #fafafa;
+}
 .stats-line .attribute-name {
 	width: calc(65% - 5px);
+	margin: 0;
 }
 .stats-line .attribute-detail {
 	width: calc(35% - 5px);
+	margin: 0;
 }
 .stats-par {
 	margin-bottom: 1.1em;

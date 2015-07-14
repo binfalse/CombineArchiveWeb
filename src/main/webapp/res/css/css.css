@@ -98,6 +98,16 @@ nav .highlight
 	font-weight: bold;
 }
 
+#nav-workspace {
+	float: left;
+	width: 65%;
+}
+#nav-main {
+	float: right;
+	width: calc(35% - 5px);
+	text-align: right;
+}
+
 div.nav-container
 {
 	background-color: #fafafa;

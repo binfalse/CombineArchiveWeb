@@ -189,6 +189,7 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
 		}
 		
+		// only fetch user stats, if they are avialable
 		StatisticData stats = null;
 		if( user != null )
 			stats = QuotaManager.getInstance().getUserStats(user);
@@ -198,6 +199,10 @@ public class RestApi extends RestHelper {
 		// if secret is corret -> enable full stats
 		if( secret != null && Fields.STATS_SECRET != null && secret.equals(Fields.STATS_SECRET) )
 			stats.setFullStats(true);
+		else if( Fields.STATS_PUBLIC == false ) {
+			// stats are not public and no secret was provided
+			return buildErrorResponse(400, user, "no or wrong secret was provided.", "public stats are disabled");
+		}
 		
 		return buildResponse(200, user).entity(stats).build();
 	}

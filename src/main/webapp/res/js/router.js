@@ -15,12 +15,13 @@ var PageRouter = Backbone.Router.extend({
 		// init views
 		workspaceArchives = new ArchiveCollection();
 		navigationView = new NavigationView({ collection: workspaceArchives });
+		messageView = new MessageView();
+		
 		archiveView = new ArchiveView();
 		startView = new StartView();
 		createView = new CreateView();
 		statsView = new StatsView();
 		aboutView = new AboutView();
-		messageView = new MessageView();
 		
 		workspaceArchives.once("sync", function(eventName) {
 			Backbone.history.start();

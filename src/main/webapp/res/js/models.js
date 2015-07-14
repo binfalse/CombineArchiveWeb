@@ -2037,6 +2037,8 @@ var StatsView = Backbone.View.extend({
 			return;
 		
 		this.timeout = null;
+		messageView.removeMessages("stats-error");
+		
 		var self = this;
 		this.model.fetch({
 			success: function(model, response, options) {
@@ -2047,9 +2049,9 @@ var StatsView = Backbone.View.extend({
 			error: function(model, response, options) {
 				self.$el.fadeOut();
 				if( response.responseJSON !== undefined && response.responseJSON.status == "error" )
-					messageView.error("Error while fetching stats", response.responseJSON.errors);
+					messageView.error("Error while fetching stats", response.responseJSON.errors, "stats-error");
 				else
-					messageView.error("Error while fetching stats!");
+					messageView.error("Error while fetching stats!", "stats-error");
 				
 			}
 		});

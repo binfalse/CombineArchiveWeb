@@ -160,6 +160,22 @@ public class Fields {
 		// max stats age
 		STATS_MAX_AGE = parseLong( context.getInitParameter("MAX_STATS_AGE"), STATS_MAX_AGE );
 		
+		// public stats
+		String statsPublic = context.getInitParameter("STATS_PUBLIC");
+		if( statsPublic != null && statsPublic.isEmpty() == false ) {
+			statsPublic = statsPublic.toLowerCase();
+			if( statsPublic.equals("true") || statsPublic.equals("1") )
+				STATS_PUBLIC = true;
+			else
+				STATS_PUBLIC = false;
+		}
+		
+		String statsSecret = context.getInitParameter("STATS_SECRET");
+		if( statsSecret != null && statsSecret.isEmpty() == false )
+			STATS_SECRET = statsSecret;
+		else
+			STATS_SECRET = null;
+		
 		// feedback Url
 		String feedbackUrl = context.getInitParameter("FEEDBACK_URL");
 		if( feedbackUrl != null && feedbackUrl.isEmpty() == true )

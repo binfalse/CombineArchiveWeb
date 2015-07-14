@@ -259,7 +259,7 @@ public class WorkspaceManager {
 				Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE );
 			}
 			catch (AtomicMoveNotSupportedException e) {
-				LOGGER.warn(e, "Atomic move of settings file failed. Fallback to normal operation. This is normal in a Virtualisation Container");
+				LOGGER.info(e, "Atomic move of settings file failed. Fallback to normal operation.");
 				Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING );
 			}
 			

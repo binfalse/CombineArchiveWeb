@@ -100,11 +100,11 @@ nav .highlight
 
 #nav-workspace {
 	float: left;
-	width: 65%;
+	width: 55%;
 }
 #nav-main {
 	float: right;
-	width: calc(35% - 5px);
+	width: calc(45% - 5px);
 	text-align: right;
 }
 

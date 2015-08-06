@@ -18,7 +18,11 @@
 	<Parameter name="MAX_STATS_AGE" value="10" override="false" />
 	<!-- Feedback Button URL, set to empty value to disable button -->
 <!-- 	<Parameter name="FEEDBACK_URL" value="https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE" override="false" /> -->
-
+	<!-- set to true, if the you want to display a stats page on your webcat instance -->
+	<Parameter name="STATS_PUBLIC" value="true" override="false" />
+	<!-- Set a secret to access full stats by adding an url parameter, even if the stats are disabled. Leave blank to disable this feature -->
+	<Parameter name="STATS_SECRET" value="" override="false" />
+	
 	<!-- Quotas -->
 	
 	<!-- Maximum size in bytes of all workspaces together. 0 means unlimited -->

@@ -100,6 +100,7 @@ public class WorkspaceManager {
 		workspace.updateLastseen();
 		// add to settings
 		workspaces.put(uuid, workspace);
+		LOGGER.info("Created new workspace with id ", workspace.getWorkspaceId());
 		
 		return workspace;
 	}

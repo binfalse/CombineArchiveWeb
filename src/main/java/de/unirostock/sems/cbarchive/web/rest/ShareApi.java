@@ -85,6 +85,8 @@ public class ShareApi extends RestHelper {
 	@Path("/share/{user_path}")
 	@Produces( MediaType.TEXT_PLAIN )
 	public Response setUserPath( @CookieParam(Fields.COOKIE_PATH) String oldUserPath, @PathParam("user_path") String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @Context HttpServletRequest requestContext) {
+		
+		LOGGER.debug("Got share link to workspace ", userPath);
 		// user stuff
 		UserManager user = null;
 		try {
@@ -104,17 +106,21 @@ public class ShareApi extends RestHelper {
 				history = new WorkspaceHistory();
 
 			// puts current workspace into history
-			if( history.containsWorkspace(user.getWorkspaceId()) == false )
+			if( history.containsWorkspace(user.getWorkspaceId()) == false ) {
 				history.getRecentWorkspaces().add( user.getWorkspace() );
+				LOGGER.debug("Added shared workspace to history. Wasn't added yet.");
+			}
 			history.setCurrentWorkspace( user.getWorkspaceId() );
+			LOGGER.info("Set current workspace id to ", user.getWorkspaceId(), " from ", oldUserPath);
 
 			if( oldUserPath != null && !oldUserPath.isEmpty() && history.containsWorkspace( oldUserPath ) == false ) {
 				Workspace workspace = WorkspaceManager.getInstance().getWorkspace(oldUserPath);
-				if( workspace != null )
+				if( workspace != null ) {
 					history.getRecentWorkspaces().add( workspace );
+					LOGGER.debug("Added old workspace to history ", oldUserPath);
+				}
 			}
 
-			history.setCurrentWorkspace( user.getWorkspaceId() );
 			historyCookie = history.toCookieJson();
 
 		} catch (IOException e) {

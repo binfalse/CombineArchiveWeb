@@ -61,10 +61,14 @@ public class UserManager {
 	}
 
 	public UserManager( String workspaceId ) throws IOException {
+		
 		if( workspaceId != null && !workspaceId.isEmpty() ) {
 			workspace = workspaceManager.getWorkspace(workspaceId);
+			LOGGER.debug("Trying to obtain workspace with id ", workspaceId);
 		}
+		
 		if( workspace == null ) {
+			LOGGER.debug("Workspace with id ", workspaceId, " not found. Create new one with random id.");
 			workspace = workspaceManager.createWorkspace();
 		}
 		

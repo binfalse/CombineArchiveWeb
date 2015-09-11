@@ -634,7 +634,7 @@
 	</div>
 	<footer>
 		built by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ <a href="http://www.uni-rostock.de/" title="University of Rostock">University of Rostock</a>
-		&nbsp;|&nbsp;<a id="about-footer-link" href="#" title="About page">About</a>
+		&nbsp;|&nbsp;<a id="about-footer-link" href="#about" title="About page">About</a>
 	</footer>
 </body>
 </html>

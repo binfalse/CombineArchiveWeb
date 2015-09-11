@@ -123,9 +123,9 @@ public class Tools
 			// parse vCard info
 			if( userInfo != null && !userInfo.getValue().isEmpty() )
 				user.setData( UserData.fromJson( userInfo.getValue() ) ); 
+			
+			storeUserCookies(cookies, user);
 		}
-
-		storeUserCookies(cookies, user);
 
 		return user;
 	}

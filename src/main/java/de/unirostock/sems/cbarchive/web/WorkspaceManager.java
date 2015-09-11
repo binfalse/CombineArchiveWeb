@@ -102,6 +102,9 @@ public class WorkspaceManager {
 		workspaces.put(uuid, workspace);
 		LOGGER.info("Created new workspace with id ", workspace.getWorkspaceId());
 		
+		// save the settings
+		storeSettings();
+		
 		return workspace;
 	}
 	

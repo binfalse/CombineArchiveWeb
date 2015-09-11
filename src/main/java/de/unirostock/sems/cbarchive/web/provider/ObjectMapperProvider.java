@@ -40,7 +40,6 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 	
 	@Override
 	public ObjectMapper getContext(Class<?> type) {
-		LOGGER.info("returns ObjectMapper");
 		return mapper;
 	}
 

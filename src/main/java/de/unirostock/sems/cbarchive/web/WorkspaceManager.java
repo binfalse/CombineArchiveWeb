@@ -228,19 +228,25 @@ public class WorkspaceManager {
 		
 		LOGGER.info("store settings to disk");
 		
+		int workspaceCount = 0;
+		int archiveCount = 0;
 		for( String workspaceId : workspaces.keySet() ) {
 			Workspace workspace = workspaces.get(workspaceId);
 			
 			// add fields for name and last-seen
 			properties.setProperty( Fields.PROP_WORKSPACE_PRE + workspaceId, workspace.getName() );
 			properties.setProperty( Fields.PROP_LASTSEEN_PRE + workspaceId, Tools.DATE_FORMATTER.format(workspace.getLastseen()) );
+			workspaceCount++;
 			
 			// iterate over all archives
 			for( String archiveId : workspace.getArchives().keySet() ) {
 				String archiveName = workspace.getArchives().get(archiveId);
 				properties.setProperty( Fields.PROP_ARCHIVE_PRE + workspaceId + Fields.PROP_SEPARATOR + archiveId, archiveName);
+				archiveCount++;
 			}
 		}
+		
+		LOGGER.debug("Constructed settings file with ", workspaceCount, " Workspaces and ", archiveCount, " Archives");
 		
 		try {
 			// first write settings to temp file
@@ -251,13 +257,16 @@ public class WorkspaceManager {
 			// flush'n'close
 			output.flush();
 			output.close();
+			LOGGER.debug("wrote ", temp, " (", temp.length(), " Bytes) to disk.");
 			
 			// create directories (just in case...)
 			Files.createDirectories( Fields.SETTINGS_FILE.toPath().getParent() );
 			
 			// replace actual settings file, with newly written one
 			try {
+				LOGGER.info("Trying to move new settings file in place ", Fields.SETTINGS_FILE);
 				Files.move( temp.toPath(), Fields.SETTINGS_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE );
+				LOGGER.info("done moving.");
 			}
 			catch (AtomicMoveNotSupportedException e) {
 				LOGGER.info(e, "Atomic move of settings file failed. Fallback to normal operation.");

@@ -40,7 +40,6 @@ import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.web.Fields;
 import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.UserManager;
-import de.unirostock.sems.cbarchive.web.WorkspaceManager;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;

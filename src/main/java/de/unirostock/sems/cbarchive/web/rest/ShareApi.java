@@ -86,7 +86,10 @@ public class ShareApi extends RestHelper {
 	@Produces( MediaType.TEXT_PLAIN )
 	public Response setUserPath( @CookieParam(Fields.COOKIE_PATH) String oldUserPath, @PathParam("user_path") String userPath, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @Context HttpServletRequest requestContext) {
 		
+		// clean up user path
+		userPath = userPath.trim();
 		LOGGER.debug("Got share link to workspace ", userPath);
+		
 		// user stuff
 		UserManager user = null;
 		try {

@@ -71,6 +71,8 @@ public class UserManager {
 			LOGGER.debug("Workspace with id ", workspaceId, " not found. Create new one with random id.");
 			workspace = workspaceManager.createWorkspace();
 		}
+		else
+			LOGGER.debug("Got it...");
 		
 		// updates the last-seen time stamp
 		workspace.updateLastseen();

@@ -116,14 +116,18 @@ public class Tools
 
 		Cookie userInfo		= cookies.getCookie( Fields.COOKIE_USER );
 
-		UserManager user = new UserManager(pathCookie.getValue());
-		if( userInfo != null && !userInfo.getValue().isEmpty() )
-			user.setData( UserData.fromJson( userInfo.getValue() ) ); 
+		UserManager user = null;
+		if( WorkspaceManager.getInstance().hasWorkspace( pathCookie.getValue() ) ) {
+			// workspace exists
+			user = new UserManager(pathCookie.getValue());
+			// parse vCard info
+			if( userInfo != null && !userInfo.getValue().isEmpty() )
+				user.setData( UserData.fromJson( userInfo.getValue() ) ); 
+		}
 
 		storeUserCookies(cookies, user);
 
 		return user;
-
 	}
 
 	public static void storeUserCookies(CookieManager cookies, UserManager user) {

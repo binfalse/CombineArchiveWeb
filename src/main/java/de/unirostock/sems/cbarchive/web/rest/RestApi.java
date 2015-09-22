@@ -652,9 +652,13 @@ public class RestApi extends RestHelper {
 			// check for mime type
 			// TODO
 			
+			// figuring out a good temp file name (seems like URIs don't like Brackets) 
+			String uploadedFileName = file.getFormDataContentDisposition().getFileName();
+			uploadedFileName = uploadedFileName.replaceAll("[^A-Za-z0-9]", "_");
+			
 			// write uploaded file to temp
 			// copy the stream to a temp file
-			temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, file.getFormDataContentDisposition().getFileName() );
+			temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, uploadedFileName );
 			// write file to disk
 			OutputStream output = new FileOutputStream( temp.toFile() );
 			InputStream input = file.getEntityAs(InputStream.class);
@@ -893,9 +897,13 @@ public class RestApi extends RestHelper {
 					// remove leading slash
 					if( fileName.startsWith("/") )
 						fileName = fileName.substring(1);
-						
+					
+					// figuring out a good temp file name (seems like URIs don't like Brackets) 
+					String uploadedFileName = file.getFormDataContentDisposition().getFileName();
+					uploadedFileName = uploadedFileName.replaceAll("[^A-Za-z0-9]", "_");
+					
 					// copy the stream to a temp file
-					java.nio.file.Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, file.getFormDataContentDisposition().getFileName() );
+					java.nio.file.Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, uploadedFileName );
 					// write file to disk
 					OutputStream output = new FileOutputStream( temp.toFile() );
 					InputStream input = file.getEntityAs(InputStream.class);

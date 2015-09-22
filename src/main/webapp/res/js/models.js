@@ -1537,6 +1537,7 @@ var CreateView = Backbone.View.extend({
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
 		"click .dropbox a": "dropboxClick",
+		"click .dropbox .center-button": "dropboxClick",
 		"change .dropbox input": "dropboxManual",
 		"click a.test": "addMsg",
 		"click a.test2": "rmvMsg"

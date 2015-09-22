@@ -257,7 +257,7 @@
 				</div>
 				
 				<input type="radio" id="newArchiveTemplate-CellMl" name="newArchiveTemplate" value="cellml" />
-				<label for="newArchiveTemplate-CellMl">Create an archive from <b>CellMl model repository</b></label><br />
+				<label for="newArchiveTemplate-CellMl">Create an archive from <b>CellML model repository</b></label><br />
 				<div class="create-parameter on-archive-cellml">
 					<input type="text" name="newArchiveCellMlLink" placeholder="link to CellML repository" size="50" /><br />
 				</div>

@@ -940,6 +940,7 @@ var ArchiveView = Backbone.View.extend({
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
 		"click .dropbox a": "dropboxClick",
+		"click .dropbox .center-button": "dropboxClick",
 		"change .dropbox input": "dropboxManual",
 		"click .archive-folder-add": "addFolder",
 		

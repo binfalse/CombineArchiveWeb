@@ -222,6 +222,7 @@ div.nav-container
 	
 	background-color: #c00;
 	text-decoration: none;
+	cursor: pointer;
 }
 
 .dropbox div.file-name-display {

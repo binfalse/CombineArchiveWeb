@@ -32,12 +32,12 @@
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>
 			<artifactId>CombineArchive</artifactId>
-			<version>1.0</version>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.unirostock.sems</groupId>
 			<artifactId>CombineExt</artifactId>
-			<version>1.1.1</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.binfalse</groupId>

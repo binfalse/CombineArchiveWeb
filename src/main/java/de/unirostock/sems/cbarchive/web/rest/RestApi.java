@@ -874,8 +874,9 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse(500, user, "Cannot read options string.");
 		}
 		
+		Archive archive = null;
 		try {
-			Archive archive = user.getArchive(archiveId);
+			archive = user.getArchive(archiveId);
 			List<Object> result = new LinkedList<Object>();
 			
 			// adds ending slash
@@ -891,9 +892,9 @@ public class RestApi extends RestHelper {
 			}
 			
 			for( FormDataBodyPart file : files ) {
-				
+				String fileName = null;
 				try {
-					String fileName = file.getFormDataContentDisposition().getFileName();
+					fileName = file.getFormDataContentDisposition().getFileName();
 					// remove leading slash
 					if( fileName.startsWith("/") )
 						fileName = fileName.substring(1);
@@ -1003,16 +1004,23 @@ public class RestApi extends RestHelper {
 					// add to result list
 					result.add( new ArchiveEntryDataholder(entry) );
 				}
-				catch (IOException e) {
+				catch (CombineArchiveWebException | IOException e) {
 					LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
-					result.add( new ArchiveEntryUploadException(MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir()), path) );
+					String message = e.getMessage();
+					if( message == null || message.isEmpty() )
+						message = MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir());
+					
+					result.add( new ArchiveEntryUploadException(message, path + fileName) );
 					continue;
 				}
 				
 			}
 			
-			// pack and close the archive
-			archive.packAndClose();
+			synchronized (archive) {
+				// pack and close the archive
+				archive.packAndClose();
+				archive = null;
+			}
 			
 			// trigger quota update
 			QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
@@ -1023,6 +1031,14 @@ public class RestApi extends RestHelper {
 		} catch (CombineArchiveWebException | IOException | TransformerException e) {
 			LOGGER.error(e, MessageFormat.format("Error while uploading/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
 			return buildErrorResponse(500, user, "Error while uploading file: " + e.getMessage() );
+		} finally {
+			try {
+				if( archive != null )
+					archive.close();
+			}
+			catch (IOException e) {
+				LOGGER.error(e, "Final closing of archive caused exception");
+			}
 		}
 		
 	}

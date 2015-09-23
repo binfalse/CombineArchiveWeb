@@ -1380,6 +1380,7 @@ var ArchiveView = Backbone.View.extend({
 					}
 					else
 						messageView.error( "Unknown Error", "Cannot move file." );
+					self.fetchCollection(true, scrollValue);
 				}
 				
 			});

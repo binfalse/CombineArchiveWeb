@@ -10,6 +10,12 @@ A demo is currently hosted on our server. *No need for registration!*
 ## Development
 The development is currently coordinated at our [trac project management](https://sems.uni-rostock.de/trac/combinearchive-web).
 
+## Additional Resources
+Some helpful resources can be found in the resources folder. It contains a default context configuration for tomcat, a default
+VHost configuration for the Apache WebServer and a folder called "nagios" containing a simple python3 script for nagios, to
+check if the webCAT instance is up and running. In case a stats secret is provided (and configured in the python script) it
+also checks for the maximum space quota.
+
 ## Licence
 CombineArchiveWeb - a WebInterface to read/create/write/manipulate/... COMBINE archives
 Copyright (C) 2014-2015:

@@ -305,8 +305,13 @@ public class UserManager {
 	}
 
 	public void updateArchiveEntry( String archiveId, ArchiveEntryDataholder newEntryDataholder ) throws CombineArchiveWebException {
+		Archive archive = null;
 		
-		Archive archive;
+		if( Tools.isFilenameBlacklisted(newEntryDataholder.getFileName()) || Tools.isFilenameBlacklisted(newEntryDataholder.getFilePath()) )
+			throw new CombineArchiveWebException( 
+					MessageFormat.format("The filename is blacklisted. You may not add files called {0}!", newEntryDataholder.getFileName())
+				);
+		
 		try {
 			archive = getArchive(archiveId);
 		} catch (FileNotFoundException e) {

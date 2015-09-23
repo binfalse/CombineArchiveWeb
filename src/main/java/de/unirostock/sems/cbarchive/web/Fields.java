@@ -18,6 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -40,6 +44,11 @@ public class Fields {
 	public static File STORAGE = new File ("/tmp/CombineArchiveWebStorage");
 
 	public static File SETTINGS_FILE = new File( STORAGE, SETTINGS_FILE_NAME );
+	
+	/** Blacklist of file names */
+	public static final Set<String> FILENAME_BLACKLIST = Collections.unmodifiableSet(
+			new HashSet<String>( Arrays.asList( new String[] {"metadata.rdf", "manifest.xml"} ) )
+		);
 
 	/** The Constant COOKIE_AGE. */
 	public static final int COOKIE_AGE = 60*60*24*365;

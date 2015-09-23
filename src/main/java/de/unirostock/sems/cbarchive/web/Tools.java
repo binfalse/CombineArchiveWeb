@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.binfalse.bflog.LOGGER;
@@ -257,5 +259,22 @@ public class Tools
 		}
 
 		return newLocation;
+	}
+	
+	/**
+	 * checks whether a filename is blacklisted or not
+	 * 
+	 * @param filename
+	 * @return true if filename is blacklisted
+	 */
+	public static boolean isFilenameBlacklisted( String filename ) {
+		
+		if( filename == null || filename.isEmpty() )
+			return true;
+		
+		if( Fields.FILENAME_BLACKLIST.contains( FilenameUtils.getName(filename) ) ) 
+			return true;
+		
+		return false;
 	}
 }

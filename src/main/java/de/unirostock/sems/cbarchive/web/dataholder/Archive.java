@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jdom2.JDOMException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,6 +47,7 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
+import de.unirostock.sems.cbarchive.web.Tools;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbext.Formatizer;
 
@@ -241,6 +243,12 @@ public class Archive implements Closeable {
 			LOGGER.error( "The archive was not opened" );
 			throw new CombineArchiveWebException("The archive was not opened");
 		}
+		
+		// check for blacklisted filename
+		if( Tools.isFilenameBlacklisted(fileName) )
+			throw new CombineArchiveWebException( 
+					MessageFormat.format("The filename is blacklisted. You may not add files called {0}!", FilenameUtils.getName(fileName))
+				);
 		
 		ArchiveEntry entry = null;
 		

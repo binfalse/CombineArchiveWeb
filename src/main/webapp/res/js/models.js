@@ -197,7 +197,9 @@ var NavigationView = Backbone.View.extend({
 	selectArchiveFile: function(archiveId, fileId, setHistory) {
 		
 		result = this.selectArchive(archiveId, setHistory);
-		archiveView.setArchiveFile(fileId, false);
+		setTimeout(function() {
+			archiveView.setArchiveFile(fileId, false);
+		}, 500);
 		return result;
 	},
 	selectArchive: function(archiveId, setHistory) {
@@ -1317,6 +1319,9 @@ var ArchiveView = Backbone.View.extend({
 				self.$el.find(".archive-fileinfo").fadeIn(100);
 			});
 			self.explorerHideTimeout = undefined;
+			
+			// do History stuff
+			pageRouter.selectArchiveFile( self.model.get("id"), self.entryView.entryId, false );
 		}, force == true ? 0 : 187);
 		
 	},

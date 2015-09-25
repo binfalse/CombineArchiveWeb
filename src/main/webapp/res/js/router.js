@@ -34,13 +34,13 @@ var PageRouter = Backbone.Router.extend({
 	selectArchive: function( archiveId, trigger ) {
 		return this.navigate( "archive/" + archiveId, {"trigger": (trigger === undefined || trigger == true ? true : false) } );
 	},
-	selectArchiveFile: function( archiveId, fileId ) {
+	selectArchiveFile: function( archiveId, fileId, trigger ) {
 		if( archiveId == undefined ) {
 			fileId = archiveId;
 			archiveId = archiveView.model.get("id");
 		}
 		 
-		return this.navigate( "archive/" + archiveId + "/" + fileId );
+		return this.navigate( "archive/" + archiveId + "/" + fileId, {"trigger": (trigger === undefined || trigger == true ? true : false) } );
 	},
 	goToPage: function( page ) {
 		return this.navigate( page, {trigger: true} );

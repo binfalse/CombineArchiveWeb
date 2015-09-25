@@ -902,7 +902,7 @@ var ArchiveView = Backbone.View.extend({
 		this.entryView.fetch( this.model.get("id"), fileId );
 		
 		if( setHistory === undefined || setHistory == true )
-			pageRouter.selectArchiveFile( this.model.get("id"), fileId );
+			pageRouter.selectArchiveFile( this.model.get("id"), fileId, false );
 	},
 	
 	fetchCollection: function( render, scrollValue ) {

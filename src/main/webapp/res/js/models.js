@@ -194,6 +194,12 @@ var NavigationView = Backbone.View.extend({
 		});
 		
 	},
+	selectArchiveFile: function(archiveId, fileId, setHistory) {
+		
+		result = this.selectArchive(archiveId, setHistory);
+		archiveView.setArchiveFile(fileId, false);
+		return result;
+	},
 	selectArchive: function(archiveId, setHistory) {
 		var $navElem = this.$el.find( "#nav-archivelink-" + archiveId );
 		
@@ -880,7 +886,7 @@ var ArchiveView = Backbone.View.extend({
 		// gets all entries in for this archive
 		this.fetchCollection(true);
 	},
-	setArchiveFile: function( fileId ) {
+	setArchiveFile: function( fileId, setHistory ) {
 		
 		this.hideExplorer(null, true);
 		
@@ -892,6 +898,9 @@ var ArchiveView = Backbone.View.extend({
 			el: this.$el.find(".archive-fileinfo")
 		});
 		this.entryView.fetch( this.model.get("id"), fileId );
+		
+		if( setHistory === undefined || setHistory == true )
+			pageRouter.selectArchiveFile( this.model.get("id"), fileId );
 	},
 	
 	fetchCollection: function( render, scrollValue ) {
@@ -1289,6 +1298,9 @@ var ArchiveView = Backbone.View.extend({
 			
 			self.$el.find(".archive-filetree").animate({"width": width + "px"}, 500);
 			self.explorerShowTimeout = undefined;
+			
+			// do History stuff
+			pageRouter.selectArchive( self.model.get("id"), false );
 		}, 187);
 	},
 	hideExplorer: function(event, force) {

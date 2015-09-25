@@ -8,6 +8,7 @@ var PageRouter = Backbone.Router.extend({
 		"stats":						"stats",
 		"about":						"about",
 		"archive/:archiveId":			"archive",
+		"archive/:archiveId/:fileId":	"archive"
 	},
 	
 	initialize: function(options) {
@@ -30,8 +31,8 @@ var PageRouter = Backbone.Router.extend({
 	},
 	
 	// Helper functions
-	selectArchive: function( archiveId ) {
-		return this.navigate( "archive/" + archiveId, {trigger: true} );
+	selectArchive: function( archiveId, trigger ) {
+		return this.navigate( "archive/" + archiveId, {"trigger": (trigger === undefined || trigger == true ? true : false) } );
 	},
 	selectArchiveFile: function( archiveId, fileId ) {
 		if( archiveId == undefined ) {
@@ -58,8 +59,11 @@ var PageRouter = Backbone.Router.extend({
 	about: function() {
 		navigationView.goToPage("about-page", false);
 	},
-	archive: function(archiveId) {
-		navigationView.selectArchive(archiveId, false);
+	archive: function(archiveId, fileId) {
+		if( fileId != null )
+			navigationView.selectArchiveFile(archiveId, fileId, false);
+		else
+			navigationView.selectArchive(archiveId, false);
 	}
 	
 });

@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -348,6 +350,42 @@ public class UserManager {
 				if( combineArchive.getEntryByLocation(newFilePath) != null ) {
 					// there is a file existing at target path -> check replace strategy
 					ReplaceStrategy strategy = ReplaceStrategy.fromString( newEntryDataholder.getOption() );
+					if( strategy == ReplaceStrategy.REPLACE ) {
+						// Replace -> meta data of source file will be destroyed.
+						// get some temp file
+						Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, oldEntryDataholder.getFileName() );
+						
+						// extract old file
+						oldEntryDataholder.getArchiveEntry().extractFile(temp.toFile());
+						// replaces file in target path
+						archive.addArchiveEntry(newFilePath, temp, ReplaceStrategy.REPLACE);
+						
+					}
+					else if( strategy == ReplaceStrategy.OVERRIDE ) {
+						// Override -> meta data of target file will be destroyed.
+						
+						// remove file on new position first
+						combineArchive.removeEntry(newFilePath);
+						// than move source file to target position
+						combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
+					}
+					else if( strategy == ReplaceStrategy.RENAME ) {
+						// Rename -> rename source file
+						
+						// find new name
+						String altFileName = newFilePath;
+						int i = 1;
+						while( combineArchive.getEntry(altFileName) != null ) {
+							i++;
+							int extensionPoint = newFilePath.lastIndexOf( '.' );
+							String extension = newFilePath.substring( extensionPoint );
+							String pureName = newFilePath.substring( 0, extensionPoint );
+							
+							altFileName = pureName + "-" + String.valueOf(i) + extension;
+						}
+						// moving file to alternative path
+						combineArchive.moveEntry(oldEntryDataholder.getFilePath(), altFileName);
+					}
 							
 				}
 				else {

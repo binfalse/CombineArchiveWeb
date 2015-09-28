@@ -89,6 +89,10 @@ public class UserManager {
 	public void setData(UserData data) {
 		this.data = data;
 	}
+	
+	public boolean hasData() {
+		return data != null ? data.hasInformation() : false;
+	}
 
 	public String getWorkspaceId() {
 		return workspace.getWorkspaceId();
@@ -237,7 +241,7 @@ public class UserManager {
 		return createArchive(name, null, creator);
 	}
 	
-	private String createArchive( String name, File existingArchive, VCard creator ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
+	public String createArchive( String name, File existingArchive, VCard creator ) throws IOException, JDOMException, ParseException, CombineArchiveException, TransformerException {
 		
 		// generates new unique UID
 		String uuid = UUID.randomUUID ().toString ();
@@ -438,6 +442,6 @@ public class UserManager {
 			throw new CombineArchiveWebException("Cannot pack and close archive", e);
 		}
 	}
-	
+
 
 }

@@ -574,7 +574,7 @@ public class RestApi extends RestHelper {
 						return buildErrorResponse(507, user, "The maximum size is reached.");
 					}
 					
-					String id = user.createArchive( archive.getName(), archiveFile );
+					String id = user.createArchive( archive.getName(), archiveFile, archive.isIncludeVCard() && user.hasData() ? user.getData().getVCard() : null );
 					archive.setId(id);
 					
 				}
@@ -588,7 +588,7 @@ public class RestApi extends RestHelper {
 			}
 			else {
 				// Ordinary creation (only include VCard, if checkbox is checked)
-				String id = user.createArchive( archive.getName(), archive.isIncludeVCard() ? user.getData().getVCard() : null );
+				String id = user.createArchive( archive.getName(), archive.isIncludeVCard() && user.hasData() ? user.getData().getVCard() : null );
 				archive.setId(id);
 			}
 			
@@ -691,7 +691,7 @@ public class RestApi extends RestHelper {
 			}
 			
 			// creates a existing archive in the working space (check is included)
-			String id = user.createArchive( archive.getName(), temp.toFile() );
+			String id = user.createArchive( archive.getName(), temp.toFile(), archive.isIncludeVCard() && user.hasData() ? user.getData().getVCard() : null );
 			archive.setId(id);
 			
 			// trigger quota update

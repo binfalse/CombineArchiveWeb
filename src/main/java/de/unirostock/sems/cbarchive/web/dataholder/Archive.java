@@ -230,6 +230,20 @@ public class Archive implements Closeable {
 		return addArchiveEntry(fileName, file, ReplaceStrategy.RENAME);
 	}
 	
+	@JsonIgnore
+	public ArchiveEntryDataholder getEntryById( String id ) {
+		
+		if( id == null || id.isEmpty() )
+			return null;
+		
+		for( ArchiveEntryDataholder entry : entries.values() ) {
+			if( entry.getId().equals(id) )
+				return entry;
+		}
+		
+		return null;
+	}
+	
 	public enum ReplaceStrategy {
 		RENAME,		// renames the new file, if the name is already taken
 		REPLACE,	// replaces the old file, meta data will be copied

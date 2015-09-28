@@ -359,6 +359,8 @@ public class UserManager {
 						oldEntryDataholder.getArchiveEntry().extractFile(temp.toFile());
 						// replaces file in target path
 						archive.addArchiveEntry(newFilePath, temp, ReplaceStrategy.REPLACE);
+						// delete old source file
+						archive.getArchive().removeEntry( oldEntryDataholder.getArchiveEntry() );
 						
 					}
 					else if( strategy == ReplaceStrategy.OVERRIDE ) {

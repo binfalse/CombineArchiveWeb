@@ -825,7 +825,6 @@ public class RestApi extends RestHelper {
 		}
 
 		try {
-			// TODO parse option filed
 			user.updateArchiveEntry(archiveId, newEntry);
 			
 			Archive archive = user.getArchive(archiveId);
@@ -844,6 +843,7 @@ public class RestApi extends RestHelper {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	@POST
 	@Path( "/archives/{archive_id}/entries" )
 	@Produces( MediaType.APPLICATION_JSON )

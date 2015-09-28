@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
+import de.unirostock.sems.cbarchive.web.Tools;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserData {
@@ -102,14 +103,8 @@ public class UserData {
 	 */
 	@JsonIgnore
 	public boolean isContained( List<VCard> list ) {
-
-		for( VCard user : list ) {
-			if( user.getFamilyName().equals(familyName) && user.getGivenName().equals(givenName)
-					&& user.getEmail().equals(email) && user.getOrganization().equals(organization) )
-				return true;
-		}
 		
-		return false;
+		return Tools.containsVCard(list, getVCard());
 	}
 	
 	@JsonIgnore

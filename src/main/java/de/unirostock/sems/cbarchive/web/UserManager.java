@@ -41,7 +41,6 @@ import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
 import de.unirostock.sems.cbarchive.CombineArchive;
 import de.unirostock.sems.cbarchive.CombineArchiveException;
-import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
@@ -253,6 +252,12 @@ public class UserManager {
 			// an archive already exists
 			// check if combineArchive is valid
 			CombineArchive combineArchive = new CombineArchive( existingArchive );
+			
+			// adds the creator and the current date, if provided and archive is valid
+			if( combineArchive != null && creator != null && !creator.isEmpty() ) {
+				// add modified date and own VCard to all omex descriptions for the root element
+				Tools.addOmexMetaData(combineArchive, creator, true);
+			}
 			combineArchive.close();
 			
 			// copy files
@@ -407,10 +412,8 @@ public class UserManager {
 			}
 			
 			// add modified date to all omex descriptions for the root element
-			for( MetaDataObject metaObject : combineArchive.getDescriptions() ) {
-				if( metaObject instanceof OmexMetaDataObject )
-					((OmexMetaDataObject) metaObject).getOmexDescription().getModified().add( new Date() );
-			}
+			Tools.addOmexMetaData(combineArchive, null, false);
+			
 		}
 		
 		// format changed

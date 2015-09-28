@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.servlet.http.Cookie;
@@ -39,6 +40,11 @@ import org.apache.commons.io.FilenameUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.binfalse.bflog.LOGGER;
+import de.unirostock.sems.cbarchive.meta.MetaDataHolder;
+import de.unirostock.sems.cbarchive.meta.MetaDataObject;
+import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
+import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
+import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
@@ -277,4 +283,86 @@ public class Tools
 		
 		return false;
 	}
+	
+	/**
+	 * Adds current date as modification and adds the creator if not done yet, to every Omex description
+	 * Also creates new Omex description, if create is set to true and only if necessary
+	 * 
+	 * @param entity
+	 * @param creator
+	 * @param create
+	 */
+	public static void addOmexMetaData(MetaDataHolder entity, VCard creator, boolean create) {
+		
+		int added = 0;
+		// save some checks
+		if( creator != null && creator.isEmpty() )
+			creator = null;
+		
+		// add modified date and own VCard to all omex descriptions for the root element
+		for( MetaDataObject metaObject : entity.getDescriptions() ) {
+			if( metaObject instanceof OmexMetaDataObject ) {
+				OmexDescription meta = ((OmexMetaDataObject) metaObject).getOmexDescription();
+				
+				meta.getModified().add( new Date() );
+				if( creator != null && !containsVCard(meta.getCreators(), creator) )
+					// creator is set and not in Omex right now
+					meta.getCreators().add(creator);
+				added++;
+			}
+		}
+		
+		if( added == 0 && create == true ) {
+			// meta was added to non entry -> create
+			OmexDescription meta = new OmexDescription();
+			meta.getModified().add( meta.getCreated() );
+			if( creator != null )
+				meta.getCreators().add( creator );
+			
+			// attach to entity
+			entity.addDescription( new OmexMetaDataObject(meta) );
+		}
+		
+	}
+	
+	/**
+	 * Checks if the given VCard exists already in the Collection
+	 * 
+	 * @param collection
+	 * @param vcard
+	 * @return
+	 */
+	public static boolean containsVCard( Collection<VCard> collection, VCard vcard ) {
+		
+		if( collection == null )
+			return vcard == null;
+		else if( vcard == null )
+			return false;
+			
+		for( VCard current : collection )
+			if( areVCardEqual(current, vcard) )
+				return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Compares 2 VCards and returns true if both are identical in means of String.equal() or if both are null
+	 * 
+	 * @param vcard1
+	 * @param vcard2
+	 * @return
+	 */
+	public static boolean areVCardEqual( VCard vcard1, VCard vcard2 ) {
+		
+		if( vcard1 == vcard2 || (vcard1 == null && vcard2 == null) )
+			return true;
+		else if( vcard1 == null || vcard2 == null )
+			return false;
+		return	(vcard1.getGivenName() == null ? vcard2.getGivenName() == null : vcard1.getGivenName().equals( vcard2.getGivenName() )) &&
+				(vcard1.getFamilyName() == null ? vcard2.getFamilyName() == null : vcard1.getFamilyName().equals( vcard2.getFamilyName() )) &&
+				(vcard1.getEmail() == null ? vcard2.getEmail() == null : vcard1.getEmail().equals( vcard2.getEmail() )) &&
+				(vcard1.getOrganization() == null ? vcard2.getOrganization() == null : vcard1.getOrganization().equals( vcard2.getOrganization() ));
+	}
+
 }

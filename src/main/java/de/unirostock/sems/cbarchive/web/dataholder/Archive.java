@@ -77,9 +77,10 @@ public class Archive implements Closeable {
 	public static final String TEMPLATE_HTTP		= "http";
 	public static final String TEMPLATE_EXISTING	= "existing";
 	
-	protected String template	= TEMPLATE_PLAIN;
-	protected String id			= null;
-	protected String name		= null;
+	protected String template		= TEMPLATE_PLAIN;
+	protected boolean includeVCard	= false;
+	protected String id				= null;
+	protected String name			= null;
 	
 	@JsonInclude(Include.NON_NULL) 
 	protected Map<String, ArchiveEntryDataholder> entries = null;
@@ -140,6 +141,14 @@ public class Archive implements Closeable {
 
 	public void setTemplate(String template) {
 		this.template = template;
+	}
+	
+	public boolean isIncludeVCard() {
+		return includeVCard;
+	}
+
+	public void setIncludeVCard(boolean includeVCard) {
+		this.includeVCard = includeVCard;
 	}
 
 	@JsonIgnore

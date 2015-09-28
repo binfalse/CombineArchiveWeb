@@ -587,8 +587,8 @@ public class RestApi extends RestHelper {
 				}
 			}
 			else {
-				// Ordinary creation
-				String id = user.createArchive( archive.getName(), user.getData().getVCard() );
+				// Ordinary creation (only include VCard, if checkbox is checked)
+				String id = user.createArchive( archive.getName(), archive.isIncludeVCard() ? user.getData().getVCard() : null );
 				archive.setId(id);
 			}
 			

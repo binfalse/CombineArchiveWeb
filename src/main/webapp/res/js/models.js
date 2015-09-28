@@ -1690,6 +1690,7 @@ var CreateView = Backbone.View.extend({
 		
 		var archiveName = this.$el.find("input[name='newArchiveName']").val();
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
+		var includeVCard = this.$el.find("input[name='newArchvieIncludeVCard']").is(":checked");
 		var self = this;
 		
 		if( archiveName == null || archiveName == undefined || archiveName == "" ) {
@@ -1698,7 +1699,8 @@ var CreateView = Backbone.View.extend({
 			return false;
 		}
 		
-		var archiveModel = new ArchiveModel({"name": archiveName}, {"collection": workspaceArchives});
+		// set name and behavior for including own VCard
+		var archiveModel = new ArchiveModel({"name": archiveName, "includeVCard": includeVCard == true ? true : false }, {"collection": workspaceArchives});
 		
 		if( !archiveModel.isValid() ) {
 			// model is not valid

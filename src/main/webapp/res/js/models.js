@@ -1400,7 +1400,7 @@ var ArchiveView = Backbone.View.extend({
 			// is duplicated?
 			if( isDuplicated ) {
 				console.log("duplicate!");
-				var popupHtml = templateCache["template-dialog-exists"]({"fileName": data.node.text});
+				var popupHtml = templateCache["template-dialog-move"]({"fileName": data.node.text});
 				$.prompt( popupHtml, {
 					buttons: { "Rename": "rename", "Replace": "replace", "Override": "override", "Cancel": "cancel" },
 					submit: function(event, value, message, fromVal) {

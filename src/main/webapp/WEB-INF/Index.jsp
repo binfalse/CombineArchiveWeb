@@ -533,6 +533,17 @@
 			</ul>
 		</div>
 		<!-- **** -->
+		<div id="template-dialog-move">
+			<p>
+				<strong>{{# print(escape(fileName)); }}</strong> already exists in the target folder.
+			</p>
+			<ul>
+				<li><strong>Rename</strong> the file you tried to move</li>
+				<li><strong>Replace</strong> the old file, meta data of the <i>target</i> file will be perserved</li>
+				<li><strong>Override</strong> the old file, meta data of the <i>source</i> file will be perserved</li>
+			</ul>
+		</div>
+		<!-- **** -->
 		<div id="template-xml-meta-entry">
 			<h4>RDF/XML entry</h4>
 			<div class="archive-meta-xml-code">

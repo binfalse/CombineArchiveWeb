@@ -237,7 +237,10 @@
 			<h2>CreateArchive</h2>
 			<p>
 				<label for="newArchiveName">Name of the Archive:</label><br />
-				<input type="text" id="newArchiveName" name="newArchiveName" placeholder="archive name" />
+				<input type="text" id="newArchiveName" name="newArchiveName" placeholder="archive name" /><br />
+				
+				<input type="checkbox" id="newArchiveIncludeVCard" name="newArchiveIncludeVCard" checked="checked" />
+				<label for="newArchiveIncludeVCard">Include own VCard.</label>
 			</p>
 			
 			<div style="margin: 0.5em 0; float: left;">

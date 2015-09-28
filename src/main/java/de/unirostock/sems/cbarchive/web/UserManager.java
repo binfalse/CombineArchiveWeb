@@ -44,6 +44,7 @@ import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.dataholder.Workspace;
@@ -319,17 +320,10 @@ public class UserManager {
 			throw new CombineArchiveWebException("Cannot open archive with id: " + archiveId, e);
 		}
 		CombineArchive combineArchive = archive.getArchive();
-		ArchiveEntry archiveEntry = null;
-		
 		// searching for the old entry by the id
-		for( ArchiveEntryDataholder entry : archive.getEntries().values() ) {
-			if( entry.getId().equals(newEntryDataholder.getId()) ) {
-				archiveEntry = entry.getArchiveEntry();
-				break;
-			}
-		}
+		ArchiveEntryDataholder oldEntryDataholder = archive.getEntryById( newEntryDataholder.getId() );
 		
-		if( archiveEntry == null ) {
+		if( oldEntryDataholder == null ) {
 			// was not able to find the old entry
 			try {
 				archive.close();
@@ -338,8 +332,8 @@ public class UserManager {
 			}
 			throw new CombineArchiveWebException("Cannot find old version of archive entry");
 		}
-		
-		ArchiveEntryDataholder oldEntryDataholder = new ArchiveEntryDataholder(archiveEntry);
+		// get the real entry
+		ArchiveEntry archiveEntry = oldEntryDataholder.getArchiveEntry();
 		
 		// applies changes in the filename/filepath
 		String newFilePath = newEntryDataholder.getFilePath();
@@ -351,7 +345,15 @@ public class UserManager {
 			
 			// move it!
 			try {
-				combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
+				if( combineArchive.getEntryByLocation(newFilePath) != null ) {
+					// there is a file existing at target path -> check replace strategy
+					ReplaceStrategy strategy = ReplaceStrategy.fromString( newEntryDataholder.getOption() );
+							
+				}
+				else {
+					// usual case
+					combineArchive.moveEntry(oldEntryDataholder.getFilePath(), newFilePath);
+				}
 			} catch (IOException e) {
 				LOGGER.error(e, "Cannot move file from ", oldEntryDataholder.getFilePath(), " to ", newFilePath);
 				

@@ -247,7 +247,24 @@ public class Archive implements Closeable {
 	public enum ReplaceStrategy {
 		RENAME,		// renames the new file, if the name is already taken
 		REPLACE,	// replaces the old file, meta data will be copied
-		OVERRIDE	// replaces the old file, meta data will be discarded
+		OVERRIDE;	// replaces the old file, meta data will be discarded
+		
+		public static ReplaceStrategy fromString( String string ) {
+			
+			if( string == null || string.isEmpty() )
+				return RENAME;
+			
+			ReplaceStrategy strategy = RENAME;
+			string = string.toLowerCase();
+			
+			if( string.contains("replace") )
+				strategy = ReplaceStrategy.REPLACE;
+			else if( string.contains("override") )
+				strategy = ReplaceStrategy.OVERRIDE;
+			
+			return strategy;
+		}
+		
 	}
 	
 	@JsonIgnore

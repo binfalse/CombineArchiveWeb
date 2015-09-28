@@ -957,17 +957,9 @@ public class RestApi extends RestHelper {
 					}
 					
 					// override flag
-					
-					ReplaceStrategy strategy = ReplaceStrategy.RENAME;
-					
 					String opt = (options != null) ? options.get( file.getFormDataContentDisposition().getFileName() ) : null;
-					if( opt != null && !opt.isEmpty() ) {
-						if( opt.contains("replace") )
-							strategy = ReplaceStrategy.REPLACE;
-						else if( opt.contains("override") )
-							strategy = ReplaceStrategy.OVERRIDE;
-					}
-					
+					ReplaceStrategy strategy = ReplaceStrategy.fromString(opt); 
+							
 					// add the file in the currently selected path
 					ArchiveEntry entry = archive.addArchiveEntry(path + fileName, temp, strategy);
 					

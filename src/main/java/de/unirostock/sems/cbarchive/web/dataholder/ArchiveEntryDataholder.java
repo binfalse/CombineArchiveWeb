@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import de.binfalse.bflog.LOGGER;
 import de.unirostock.sems.cbarchive.ArchiveEntry;
@@ -46,6 +48,10 @@ public class ArchiveEntryDataholder {
 	protected long fileSize;
 	protected URI format;
 	protected List<MetaObjectDataholder> meta = new ArrayList<MetaObjectDataholder>();
+	
+	/** internal used option field, for replace strategy **/
+	@JsonInclude( Include.NON_NULL )
+	protected String option = null;
 
 	public ArchiveEntryDataholder( ArchiveEntry archiveEntry ) {
 		this.archiveEntry		= archiveEntry;
@@ -179,5 +185,16 @@ public class ArchiveEntryDataholder {
 	public MetaDataHolder getMetaDataHolder() {
 		return metaDataHolder;
 	}
+
+	public String getOption() {
+		return option;
+	}
+
+	public void setOption(String option) {
+		this.option = option;
+	}
 	
+	public void clearOption() {
+		this.option = null;
+	}
 }

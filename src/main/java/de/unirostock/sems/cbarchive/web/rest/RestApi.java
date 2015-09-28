@@ -825,6 +825,7 @@ public class RestApi extends RestHelper {
 		}
 
 		try {
+			// TODO parse option filed
 			user.updateArchiveEntry(archiveId, newEntry);
 			
 			Archive archive = user.getArchive(archiveId);

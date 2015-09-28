@@ -1361,9 +1361,9 @@ var ArchiveView = Backbone.View.extend({
 	},
 	jstreeMove: function(event, data) {
 		
-		console.log(data);
 		var jstree = this.$treeEl.jstree(true);
 		
+		// getting new node path
 		var path = data.node.text;
 		var par = jstree.get_node(data.parent);
 		while( par != null && par != undefined && par.id != "#" ) {
@@ -1375,34 +1375,76 @@ var ArchiveView = Backbone.View.extend({
 			//path = par.text + ( par.text.indexOf("/", par.text.length-1) === -1 ? "/" : "") + path;
 			par = jstree.get_node( jstree.get_parent(par) );
 		}
-		console.log(path);
 		var scrollValue = this.$el.find(".archive-filetree").scrollTop();
 		
 		var model = this.collection.findWhere( {"id": data.node.data.id } );
 		if( model.get("filePath") != path ) {
 			// path has changed
-			model.set("filePath", path);
-			var self = this;
-			model.save({}, {
-				success: function(model, response, options) {
-					// everything ok
-					messageView.success( "file successfully moved." );
-					self.fetchCollection(true, scrollValue);
-				},
-				error: function(model, response, options) {
-					console.log("error moving file.");
-					if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
-						var text = response.responseJSON.errors;
-						messageView.error( "Cannot move file", text );
-					}
-					else
-						messageView.error( "Unknown Error", "Cannot move file." );
-					self.fetchCollection(true, scrollValue);
-				}
+			
+			// check if file with same name already exists in new folder
+			var directParent = jstree.get_node(data.parent);
+			var isDuplicated = false;
+			if( _.isArray(directParent.children) ) {
 				
-			});
+				// check for duplication
+				isDuplicated = _.find(directParent.children, function (child) {
+					var childNode = jstree.get_node(child);
+					return childNode.text == data.node.text && childNode.id != data.node.id;
+				}) == undefined ? false : true;
+			}
+			
+			var self = this;
+			// is duplicated?
+			if( isDuplicated ) {
+				console.log("duplicate!");
+				var popupHtml = templateCache["template-dialog-exists"]({"fileName": data.node.text});
+				$.prompt( popupHtml, {
+					buttons: { "Rename": "rename", "Replace": "replace", "Override": "override", "Cancel": "cancel" },
+					submit: function(event, value, message, fromVal) {
+						if( value == "cancel" ) {
+							self.fetchCollection(true, scrollValue);
+							return;
+						}
+						model.set("filePath", path);
+						model.set("option", value);
+						setTimeout(function() { self.moveFileDoIt(model); }, 0);
+					}
+				});
+				
+				return;
+			}
+			else {
+				// simply update model
+				model.set("filePath", path);
+				setTimeout(function() { self.moveFileDoIt(model); }, 0);
+			}
+			
+			
 		}
 		
+	},
+	moveFileDoIt: function(model) {
+		var self = this;
+		var scrollValue = this.$el.find(".archive-filetree").scrollTop();
+		model.save({}, {
+			success: function(model, response, options) {
+				// everything ok
+				messageView.success( "file successfully moved." );
+				self.fetchCollection(true, scrollValue);
+			},
+			error: function(model, response, options) {
+				console.log("error moving file.");
+				if( response.responseJSON !== undefined && response.responseJSON.status == "error" ) {
+					var text = response.responseJSON.errors;
+					messageView.error( "Cannot move file", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Cannot move file." );
+				self.fetchCollection(true, scrollValue);
+			}
+			
+		});
+
 	},
 	
 	generateJsTreeJson: function() {

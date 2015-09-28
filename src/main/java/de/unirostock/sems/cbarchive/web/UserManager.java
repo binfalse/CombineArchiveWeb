@@ -261,6 +261,7 @@ public class UserManager {
 			if( combineArchive != null && creator != null && !creator.isEmpty() ) {
 				// add modified date and own VCard to all omex descriptions for the root element
 				Tools.addOmexMetaData(combineArchive, creator, true);
+				combineArchive.pack();
 			}
 			combineArchive.close();
 			

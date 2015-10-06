@@ -340,7 +340,7 @@
 						<a class="archive-info-convert on-not-edit" href="{{# print(CaroUrl); print(baseUrl); }}download/archive/{{# print(workspace.workspaceId); }}/{{# print(archive.id); }}.omex" target="_blank">[Export RO]</a>
 						<% } %>
 						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
-						<a class="archive-info-edit on-not-edit" href="#">[Edit]</a>
+						<a class="archive-info-edit on-not-edit" href="#">[Rename]</a>
 						<a class="archive-info-delete on-not-edit" href="#">[Delete]</a>
 						<a class="archive-info-save on-edit" href="#">[Save]</a>
 						<a class="archive-info-cancel on-edit" href="#">[Cancel]</a>

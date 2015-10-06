@@ -122,6 +122,9 @@ div.nav-container
 .error-element {
 	background-color: #FF9696
 }
+br.oneandhalf {
+	line-height: 1.5em;
+}
 /* -------- Feedback Button -------- */
 #feedback {
 	display: block;

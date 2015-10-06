@@ -1625,22 +1625,27 @@ var CreateView = Backbone.View.extend({
 		}
 		else if( archiveTemplate == "empty" ) {
 			this.$el.find(".create-parameter").hide();
+			this.$el.find("input[name='newArchiveIncludeVCard']").prop("checked", true);
 		}
 		else if( archiveTemplate == "file" ) {
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-upload").show();
+			this.$el.find("input[name='newArchiveIncludeVCard']").prop("checked", false);
 		}
 		else if( archiveTemplate == "cellml" ) {
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-cellml").show();
+			this.$el.find("input[name='newArchiveIncludeVCard']").prop("checked", true);
 		}
 		else if( archiveTemplate == "git" ) {
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-git").show();
+			this.$el.find("input[name='newArchiveIncludeVCard']").prop("checked", true);
 		}
 		else if( archiveTemplate == "http" ) {
 			this.$el.find(".create-parameter").hide();
 			this.$el.find(".on-archive-http").show();
+			this.$el.find("input[name='newArchiveIncludeVCard']").prop("checked", false);
 		}
 		else {
 			// no known type of archive

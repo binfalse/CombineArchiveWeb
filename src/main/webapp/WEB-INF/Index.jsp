@@ -240,7 +240,7 @@
 				<input type="text" id="newArchiveName" name="newArchiveName" placeholder="archive name" /><br />
 				
 				<input type="checkbox" id="newArchiveIncludeVCard" name="newArchiveIncludeVCard" checked="checked" />
-				<label for="newArchiveIncludeVCard">Include own VCard.</label>
+				<label for="newArchiveIncludeVCard">Add me as Creator</label>
 			</p>
 			
 			<div style="margin: 0.5em 0; float: left;">

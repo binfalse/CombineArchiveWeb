@@ -300,6 +300,14 @@
 				See <a href="http://sems.uni-rostock.de/cat" title="CombineArchive Toolkit">our website</a> for further information.
 			</p>
 			
+			<h2>Publication</h2>
+			<p>
+				Scharm M, Wendland F, Peters M, Wolfien M, Theile T, Waltemath D (2014)<br />
+				<strong>The CombineArchiveWeb Application</strong> - A Web-based Tool to Handle Files Associated with Modelling Results.
+				Proceedings of the 2014 Workshop on Semantic Web Applications and Tools for life sciences. Demo paper.<br class="oneandhalf"/>
+				<a href="http://ceur-ws.org/Vol-1320/paper_19.pdf" target="_blank">http://ceur-ws.org/Vol-1320/paper_19.pdf</a>
+			</p>
+			
 			<h2>License</h2>
 			<p>
 				This program is free software: you can redistribute it and/or modify

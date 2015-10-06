@@ -348,6 +348,9 @@ ul.start-history-list > li.current-workspace {
 
 /* -------- Archive View -------- */
 
+.filetree-master-file {
+	font-weight: bold;
+}
 a.jstree-anchor > i.jstree-icon {
 	background-size: cover !important;
 }

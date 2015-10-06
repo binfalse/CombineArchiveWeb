@@ -1468,6 +1468,7 @@ var ArchiveView = Backbone.View.extend({
 					"data": entry,
 					"type": "file",
 					"icon": "res/icon/" + entry.get("format"),
+					"a_attr": entry.get("master") == true ? { "class": "filetree-master-file" } : {},
 					"state": {
 						"opened": false,
 						"disabled": false,
@@ -1498,6 +1499,7 @@ var ArchiveView = Backbone.View.extend({
 						"data": entry,
 						"type": "file",
 						"icon": "res/icon/" + entry.get("format"),
+						"a_attr": entry.get("master") == true ? { "class": "filetree-master-file" } : {},
 						"state": {
 							"opened": false,
 							"disabled": false,

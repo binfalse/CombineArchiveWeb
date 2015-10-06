@@ -399,7 +399,10 @@
 					{{# if( entry.filePath != "/" ) { }}
 					<div class="attribute-name">file name:</div>
 					<div class="attribute-detail">
-						<span class="on-not-edit text-archive-entry-filename">{{# print(escape(entry.fileName)); }}</span>
+						<span class="on-not-edit text-archive-entry-filename edit-object">
+							{{# print(escape(entry.fileName)); }}
+							<span class="edit-link"><a href="#" class="archive-file-edit">[Rename]</a></span>
+						</span>
 						<input type="text" class="on-edit" name="archiveEntryFileName" value="{{# print(escape(entry.fileName)); }}" placeholder="file name" />
 					</div>
 					{{# } }}

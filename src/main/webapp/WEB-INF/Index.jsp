@@ -97,7 +97,6 @@
 			<h2>Share Workspace</h2>
 			<p>
 				We offer basic support for collaborative working.
-				All the archives that 
 				To share this workspace, just distribute the following link: <br />
 				<div>
 					<input type="text" style="display: block; float: left; width: calc(100% - 6.5em);" readonly="readonly" value="{{# print(baseUrl); }}rest/share/{{# print(current.workspaceId); }}" />

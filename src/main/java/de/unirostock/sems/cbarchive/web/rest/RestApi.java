@@ -367,8 +367,10 @@ public class RestApi extends RestHelper {
 				history.getRecentWorkspaces().add( user.getWorkspace() );
 			history.setCurrentWorkspace( user.getWorkspaceId() );
 			
-			if( workspaceId == null || workspaceId.isEmpty() )
+			if( workspaceId == null || workspaceId.isEmpty() ) {
+				LOGGER.error("No workspace id was provided for deletion");
 				return buildErrorResponse(400, user, "No workspace ID provided");
+			}
 			
 			// removes workspace
 			history.removeWorkspaceFromHistory(workspaceId);
@@ -433,8 +435,10 @@ public class RestApi extends RestHelper {
 			user.setData(data);
 			return buildResponse(200, user).entity(user.getData()).build();
 		}
-		else
+		else {
+			LOGGER.warn("User ", user.getWorkspaceId(), " has provided insufficient information to update vCard");
 			return buildErrorResponse(400, user, "insufficient user information");
+		}
 	}
 	
 	// --------------------------------------------------------------------------------
@@ -1077,8 +1081,10 @@ public class RestApi extends RestHelper {
 				
 				if( result )
 					return buildResponse(200, user).entity("ok").build();
-				else
+				else {
+					LOGGER.error("Cannot move meta description for entry ", entryId, " in Archive ", archiveId, " in Workspace ", user.getWorkspaceId());
 					return buildErrorResponse(500, user, "Cannot remove meta description");
+				}
 			} catch (TransformerException e) {
 				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Cannot delete meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
@@ -1369,8 +1375,10 @@ public class RestApi extends RestHelper {
 				
 				if( result )
 					return buildResponse(200, user).entity("ok").build();
-				else
+				else {
+					LOGGER.error("Cannot remove meta description for entry ", entryId, " in Archive ", archiveId, " in Workspace ", user.getWorkspaceId());
 					return buildErrorResponse(500, user, "Cannot remove meta description");
+				}
 			} catch (TransformerException e) {
 				LOGGER.error(e, MessageFormat.format("Cannot pack archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 				return buildErrorResponse( 500, user, "Cannot delete meta info", "Cannot pack archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );

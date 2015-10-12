@@ -48,7 +48,7 @@
 	<link rel="stylesheet" href="res/css/jquery-impromptu.min.css" type="text/css">
 	
 	<!-- main scripts -->
-	<% int scriptVersion = 4; %>
+	<% int scriptVersion = 5; %>
 	<script type="text/javascript" src="res/js/models.js?version=<%= scriptVersion %>"></script>
 	<script type="text/javascript" src="res/js/router.js?version=<%= scriptVersion %>"></script>
 	<script type="text/javascript" src="res/js/js.js?version=<%= scriptVersion %>"></script>
@@ -247,8 +247,11 @@
 				<label for="newArchiveTemplate-File"><b>Upload</b> an existing archive</label><br />
 				<div class="create-parameter on-archive-upload">
 					<div class="dropbox">
-						<div class="center-button">
-							<a href="#">Upload file</a>
+						<div class="dropbox-buttons">
+							<div class="center-button">
+								<a href="#">Upload file</a>
+							</div>
+							<div class="clearer"></div>
 						</div>
 						<div class="file-name-display">Test...</div>
 						<input type="file" name="newArchiveExisting" />
@@ -356,9 +359,15 @@
 				
 				<div class="archive-upload">
 					<div class="dropbox">
-						<div class="center-button">
-							<a href="#">Upload files</a>
-							<div class="icon"> </div>
+						<div class="dropbox-buttons">
+							<div class="center-button">
+								<a href="#">Upload files</a>
+								<div class="icon"> </div>
+							</div>
+							<div class="fetch-button">
+								<a href="#">v</a>
+							</div>
+							<div class="clearer"></div>
 						</div>
 						<input type="file" name="fileUpload" multiple="multiple" />
 					</div>

@@ -950,8 +950,9 @@ var ArchiveView = Backbone.View.extend({
 		
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
-		"click .dropbox a": "dropboxClick",
+//		"click .dropbox a": "dropboxClick",
 		"click .dropbox .center-button": "dropboxClick",
+		"click .dropbox .fetch-button": "dropboxFetch",
 		"change .dropbox input": "dropboxManual",
 		"click .archive-folder-add": "addFolder",
 		
@@ -1067,6 +1068,15 @@ var ArchiveView = Backbone.View.extend({
 		var files = event.originalEvent.dataTransfer.files;
 		this.uploadFiles(files);
 		
+	},
+	dropboxFetch: function(event) {
+		// disables default click behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
+		alert("fetch");
+		
+		return false;
 	},
 	dropboxClick: function(event) {
 		// disables default click behavior

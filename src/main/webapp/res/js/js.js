@@ -23,6 +23,30 @@ function bytesToSize(bytes) {
 	var i = Math.floor(Math.log(bytes) / Math.log(k));
 	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
 }
+// http://www.sitepoint.com/testing-for-empty-values/
+function empty(data) {
+	if(typeof(data) == 'number' || typeof(data) == 'boolean')
+	{ 
+		return false; 
+	}
+	if(typeof(data) == 'undefined' || data === null)
+	{
+		return true; 
+	}
+	if(typeof(data.length) != 'undefined')
+	{
+		return data.length == 0;
+	}
+	var count = 0;
+	for(var i in data)
+	{
+		if(data.hasOwnProperty(i))
+		{
+			count ++;
+		}
+	}
+	return count == 0;
+}
 
 //Underscore template interpolate character to {{# ... }}
 _.templateSettings =  {
@@ -52,28 +76,28 @@ function escape(string, brline) {
 }
 
 $(document).ready(function () {
-	
+
 	$("#noJs").remove ();
-	
+
 	var isIE = /*@cc_on!@*/false || !!document.documentMode;
 	if (!isIE)
 		$("#noBrowser").remove ();
 	else
 		return;
-	
+
 	// read in and compile all tempates
 	$("#templates").children().each( function(index, element) {
 		var $el = $(element);
 		var id = $el.attr("id");
 		var html = $el.html();
-		
+
 		if( id != undefined && html != undefined && html.length > 1) {
 			html = html.replace(__deescape.amp, "&").replace(__deescape.lt, "<").replace(__deescape.gt, ">");
 			templateCache[ id ] = _.template(html);
 		}
 		$el.remove();
 	});
-	
+
 	// heatbeat
 	$.get( RestRoot + "heartbeat", function(data) {
 		if( data.substring(0, 2) == "ok" ) {
@@ -83,17 +107,17 @@ $(document).ready(function () {
 			// init router and views
 			pageRouter = new PageRouter();
 			pageRouter.navigate("", {trigger: true});
-			
+
 			$("#about-footer-link").click(function(event) {
 				//navigationView.goToPage("about-page");
 				pageRouter.navigate("about", {trigger: true});
 				return false;
 			});
-			
+
 			// show the page
 			$("#page").show();
 		}
 	});
-	
+
 });
 

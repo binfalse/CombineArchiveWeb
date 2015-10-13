@@ -567,6 +567,19 @@ div.attribute-detail-br {
 	
 }
 
+/* Dialog to fetch files from remote URL */
+div#template-dialog-fetch {
+	
+}
+div.fetch-dialog-form {
+	width: 100%;
+	margin: 1em 0;
+}
+div.fetch-dialog-form .fetch-dialog-url {
+	width: 100%;
+}
+}
+
 /* -------- Create View -------- */
 
 .create-parameter  {

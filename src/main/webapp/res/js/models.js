@@ -952,9 +952,11 @@ var ArchiveView = Backbone.View.extend({
 		"drop .dropbox": "dropboxDrop",
 //		"click .dropbox a": "dropboxClick",
 		"click .dropbox .center-button": "dropboxClick",
-		"click .dropbox .fetch-button": "dropboxFetch",
 		"change .dropbox input": "dropboxManual",
 		"click .archive-folder-add": "addFolder",
+		
+		"click .dropbox .fetch-button": "dropboxFetch",
+//		"click .fetch-dialog-button": "doFetch",
 		
 		"dragover .archive-filetree": "dropboxOver",
 		"drop .archive-filetree": "dropboxDrop",
@@ -1048,6 +1050,33 @@ var ArchiveView = Backbone.View.extend({
 		
 		return false;
 	},
+	getCurrentFileTreePath: function() {
+		
+		var jstree = this.$treeEl.jstree(true);
+		var currentNode = jstree.get_selected(true)[0];
+		var path = "/";
+		
+		if( currentNode != undefined && currentNode.original.type != "root" ) {
+			// there is a selected node and it is not the root node
+			
+			if( currentNode.original.type == "dir" )
+				path = currentNode.original.text + "/";
+			
+			var par = jstree.get_node( "#" + jstree.get_parent(currentNode) );
+			while( par != null && par != undefined && par != false && par.id != "#" ) {
+				var npath = par.text;
+				if( npath.indexOf("/", npath.length - 1) === -1 )
+					npath = npath + "/";
+				
+				if( npath !== "/" )
+					path = npath + path;
+				//path = par.text + ( par.text.indexOf("/", par.text.length-1) === -1 ? "/" : "") + path;
+				par = jstree.get_node( jstree.get_parent(par) );
+			}
+		}
+		
+		return path;
+	},
 	dropboxOver: function(event) {
 		// disables default drag'n'drop behavior
 		event.stopPropagation();
@@ -1068,15 +1097,6 @@ var ArchiveView = Backbone.View.extend({
 		var files = event.originalEvent.dataTransfer.files;
 		this.uploadFiles(files);
 		
-	},
-	dropboxFetch: function(event) {
-		// disables default click behavior
-		event.stopPropagation();
-		event.preventDefault();
-		
-		alert("fetch");
-		
-		return false;
 	},
 	dropboxClick: function(event) {
 		// disables default click behavior
@@ -1103,28 +1123,7 @@ var ArchiveView = Backbone.View.extend({
 	uploadFiles: function(files) {
 		
 		// get current location
-		var jstree = this.$treeEl.jstree(true);
-		var currentNode = jstree.get_selected(true)[0];
-		
-		var path = "/";
-		if( currentNode != undefined && currentNode.original.type != "root" ) {
-			// there is a selected node and it is not the root node
-			
-			if( currentNode.original.type == "dir" )
-				path = currentNode.original.text + "/";
-			
-			var par = jstree.get_node( "#" + jstree.get_parent(currentNode) );
-			while( par != null && par != undefined && par != false && par.id != "#" ) {
-				var npath = par.text;
-				if( npath.indexOf("/", npath.length - 1) === -1 )
-					npath = npath + "/";
-				
-				if( npath !== "/" )
-					path = npath + path;
-				//path = par.text + ( par.text.indexOf("/", par.text.length-1) === -1 ? "/" : "") + path;
-				par = jstree.get_node( jstree.get_parent(par) );
-			}
-		}
+		var path = this.getCurrentFileTreePath();
 		
 		// Grabs the data
 		var uploadTask = {
@@ -1234,6 +1233,79 @@ var ArchiveView = Backbone.View.extend({
 //				this.$el.find(".dropbox a").show();
 			},
 			error: function(data) {
+				self.$el.find(".dropbox .icon").hide();
+				self.$el.find(".dropbox a").show();
+				
+				console.log(data);
+				console.log("error uploading file.");
+				if( data !== undefined && data.responseJSON !== undefined && data.responseJSON.status == "error" ) {
+					var text = data.responseJSON.errors;
+					messageView.error( "Cannot upload file", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Cannot upload file." );
+			}
+		});
+	},
+	dropboxFetch: function(event) {
+		// disables default click behavior
+		event.stopPropagation();
+		event.preventDefault();
+		
+		// open only one instance
+		if( this.fetchDialog != undefined || this.fetchDialog != null )
+			return false;
+		
+		var popupHtml = templateCache["template-dialog-fetch"]();
+		var self = this;
+		this.fetchDialog = new Impromptu( popupHtml, {
+			buttons: { "Fetch": true, "Close": false },
+			submit: function (event, value, message, formVals) {
+				if( value == false || empty(formVals['fetch-dialog-url']) ) 
+					return;
+				
+				self.doFetch( formVals['fetch-dialog-url'] );
+			},
+			close: function (event) {
+				self.fetchDialog = null;
+			}
+		});
+		
+		return false;
+	},
+	doFetch: function(url) {
+		
+		// show waiting stuff
+		this.$el.find(".dropbox .icon").show();
+		this.$el.find(".dropbox a").hide();
+		
+		// get current location
+		var path = this.getCurrentFileTreePath();
+		var self = this;
+		// upload it
+		$.ajax({
+			"url": self.collection.url,
+			"type": "POST",
+			"processData": false,
+			"contentType": false,
+			"data": {
+				"url": url,
+				"path": path
+			},
+			"success": function(data) {
+				self.fetchCollection(true);
+				
+				// scanning for any non-critical erros.
+				if( data !== undefined ) {
+					_.each(data, function(element, index, list) {
+						if( element.error == true )
+							messageView.warning( element.filePath, element.message );
+					});
+				}
+				else 
+					messageView.error( "Unknown Error", "No response from the server!" );
+			},
+			"error": function(data) {
 				self.$el.find(".dropbox .icon").hide();
 				self.$el.find(".dropbox a").show();
 				

@@ -50,6 +50,10 @@ import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdom2.JDOMException;
@@ -871,8 +875,51 @@ public class RestApi extends RestHelper {
 		}
 		
 		// TODO
+		Archive archive = null;
+		LinkedList<Object> result = new LinkedList<Object>();
+		try {
+			archive = user.getArchive(archiveId);
+			
+			// check maximum files in archive -> is the limit already reached, without uploading anything new?
+			if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( archive.countArchiveEntries(), Fields.QUOTA_FILE_LIMIT) == false ) {
+				LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+				return buildErrorResponse(507, user, "The max amount of files in one archive is reached.");
+			}
+			
+			HttpClient client = HttpClientBuilder.create().build();
+			for( String remoteUrl : request.getRemoteUrl() ) {
+				
+				HttpResponse reponse = client.execute( new HttpGet(remoteUrl) );
+				// TODO
+				
+				
+				
+			}
+			
+			synchronized (archive) {
+				// pack and close the archive
+				archive.packAndClose();
+				archive = null;
+			}
+			
+			// trigger quota update
+			QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
+			// return all successfully uploaded files
+			return buildResponse(200, user).entity(result).build();
+			
+		} catch (CombineArchiveWebException | IOException | TransformerException e) {
+			LOGGER.error(e, MessageFormat.format("Error while fetching/adding file to archive {0} in Workspace {1}", archiveId, user.getWorkingDir() ));
+			return buildErrorResponse(500, user, "Error while fetching file: " + e.getMessage() );
+		} finally {
+			try {
+				if( archive != null )
+					archive.close();
+			}
+			catch (IOException e) {
+				LOGGER.error(e, "Final closing of archive caused exception");
+			}
+		}
 		
-		return null;
 	}
 	
 	@SuppressWarnings("resource")

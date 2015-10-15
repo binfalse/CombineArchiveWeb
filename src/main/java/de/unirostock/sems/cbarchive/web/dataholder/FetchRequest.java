@@ -26,6 +26,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
+
 // so Jersey parses this as root dataholder, if passed to create or update or something...
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FetchRequest implements Serializable {
@@ -34,6 +36,7 @@ public class FetchRequest implements Serializable {
 	
 	private String path = "/";
 	private List<String> remoteUrl = null;
+	private String strategy = ReplaceStrategy.RENAME.toString();
 	
 	public FetchRequest(String path, String remoteUrl) {
 		super();
@@ -63,7 +66,15 @@ public class FetchRequest implements Serializable {
 	public void setRemoteUrl(List<String> remoteUrl) {
 		this.remoteUrl = remoteUrl;
 	}
+	
+	public String getStrategy() {
+		return strategy;
+	}
 
+	public void setStrategy(String strategy) {
+		this.strategy = strategy;
+	}
+	
 	@JsonIgnore
 	public boolean isValid() {
 		

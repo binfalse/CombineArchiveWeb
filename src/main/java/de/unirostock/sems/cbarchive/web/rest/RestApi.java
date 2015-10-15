@@ -75,6 +75,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveEntryDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.ArchiveFromExisting;
+import de.unirostock.sems.cbarchive.web.dataholder.FetchRequest;
 import de.unirostock.sems.cbarchive.web.dataholder.MetaObjectDataholder;
 import de.unirostock.sems.cbarchive.web.dataholder.StatisticData;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
@@ -846,7 +847,34 @@ public class RestApi extends RestHelper {
 			return buildErrorResponse( 500, user, MessageFormat.format("Cannot update archive entry {0}/{1} in WorkingDir {2}", archiveId, newEntry.getFilePath(), user.getWorkingDir()), e.getMessage() );
 		}
 	}
-
+	
+	@POST
+	@Path( "/archives/{archive_id}/entries" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson,
+										FetchRequest request ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+			if( userJson != null && !userJson.isEmpty() )
+				user.setData( UserData.fromJson(userJson) );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if( request == null || request.isValid() == false ) {
+			LOGGER.error("Got invalid fetch request, to add file from remote url");
+			return buildErrorResponse(400, user, "Invalid fetch request");
+		}
+		
+		// TODO
+		
+		return null;
+	}
+	
 	@SuppressWarnings("resource")
 	@POST
 	@Path( "/archives/{archive_id}/entries" )

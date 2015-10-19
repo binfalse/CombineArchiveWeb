@@ -38,7 +38,6 @@ import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -391,7 +390,11 @@ public class Tools
 				break;
 		}
 		
-		return 0;
+		input.close();
+		output.flush();
+		output.close();
+		
+		return copied;
 	}
 
 }

@@ -49,7 +49,6 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.io.CopyUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -920,6 +919,8 @@ public class RestApi extends RestHelper {
 				long contentLength = 0;
 				if( contentLengthHeader != null && contentLengthHeader.getValue() != null && contentLengthHeader.getValue().isEmpty() == false ) {
 					contentLength = Long.valueOf( contentLengthHeader.getValue() );
+				} else {
+					contentLength = response.getEntity().getContentLength();
 				}
 				
 				// max size for upload
@@ -961,8 +962,8 @@ public class RestApi extends RestHelper {
 				// download the file
 				File tempFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, fileName);
 				FileOutputStream fileOutput = new FileOutputStream(tempFile);
+				//IOUtils.copyLarge(response.getEntity().getContent(), fileOutput, 0, 200);
 				//TODO
-				
 				
 			}
 			

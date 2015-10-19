@@ -1689,17 +1689,6 @@ var CreateView = Backbone.View.extend({
 		"click a.test": "addMsg",
 		"click a.test2": "rmvMsg"
 	},
-	addMsg: function(event) {
-//		this.$el.find(".create-archive").attr("disabled", "disabled");
-//		this.$el.find("#newArchiveName").attr("disabled", "disabled");
-//		this.$el.find("input[name="newArchiveTemplate"]").attr("disabled", "disabled");
-		messageView.warning("Hello", "World", "test");
-		messageView.error("World", "Hello", "test");
-		return false;
-	},
-	rmvMsg: function(event) {
-		messageView.removeMessages("test");
-	},
 	updateArchiveTemplate: function (event) {
 		var archiveTemplate = this.$el.find("input[name='newArchiveTemplate']:checked").val();
 		if( archiveTemplate == undefined ) {

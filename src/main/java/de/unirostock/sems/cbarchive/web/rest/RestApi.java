@@ -49,10 +49,14 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -857,7 +861,7 @@ public class RestApi extends RestHelper {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.APPLICATION_JSON )
 	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson,
-										FetchRequest request ) {
+										List<FetchRequest> requestList ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -867,11 +871,6 @@ public class RestApi extends RestHelper {
 		} catch (IOException e) {
 			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
-		}
-		
-		if( request == null || request.isValid() == false ) {
-			LOGGER.error("Got invalid fetch request, to add file from remote url");
-			return buildErrorResponse(400, user, "Invalid fetch request");
 		}
 		
 		// TODO
@@ -886,13 +885,85 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(507, user, "The max amount of files in one archive is reached.");
 			}
 			
-			HttpClient client = HttpClientBuilder.create().build();
-			for( String remoteUrl : request.getRemoteUrl() ) {
+			CloseableHttpClient client = HttpClientBuilder.create().build();
+			for( FetchRequest request : requestList ) {
 				
-				HttpResponse reponse = client.execute( new HttpGet(remoteUrl) );
-				// TODO
+				if( request == null || request.isValid() == false ) {
+					LOGGER.error("Got invalid fetch request, to add file from remote url");
+					result.add( new ArchiveEntryUploadException("Got invalid fetch request,  to add file from remote url.") );
+				}
 				
+				String fileName = null;
+				HttpGet getRequest = new HttpGet(request.getRemoteUrl());
+				CloseableHttpResponse response = client.execute( getRequest );
 				
+				// check for valid response
+				if( response.getStatusLine().getStatusCode() != 200 ) {
+					LOGGER.warn("Cannot fetch remote file.", request.getRemoteUrl(), "Status: ", response.getStatusLine().getStatusCode());
+					result.add( new ArchiveEntryUploadException(MessageFormat.format("Cannot fetch remote file. {1} Status: {0}", response.getStatusLine().getStatusCode(), request.getRemoteUrl()), request.getPath() ));
+				}
+				
+				// try to find sufficient file name
+				fileName = FilenameUtils.getName( request.getRemoteUrl() );
+				Header fileNameHeader = response.getFirstHeader("Content-Disposition");
+				HeaderElement[] fileNameHeaderElements = fileNameHeader.getElements();
+				if( fileNameHeaderElements.length > 0 ) {
+					NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
+					fileName = fileNamePair != null ? fileNamePair.getName() : fileName;
+				}
+				// clean up name
+				fileName = fileName.replaceAll("[^A-Za-z0-9\\.]", "_");
+				
+				// check content length
+				Header contentLengthHeader = response.getFirstHeader("Content-Length");
+				long contentLength = 0;
+				if( contentLengthHeader != null && contentLengthHeader.getValue() != null && contentLengthHeader.getValue().isEmpty() == false ) {
+					contentLength = Long.valueOf( contentLengthHeader.getValue() );
+				} else {
+					contentLength = response.getEntity().getContentLength();
+				}
+				
+				// max size for upload
+				if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(contentLength, Fields.QUOTA_UPLOAD_SIZE) == false ) {
+					LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
+					getRequest.abort();
+					result.add( new ArchiveEntryUploadException("The uploaded file is to big.", request.getPath() + fileName) );
+					continue;
+				}
+				// max files in one archive
+				if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_FILE_LIMIT) == false ) {
+					LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+					getRequest.abort();
+					result.add( new ArchiveEntryUploadException("The max amount of files in one archive is reached.", request.getPath() + fileName) );
+					continue;
+				}
+				// max archive size
+				if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + contentLength, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
+					LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
+					getRequest.abort();
+					result.add( new ArchiveEntryUploadException("The maximum size of one archive is reached.", request.getPath() + fileName) );
+					continue;
+				}
+				// max workspace size
+				if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + contentLength, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+					LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
+					getRequest.abort();
+					result.add( new ArchiveEntryUploadException("The maximum size of one workspace is reached.", request.getPath() + fileName) );
+					continue;
+				}
+				// max total size
+				if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + contentLength, Fields.QUOTA_TOTAL_SIZE) == false ) {
+					LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
+					getRequest.abort();
+					result.add( new ArchiveEntryUploadException("The maximum size is reached.", request.getPath() + fileName) );
+					continue;
+				}
+				
+				// download the file
+				File tempFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, fileName);
+				FileOutputStream fileOutput = new FileOutputStream(tempFile);
+				//IOUtils.copyLarge(response.getEntity().getContent(), fileOutput, 0, 200);
+				//TODO
 				
 			}
 			

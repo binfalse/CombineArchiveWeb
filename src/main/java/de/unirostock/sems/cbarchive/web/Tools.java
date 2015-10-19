@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
@@ -36,6 +38,7 @@ import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -363,6 +366,32 @@ public class Tools
 				(vcard1.getFamilyName() == null ? vcard2.getFamilyName() == null : vcard1.getFamilyName().equals( vcard2.getFamilyName() )) &&
 				(vcard1.getEmail() == null ? vcard2.getEmail() == null : vcard1.getEmail().equals( vcard2.getEmail() )) &&
 				(vcard1.getOrganization() == null ? vcard2.getOrganization() == null : vcard1.getOrganization().equals( vcard2.getOrganization() ));
+	}
+	
+	/**
+	 * Copies an InputStream into an OutputStream. Stops at max lengt.
+	 * 
+	 * @param input
+	 * @param output
+	 * @param maxLength
+	 * @return
+	 * @throws IOException
+	 */
+	public static long copyStream( InputStream input, OutputStream output, long maxLength ) throws IOException {
+		
+		byte[] buffer = new byte[Fields.DEFAULT_BUFFER_SIZE];
+		long copied = 0;
+		while( input.available() > 0 ) {
+			int red = input.read(buffer);
+			output.write(buffer, 0, red);
+			
+			copied = copied + red;
+			// abort, if maxLength is reached
+			if( maxLength > 0 && copied > maxLength )
+				break;
+		}
+		
+		return 0;
 	}
 
 }

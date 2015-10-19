@@ -856,6 +856,7 @@ public class RestApi extends RestHelper {
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	@POST
 	@Path( "/archives/{archive_id}/entries" )
 	@Produces( MediaType.APPLICATION_JSON )
@@ -927,7 +928,7 @@ public class RestApi extends RestHelper {
 				if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(contentLength, Fields.QUOTA_UPLOAD_SIZE) == false ) {
 					LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
 					getRequest.abort();
-					result.add( new ArchiveEntryUploadException("The uploaded file is to big.", request.getPath() + fileName) );
+					result.add( new ArchiveEntryUploadException("The fetched file is to big.", request.getPath() + fileName) );
 					continue;
 				}
 				// max files in one archive
@@ -938,14 +939,14 @@ public class RestApi extends RestHelper {
 					continue;
 				}
 				// max archive size
-				if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + contentLength, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
+				if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + contentLength, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
 					LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
 					getRequest.abort();
 					result.add( new ArchiveEntryUploadException("The maximum size of one archive is reached.", request.getPath() + fileName) );
 					continue;
 				}
 				// max workspace size
-				if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + contentLength, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+				if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + contentLength, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
 					LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
 					getRequest.abort();
 					result.add( new ArchiveEntryUploadException("The maximum size of one workspace is reached.", request.getPath() + fileName) );
@@ -959,12 +960,82 @@ public class RestApi extends RestHelper {
 					continue;
 				}
 				
-				// download the file
-				File tempFile = File.createTempFile(Fields.TEMP_FILE_PREFIX, fileName);
-				FileOutputStream fileOutput = new FileOutputStream(tempFile);
-				//IOUtils.copyLarge(response.getEntity().getContent(), fileOutput, 0, 200);
-				//TODO
+				// determine most limiting quota
+				String limitError = null;
+				long limit = Long.MAX_VALUE;
+				if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_UPLOAD_SIZE < limit ) {
+					limit = Fields.QUOTA_UPLOAD_SIZE;
+					limitError = "The fetched file is to big.";
+				}
+				if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_ARCHIVE_SIZE - user.getWorkspace().getArchiveSize(archiveId) < limit ) {
+					limit = Fields.QUOTA_ARCHIVE_SIZE - user.getWorkspace().getArchiveSize(archiveId);
+					limitError = "The maximum size of one archive is reached.";
+				}
+				if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_WORKSPACE_SIZE - QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) < limit ) {
+					limit = Fields.QUOTA_WORKSPACE_SIZE - QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace());
+					limitError = "The maximum size of one workspace is reached.";
+				}
+				if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_TOTAL_SIZE - QuotaManager.getInstance().getTotalSize() < limit ) {
+					limit = Fields.QUOTA_TOTAL_SIZE - QuotaManager.getInstance().getTotalSize();
+					limitError = "The maximum size is reached.";
+				}
 				
+				
+				// download the file
+				java.nio.file.Path tempFile = Files.createTempFile(Fields.TEMP_FILE_PREFIX, fileName);
+				FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
+				long copied = Tools.copyStream( response.getEntity().getContent() , fileOutput, limit == Long.MAX_VALUE ? 0 : limit );
+				
+				// quota was exceeded afterwards
+				if( copied >= limit ) {
+					LOGGER.error("Exceeded quota while download: ", limitError, "in workspace ", user.getWorkspaceId());
+					result.add( new ArchiveEntryUploadException(limitError, request.getPath() + fileName) );
+					
+					getRequest.abort();
+					response.close();
+					tempFile.toFile().delete();
+					continue;
+				}
+				
+				// override flag
+				ReplaceStrategy strategy = ReplaceStrategy.fromString( request.getStrategy() ); 
+						
+				// add the file in the currently selected path
+				ArchiveEntry entry = archive.addArchiveEntry(request.getPath() + fileName, tempFile, strategy);
+				
+				// add default meta information
+				if( user.getData() != null && user.getData().hasInformation() == true ) {
+					
+					// scan for existing omex meta data and takes the first one
+					OmexMetaDataObject metaObject = null;
+					for( MetaDataObject iterMetaObject : entry.getDescriptions() ) {
+						if( iterMetaObject instanceof OmexMetaDataObject ) {
+							metaObject = (OmexMetaDataObject) iterMetaObject;
+							break;
+						}
+					}
+					
+					if( metaObject == null ) {
+						OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
+						entry.addDescription( new OmexMetaDataObject(metaData) );
+					}
+					else  {
+						// add current date of modification
+						metaObject.getOmexDescription().getModified().add( new Date() );
+						// add current user as creator, if not already present
+						List<VCard> creators = metaObject.getOmexDescription().getCreators();
+						if( !user.getData().isContained(creators) )
+							creators.add( user.getData().getVCard() );
+					}
+					
+				}
+					
+				LOGGER.info(MessageFormat.format("Successfully fetched and added file {0} to archive {1}", fileName, archiveId));
+				
+				// clean up
+				tempFile.toFile().delete();
+				// add to result list
+				result.add( new ArchiveEntryDataholder(entry) );
 			}
 			
 			synchronized (archive) {

@@ -1288,10 +1288,10 @@ var ArchiveView = Backbone.View.extend({
 			"type": "POST",
 			"processData": false,
 			"contentType": false,
-			"data": {
+			"data": [{
 				"url": url,
 				"path": path
-			},
+			}],
 			"success": function(data) {
 				self.fetchCollection(true);
 				

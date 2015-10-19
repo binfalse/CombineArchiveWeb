@@ -22,8 +22,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
-import org.apache.commons.io.FilenameUtils;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.unirostock.sems.cbarchive.web.dataholder.Archive.ReplaceStrategy;

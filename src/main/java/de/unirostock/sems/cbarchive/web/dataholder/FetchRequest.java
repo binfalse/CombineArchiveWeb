@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -35,14 +33,13 @@ public class FetchRequest implements Serializable {
 	private static final long serialVersionUID = -2444137273939226465L;
 	
 	private String path = "/";
-	private List<String> remoteUrl = null;
+	private String remoteUrl = null;
 	private String strategy = ReplaceStrategy.RENAME.toString();
 	
 	public FetchRequest(String path, String remoteUrl) {
 		super();
 		this.path = path;
-		this.remoteUrl = new ArrayList<String>();
-		this.remoteUrl.add(remoteUrl);
+		this.remoteUrl = remoteUrl;
 	}
 	
 	public FetchRequest() {
@@ -59,14 +56,14 @@ public class FetchRequest implements Serializable {
 		this.path = path;
 	}
 	
-	public List<String> getRemoteUrl() {
+	public String getRemoteUrl() {
 		return remoteUrl;
 	}
 
-	public void setRemoteUrl(List<String> remoteUrl) {
+	public void setRemoteUrl(String remoteUrl) {
 		this.remoteUrl = remoteUrl;
 	}
-	
+
 	public String getStrategy() {
 		return strategy;
 	}

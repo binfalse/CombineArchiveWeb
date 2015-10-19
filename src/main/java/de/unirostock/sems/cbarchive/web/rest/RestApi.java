@@ -857,7 +857,7 @@ public class RestApi extends RestHelper {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Consumes( MediaType.APPLICATION_JSON )
 	public Response createArchiveEntry( @PathParam("archive_id") String archiveId, @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson,
-										FetchRequest request ) {
+										List<FetchRequest> requestList ) {
 		// user stuff
 		UserManager user = null;
 		try {
@@ -867,11 +867,6 @@ public class RestApi extends RestHelper {
 		} catch (IOException e) {
 			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
-		}
-		
-		if( request == null || request.isValid() == false ) {
-			LOGGER.error("Got invalid fetch request, to add file from remote url");
-			return buildErrorResponse(400, user, "Invalid fetch request");
 		}
 		
 		// TODO
@@ -887,9 +882,14 @@ public class RestApi extends RestHelper {
 			}
 			
 			HttpClient client = HttpClientBuilder.create().build();
-			for( String remoteUrl : request.getRemoteUrl() ) {
+			for( FetchRequest request : requestList ) {
 				
-				HttpResponse reponse = client.execute( new HttpGet(remoteUrl) );
+				if( request == null || request.isValid() == false ) {
+					LOGGER.error("Got invalid fetch request, to add file from remote url");
+					result.add( new ArchiveEntryUploadException("Got invalid fetch request,  to add file from remote url.") );
+				}
+				
+				HttpResponse reponse = client.execute( new HttpGet(request.getRemoteUrl()) );
 				// TODO
 				
 				

@@ -1287,11 +1287,11 @@ var ArchiveView = Backbone.View.extend({
 			"url": self.collection.url,
 			"type": "POST",
 			"processData": false,
-			"contentType": false,
-			"data": [{
-				"url": url,
+			"contentType": 'application/json; charset=UTF-8',
+			"data": JSON.stringify([{
+				"remoteUrl": url,
 				"path": path
-			}],
+			}]),
 			"success": function(data) {
 				self.fetchCollection(true);
 				

@@ -907,10 +907,12 @@ public class RestApi extends RestHelper {
 				// try to find sufficient file name
 				fileName = FilenameUtils.getName( request.getRemoteUrl() );
 				Header fileNameHeader = response.getFirstHeader("Content-Disposition");
-				HeaderElement[] fileNameHeaderElements = fileNameHeader.getElements();
-				if( fileNameHeaderElements.length > 0 ) {
-					NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
-					fileName = fileNamePair != null ? fileNamePair.getName() : fileName;
+				if( fileNameHeader != null ) {
+					HeaderElement[] fileNameHeaderElements = fileNameHeader.getElements();
+					if( fileNameHeaderElements.length > 0 ) {
+						NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
+						fileName = fileNamePair != null ? fileNamePair.getName() : fileName;
+					}
 				}
 				// clean up name
 				fileName = fileName.replaceAll("[^A-Za-z0-9\\.]", "_");

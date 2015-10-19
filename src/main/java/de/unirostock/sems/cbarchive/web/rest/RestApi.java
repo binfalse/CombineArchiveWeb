@@ -1019,11 +1019,17 @@ public class RestApi extends RestHelper {
 					
 					if( metaObject == null ) {
 						OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
+						String oldDescription = metaData.getDescription();
+						if( oldDescription == null || oldDescription.isEmpty() )
+							oldDescription = "";
+						metaData.setDescription( MessageFormat.format("Derived from: {0}\n{1}", request.getRemoteUrl(), oldDescription) );
 						entry.addDescription( new OmexMetaDataObject(metaData) );
 					}
 					else  {
 						// add current date of modification
-						metaObject.getOmexDescription().getModified().add( new Date() );
+						OmexDescription metaData = metaObject.getOmexDescription();
+						metaData.getModified().add( new Date() );
+						metaData.setDescription( MessageFormat.format("Derived from: {0}", request.getRemoteUrl()) );
 						// add current user as creator, if not already present
 						List<VCard> creators = metaObject.getOmexDescription().getCreators();
 						if( !user.getData().isContained(creators) )

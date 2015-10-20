@@ -666,6 +666,7 @@
 		<div id="archivePage" class="subPage" style="display: none;"></div>
 	</div>
 	<footer>
+		CombineArchiveWeb <%= Fields.CURRENT_VERSION %>&nbsp;<%= Fields.CURRENT_VERSION_IS_RELEASE == false ? "no-release snapshot" : "" %>
 		built by <a href="http://sems.uni-rostock.de/" title="Simulation Experiment Management for Systems Biology">SEMS</a> @ <a href="http://www.uni-rostock.de/" title="University of Rostock">University of Rostock</a>
 		&nbsp;|&nbsp;<a id="about-footer-link" href="#about" title="About page">About</a>
 	</footer>

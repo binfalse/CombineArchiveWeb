@@ -18,9 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -103,7 +106,13 @@ public class Fields {
 	
 	/** is set to something != null, it enables the full access to all stats, when added as URL-Parameter */
 	public static String STATS_SECRET = null;
-
+	
+	/** current version of webCAT, automatically read from src/main/resources/version.pref and set via maven resource filtering */
+	public static String CURRENT_VERSION = "[head version]";
+	
+	/** determines, if current build is a release build. see CURRENT_VERSION */
+	public static boolean CURRENT_VERSION_IS_RELEASE = false;
+	
 	// ------------------------------------------------------------------------
 	// Quotas
 
@@ -135,7 +144,7 @@ public class Fields {
 	// Loading Fields from servlet context
 
 	public static void loadSettingsFromContext( ServletContext context ) {
-
+		
 		// Log Level
 		LOGGER.setMinLevel (LOGGER.WARN);
 		String desiredLogLevel = context.getInitParameter("LOGLEVEL");
@@ -155,6 +164,21 @@ public class Fields {
 				LOGGER.setMinLevel (LOGGER.ERROR);
 			else if (desiredLogLevel.equals ("NONE"))
 				LOGGER.setLogToStdErr (false);
+		}
+		
+		// Version
+		InputStream versionPropStream = context.getResourceAsStream("/WEB-INF/classes/version.properties");
+		if(versionPropStream != null ) {
+			try {
+				Properties versionProp = new Properties();
+				versionProp.load( versionPropStream );
+				versionPropStream.close();
+				
+				CURRENT_VERSION = versionProp.getProperty("version", CURRENT_VERSION);
+				CURRENT_VERSION_IS_RELEASE = versionProp.getProperty("release", "false").equals("true") ? true : false; 
+			} catch (IOException e) {
+				LOGGER.warn(e, "Could not read version resource. No version will be shown.");
+			}
 		}
 		
 		// Storage

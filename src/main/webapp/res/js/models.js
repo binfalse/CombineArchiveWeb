@@ -1134,7 +1134,7 @@ var ArchiveView = Backbone.View.extend({
 		
 		// show waiting stuff
 		this.$el.find(".dropbox .icon").show();
-		this.$el.find(".dropbox a").hide();
+		this.$el.find(".dropbox .not-icon").hide();
 		// delegate stuff
 		var self = this;
 		setTimeout(function () { self.uploadFilesCheck(uploadTask); }, 0);
@@ -1192,7 +1192,7 @@ var ArchiveView = Backbone.View.extend({
 		if( _.size(options) <= 0 ) {
 			// No file is selected to upload!
 			uploadTask.view.$el.find(".dropbox .icon").hide();
-			uploadTask.view.$el.find(".dropbox a").show();
+			uploadTask.view.$el.find(".dropbox .not-icon").show();
 			return false;
 		}
 			
@@ -1228,7 +1228,7 @@ var ArchiveView = Backbone.View.extend({
 			},
 			error: function(data) {
 				self.$el.find(".dropbox .icon").hide();
-				self.$el.find(".dropbox a").show();
+				self.$el.find(".dropbox .not-icon").show();
 				
 				console.log(data);
 				console.log("error uploading file.");
@@ -1253,7 +1253,7 @@ var ArchiveView = Backbone.View.extend({
 		
 		// show waiting stuff
 		this.$el.find(".dropbox .icon").show();
-		this.$el.find(".dropbox a").hide();
+		this.$el.find(".dropbox .not-icon").hide();
 		
 		// get current location
 		var path = this.getCurrentFileTreePath();
@@ -1283,7 +1283,7 @@ var ArchiveView = Backbone.View.extend({
 			},
 			"error": function(data) {
 				self.$el.find(".dropbox .icon").hide();
-				self.$el.find(".dropbox a").show();
+				self.$el.find(".dropbox .not-icon").show();
 				
 				console.log(data);
 				console.log("error uploading file.");

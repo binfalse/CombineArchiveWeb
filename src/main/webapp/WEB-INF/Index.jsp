@@ -361,12 +361,12 @@
 					<div class="dropbox">
 						<div class="dropbox-buttons">
 							<div class="center-button">
-								<a href="#">Upload files</a>
+								<a class="not-icon" href="#">Upload files</a>
 								<div class="icon"> </div>
 							</div>
 							<div class="clearer"></div>
 						</div>
-						<div class="fetch-field">
+						<div class="fetch-field not-icon">
 							<input class="fetch-remote-url" name="fetch-remote-url" type="text" size="35" placeholder="fetch file from remote url" />
 							<input class="fetch-submit" name="fetch-submit" type="button" value="Fetch!" />
 						</div>

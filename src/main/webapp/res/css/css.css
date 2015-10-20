@@ -240,9 +240,17 @@ br.oneandhalf {
 	cursor: pointer;
 }
 .dropbox div.dropbox-buttons {
-	margin: 1em auto;
+	margin: 0.5em auto;
 	padding: 0;
 	display: inline-block;
+}
+.dropbox div.fetch-field {
+	display: inline-block;
+	padding: 0.1em 1em;
+	margin: -0.5em auto 0.5em auto;
+}
+.dropbox div.fetch-field > input {
+	font-size: 0.6em;
 }
 .dropbox div.file-name-display {
 	display: none;
@@ -268,7 +276,7 @@ br.oneandhalf {
 	display: none;
 }
 
-.dropbox input {
+.dropbox input.hidden {
 	display: none;
 }
 

@@ -253,8 +253,8 @@
 							</div>
 							<div class="clearer"></div>
 						</div>
-						<div class="file-name-display">Test...</div>
-						<input type="file" name="newArchiveExisting" />
+						<div class="file-name-display">No file choosen</div>
+						<input type="file" class="hidden" name="newArchiveExisting" />
 					</div><br />
 				</div>
 				
@@ -364,12 +364,13 @@
 								<a href="#">Upload files</a>
 								<div class="icon"> </div>
 							</div>
-							<div class="fetch-button">
-								<a href="#">v</a>
-							</div>
 							<div class="clearer"></div>
 						</div>
-						<input type="file" name="fileUpload" multiple="multiple" />
+						<div class="fetch-field">
+							<input class="fetch-remote-url" name="fetch-remote-url" type="text" size="35" placeholder="fetch file from remote url" />
+							<input class="fetch-submit" name="fetch-submit" type="button" value="Fetch!" />
+						</div>
+						<input class="hidden" type="file" name="fileUpload" multiple="multiple" />
 					</div>
 				</div>
 				<div style="clear: left;"></div>

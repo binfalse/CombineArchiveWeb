@@ -300,11 +300,11 @@ public class Archive implements Closeable {
 				int i = 1;
 				while( archive.getEntry(altFileName) != null ) {
 					i++;
-					int extensionPoint = fileName.lastIndexOf( '.' );
-					String extension = fileName.substring( extensionPoint );
-					String pureName = fileName.substring( 0, extensionPoint );
+					String extension = FilenameUtils.getExtension(fileName);
+					String pureName = FilenameUtils.getBaseName(fileName);
+					String fullPath = FilenameUtils.getFullPath(fileName);
 					
-					altFileName = pureName + "-" + String.valueOf(i) + extension;
+					altFileName = fullPath + ( pureName != null ? pureName : "" ) + "-" + String.valueOf(i) + ( extension != null && !extension.isEmpty() ? "." + extension : "" );
 				}
 				fileName = altFileName;
 			}

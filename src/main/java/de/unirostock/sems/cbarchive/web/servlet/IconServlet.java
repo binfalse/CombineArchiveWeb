@@ -57,7 +57,7 @@ public class IconServlet extends HttpServlet {
 				LOGGER.debug("format: ", formatString);
 				
 				URI format = new URI( formatString );
-				LOGGER.info("format url: ", format);
+				LOGGER.debug("format url: ", format);
 				OutputStream output = response.getOutputStream();
 				
 				InputStream input = Iconizer.formatToIconStream(format);

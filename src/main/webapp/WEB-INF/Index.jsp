@@ -567,17 +567,6 @@
 			</ul>
 		</div>
 		<!-- **** -->
-		<div id="template-dialog-fetch">
-			<div class="fetch-dialog-form">
-				<input class="fetch-dialog-url" type="text" name="fetch-dialog-url" placeholder="URL to file" />
-			</div>
-			
-			<div class="fetch-dialog-disclaimer">
-				Blabla...<br />
-				max file size: {{# print(bytesToSize(<%=Fields.QUOTA_UPLOAD_SIZE %>)); }}<br />
-			</div>
-		</div>
-		<!-- **** -->
 		<div id="template-xml-meta-entry">
 			<h4>RDF/XML entry</h4>
 			<div class="archive-meta-xml-code">

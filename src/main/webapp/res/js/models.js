@@ -950,20 +950,14 @@ var ArchiveView = Backbone.View.extend({
 		
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
-//		"click .dropbox a": "dropboxClick",
 		"click .dropbox .center-button": "dropboxClick",
 		"change .dropbox input": "dropboxManual",
 		"click .archive-folder-add": "addFolder",
 		
-		"click .dropbox .fetch-button": "dropboxFetch",
-//		"click .fetch-dialog-button": "doFetch",
+		"click .dropbox input.fetch-submit": "dropboxFetch",
 		
 		"dragover .archive-filetree": "dropboxOver",
 		"drop .archive-filetree": "dropboxDrop",
-		
-//		"mouseenter .archive-fileexplorer": "showExplorer",
-//		"click .archive-explorerexpand": "showExplorer",
-//		"mouseleave .archive-fileexplorer": "hideExplorer"
 		
 		"click .archive-explorerexpand": "toggleExplorer",
 		"mouseenter .archive-explorerexpand": "toggleExplorer",
@@ -1252,28 +1246,10 @@ var ArchiveView = Backbone.View.extend({
 		event.stopPropagation();
 		event.preventDefault();
 		
-		// open only one instance
-		if( this.fetchDialog != undefined || this.fetchDialog != null )
+		// get url
+		var url = this.$el.find(".dropbox .fetch-remote-url").val();
+		if( empty(url) )	// check for empty string
 			return false;
-		
-		var popupHtml = templateCache["template-dialog-fetch"]();
-		var self = this;
-		this.fetchDialog = new Impromptu( popupHtml, {
-			buttons: { "Fetch": true, "Close": false },
-			submit: function (event, value, message, formVals) {
-				if( value == false || empty(formVals['fetch-dialog-url']) ) 
-					return;
-				
-				self.doFetch( formVals['fetch-dialog-url'] );
-			},
-			close: function (event) {
-				self.fetchDialog = null;
-			}
-		});
-		
-		return false;
-	},
-	doFetch: function(url) {
 		
 		// show waiting stuff
 		this.$el.find(".dropbox .icon").show();
@@ -1282,7 +1258,7 @@ var ArchiveView = Backbone.View.extend({
 		// get current location
 		var path = this.getCurrentFileTreePath();
 		var self = this;
-		// upload it
+		// send request
 		$.ajax({
 			"url": self.collection.url,
 			"type": "POST",
@@ -1319,6 +1295,8 @@ var ArchiveView = Backbone.View.extend({
 					messageView.error( "Unknown Error", "Cannot upload file." );
 			}
 		});
+		
+		return false;
 	},
 	addFolder: function(event) {
 		

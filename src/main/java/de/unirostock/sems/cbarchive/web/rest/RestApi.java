@@ -649,7 +649,7 @@ public class RestApi extends RestHelper {
 		}
 		
 		if( archive instanceof ArchiveFromExisting == false ) {
-			// archive is generated from an existing file
+			// archive is not generated from an existing file
 			// delegate to the original Endpoint
 			return createArchive(userPath, archive, userJson);
 		}

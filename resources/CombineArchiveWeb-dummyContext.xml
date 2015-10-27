@@ -14,8 +14,10 @@
 	<Parameter name="STORAGE" value="/tmp/CombineArchiveWeb" override="false" />
 	<!-- URL to the SedML WebTools to enable the simulate Link, leave blank to disable -->
 	<Parameter name="SEDML_WEBTOOLS" value="http://bqfbergmann.dyndns.org/SED-ML_Web_Tools/Home/SimulateUrl?url=" override="false" />
-	<!-- URL to the CARO converter -->
+	<!-- URL to the CaRo converter -->
 	<Parameter name="CARO_URL" value="http://.../caro?from=" override="false" />
+	<!-- URL to the RoCa converter -->
+	<Parameter name="ROCA_URL" value="http://.../roca?from=" override="false" />
 	<!-- max age for stats data in seconds-->
 	<Parameter name="MAX_STATS_AGE" value="10" override="false" />
 	<!-- Feedback Button URL, set to empty value to disable button -->

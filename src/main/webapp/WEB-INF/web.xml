@@ -48,6 +48,11 @@
 	</context-param>
 	
 	<context-param>
+		<param-name>ROCA_URL</param-name>
+		<param-value></param-value>
+	</context-param>
+	
+	<context-param>
 		<param-name>MAX_STATS_AGE</param-name>
 		<param-value>180</param-value>
 	</context-param>

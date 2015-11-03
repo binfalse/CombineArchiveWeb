@@ -988,38 +988,11 @@ public class RestApi extends RestHelper {
 				ArchiveEntry entry = archive.addArchiveEntry(request.getPath() + fileName, tempFile, strategy);
 				
 				// add default meta information
-				if( user.getData() != null && user.getData().hasInformation() == true ) {
-					
-					// scan for existing omex meta data and takes the first one
-					OmexMetaDataObject metaObject = null;
-					for( MetaDataObject iterMetaObject : entry.getDescriptions() ) {
-						if( iterMetaObject instanceof OmexMetaDataObject ) {
-							metaObject = (OmexMetaDataObject) iterMetaObject;
-							break;
-						}
-					}
-					
-					if( metaObject == null ) {
-						OmexDescription metaData = new OmexDescription(user.getData().getVCard(), new Date());
-						metaData.setDescription( MessageFormat.format("Derived from: {0}", request.getRemoteUrl()) );
-						entry.addDescription( new OmexMetaDataObject(metaData) );
-					}
-					else  {
-						// add current date of modification
-						OmexDescription metaData = metaObject.getOmexDescription();
-						metaData.getModified().add( new Date() );
-						String oldDescription = metaData.getDescription();
-						if( oldDescription == null || oldDescription.isEmpty() )
-							oldDescription = "";
-						metaData.setDescription( MessageFormat.format("Derived from: {0}\n{1}", request.getRemoteUrl(), oldDescription) );
-						// add current user as creator, if not already present
-						List<VCard> creators = metaObject.getOmexDescription().getCreators();
-						if( !user.getData().isContained(creators) )
-							creators.add( user.getData().getVCard() );
-					}
-					
-				}
-					
+				Tools.addOmexMetaData(entry,
+						user.getData() != null && user.getData().hasInformation() ? user.getData().getVCard() : null,
+						MessageFormat.format("Derived from: {0}", request.getRemoteUrl()),
+						true);
+				
 				LOGGER.info(MessageFormat.format("Successfully fetched and added file {0} to archive {1}", fileName, archiveId));
 				
 				// clean up

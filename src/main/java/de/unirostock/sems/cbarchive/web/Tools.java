@@ -296,7 +296,7 @@ public class Tools
 	}
 
 	/**
-	 * Adds current date as modification and adds the creator if not done yet, to every Omex description
+	 * Adds current date as modification and adds the creator, if not done yet, to every Omex description
 	 * Also creates new Omex description, if create is set to true and only if necessary
 	 * 
 	 * @param entity
@@ -304,11 +304,28 @@ public class Tools
 	 * @param create
 	 */
 	public static void addOmexMetaData(MetaDataHolder entity, VCard creator, boolean create) {
+		addOmexMetaData(entity, creator, null, create);
+	}
+	
+	/**
+	 * Adds current date as modification and an additional description, as well as the creator,
+	 * if not done yet, to every Omex description. Also creates new Omex description,
+	 * if create is set to true and only if necessary
+	 * 
+	 * @param entity
+	 * @param creator
+	 * @param additionalDescription
+	 * @param create
+	 */
+	public static void addOmexMetaData(MetaDataHolder entity, VCard creator, String additionalDescription, boolean create) {
 
 		int added = 0;
 		// save some checks
 		if( creator != null && creator.isEmpty() )
 			creator = null;
+		
+		if( additionalDescription != null && additionalDescription.isEmpty() )
+			additionalDescription = null;
 
 		// add modified date and own VCard to all omex descriptions for the root element
 		for( MetaDataObject metaObject : entity.getDescriptions() ) {
@@ -319,6 +336,10 @@ public class Tools
 				if( creator != null && !containsVCard(meta.getCreators(), creator) )
 					// creator is set and not in Omex right now
 					meta.getCreators().add(creator);
+				if( additionalDescription != null )
+					// add additional description to meta (e.g. "derived from")
+					meta.setDescription( meta.getDescription() + "\n" + additionalDescription );
+					
 				added++;
 			}
 		}
@@ -329,6 +350,8 @@ public class Tools
 			meta.getModified().add( meta.getCreated() );
 			if( creator != null )
 				meta.getCreators().add( creator );
+			if( additionalDescription != null )
+				meta.setDescription(additionalDescription);
 
 			// attach to entity
 			entity.addDescription( new OmexMetaDataObject(meta) );

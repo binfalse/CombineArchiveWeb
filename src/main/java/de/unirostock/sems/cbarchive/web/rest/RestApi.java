@@ -906,9 +906,9 @@ public class RestApi extends RestHelper {
 				
 				// try to find sufficient file name
 				fileName = FilenameUtils.getName( request.getRemoteUrl() );
-				Header fileNameHeader = response.getFirstHeader("Content-Disposition");
-				if( fileNameHeader != null ) {
-					HeaderElement[] fileNameHeaderElements = fileNameHeader.getElements();
+				Header dispositionHeader = response.getFirstHeader("Content-Disposition");
+				if( dispositionHeader != null ) {
+					HeaderElement[] fileNameHeaderElements = dispositionHeader.getElements();
 					if( fileNameHeaderElements.length > 0 ) {
 						NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
 						fileName = fileNamePair != null ? fileNamePair.getName() : fileName;

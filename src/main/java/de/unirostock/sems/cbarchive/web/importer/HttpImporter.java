@@ -27,8 +27,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -136,12 +138,10 @@ public class HttpImporter extends Importer {
 			Header dispositionHeader = getResponse.getFirstHeader("Content-Disposition");
 			if( dispositionHeader != null && dispositionHeader.getValue() != null && dispositionHeader.getValue().isEmpty() == false ) {
 				// disposition header is present -> extract name
-				// inline; filename=\"{0}.{1}\"
-				Matcher matcher = Pattern.compile("filename=\\\"?(([a-zA-Z0-9-_\\+]+).(\\w+))\\\"?", Pattern.CASE_INSENSITIVE).matcher( dispositionHeader.getValue() );
-				if( matcher.find() ) {
-					suggestedName = matcher.group(1);
-					for( int i = 0; i < matcher.groupCount(); i++)
-						LOGGER.debug(i, ": ", matcher.group(i));
+				HeaderElement[] fileNameHeaderElements = dispositionHeader.getElements();
+				if( fileNameHeaderElements.length > 0 ) {
+					NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
+					suggestedName = fileNamePair != null ? fileNamePair.getName() : suggestedName;
 				}
 			}
 			else {

@@ -23,13 +23,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -134,21 +131,8 @@ public class HttpImporter extends Importer {
 			}
 			
 			// for name suggestions
-			// take name from url
-			suggestedName = FilenameUtils.getName( remoteUrl );
-			LOGGER.debug("Extracted filename ", suggestedName, " from remoteUrl ", remoteUrl);
-			
-			// try to extract name from HttpHeader
-			Header dispositionHeader = getResponse.getFirstHeader("Content-Disposition");
-			if( dispositionHeader != null && dispositionHeader.getValue() != null && dispositionHeader.getValue().isEmpty() == false ) {
-				// disposition header is present -> extract name
-				HeaderElement[] fileNameHeaderElements = dispositionHeader.getElements();
-				if( fileNameHeaderElements.length > 0 ) {
-					NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
-					suggestedName = fileNamePair != null ? fileNamePair.getName() : suggestedName;
-					LOGGER.debug("Extracted filename ", suggestedName, " from Http header");
-				}
-			}
+			suggestedName = Tools.suggestFileNameFromHttpResponse(remoteUrl, getResponse);
+			LOGGER.info("Suggested name for imported archive is ", suggestedName);
 			
 			// download it
 			OutputStream output = new FileOutputStream(tempFile);

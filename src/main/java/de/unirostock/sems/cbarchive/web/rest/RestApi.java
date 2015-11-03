@@ -49,11 +49,8 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -905,17 +902,12 @@ public class RestApi extends RestHelper {
 				}
 				
 				// try to find sufficient file name
-				fileName = FilenameUtils.getName( request.getRemoteUrl() );
-				Header dispositionHeader = response.getFirstHeader("Content-Disposition");
-				if( dispositionHeader != null ) {
-					HeaderElement[] fileNameHeaderElements = dispositionHeader.getElements();
-					if( fileNameHeaderElements.length > 0 ) {
-						NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
-						fileName = fileNamePair != null ? fileNamePair.getName() : fileName;
-					}
-				}
+				fileName = Tools.suggestFileNameFromHttpResponse(getRequest, response);
+				LOGGER.debug("Suggested name for fetched file is ", fileName);
+				
 				// clean up name
 				fileName = fileName.replaceAll("[^A-Za-z0-9\\.]", "_");
+				LOGGER.debug("Suggested and cleaned name for fetched file is ", fileName);
 				
 				// check content length
 				Header contentLengthHeader = response.getFirstHeader("Content-Length");

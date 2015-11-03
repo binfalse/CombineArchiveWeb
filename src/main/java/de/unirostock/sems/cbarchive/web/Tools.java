@@ -18,7 +18,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +38,11 @@ import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -63,7 +68,7 @@ public class Tools
 
 	/** The Constant DATE_FORMATTER. */
 	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS");
-	
+
 	/**
 	 * Tries to obtain user instance (workspace), if fails it crates a new one
 	 * 
@@ -76,7 +81,7 @@ public class Tools
 	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
 		return doLogin(request, response, true);
 	}
-	
+
 	/**
 	 * Tries to obtain user instance (workspace) <br>
 	 * if createNew is true, it also tries to create a new user instance.
@@ -90,7 +95,7 @@ public class Tools
 	 */
 	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response, boolean createNew ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
 		// find Cookies
-//		HttpSession session = request.getSession (true);
+		//		HttpSession session = request.getSession (true);
 		CookieManager cookieManagement = new CookieManager (request, response);
 
 		// gets the user class
@@ -133,7 +138,7 @@ public class Tools
 			// parse vCard info
 			if( userInfo != null && !userInfo.getValue().isEmpty() )
 				user.setData( UserData.fromJson( userInfo.getValue() ) ); 
-			
+
 			storeUserCookies(cookies, user);
 		}
 
@@ -192,7 +197,7 @@ public class Tools
 			return input;
 		}
 	}
-	
+
 	/**
 	 * Returns false, if a quota is exceeded. Otherwise true
 	 * 
@@ -201,20 +206,20 @@ public class Tools
 	 * @return
 	 */
 	public static boolean checkQuota( long currentValue, long quota ) {
-		
+
 		// Quota is set to unlimited
 		if( quota == Fields.QUOTA_UNLIMITED )
 			return true;
-		
+
 		LOGGER.info(currentValue, " vs ", quota);
-		
+
 		// check if quota is exceeded
 		if( currentValue >= quota )
 			return false;
 		else
 			return true;
 	}
-	
+
 	/**
 	 * Generates a redirect URI to an archive
 	 * 
@@ -241,7 +246,7 @@ public class Tools
 
 		return newLocation;
 	}
-	
+
 	/**
 	 * Generates Share URI to a workspace
 	 * 
@@ -268,7 +273,7 @@ public class Tools
 
 		return newLocation;
 	}
-	
+
 	/**
 	 * checks whether a filename is blacklisted or not
 	 * 
@@ -276,16 +281,16 @@ public class Tools
 	 * @return true if filename is blacklisted
 	 */
 	public static boolean isFilenameBlacklisted( String filename ) {
-		
+
 		if( filename == null || filename.isEmpty() )
 			return true;
-		
+
 		if( Fields.FILENAME_BLACKLIST.contains( FilenameUtils.getName(filename) ) ) 
 			return true;
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Adds current date as modification and adds the creator if not done yet, to every Omex description
 	 * Also creates new Omex description, if create is set to true and only if necessary
@@ -295,17 +300,17 @@ public class Tools
 	 * @param create
 	 */
 	public static void addOmexMetaData(MetaDataHolder entity, VCard creator, boolean create) {
-		
+
 		int added = 0;
 		// save some checks
 		if( creator != null && creator.isEmpty() )
 			creator = null;
-		
+
 		// add modified date and own VCard to all omex descriptions for the root element
 		for( MetaDataObject metaObject : entity.getDescriptions() ) {
 			if( metaObject instanceof OmexMetaDataObject ) {
 				OmexDescription meta = ((OmexMetaDataObject) metaObject).getOmexDescription();
-				
+
 				meta.getModified().add( new Date() );
 				if( creator != null && !containsVCard(meta.getCreators(), creator) )
 					// creator is set and not in Omex right now
@@ -313,20 +318,20 @@ public class Tools
 				added++;
 			}
 		}
-		
+
 		if( added == 0 && create == true ) {
 			// meta was added to non entry -> create
 			OmexDescription meta = new OmexDescription();
 			meta.getModified().add( meta.getCreated() );
 			if( creator != null )
 				meta.getCreators().add( creator );
-			
+
 			// attach to entity
 			entity.addDescription( new OmexMetaDataObject(meta) );
 		}
-		
+
 	}
-	
+
 	/**
 	 * Checks if the given VCard exists already in the Collection
 	 * 
@@ -335,19 +340,19 @@ public class Tools
 	 * @return
 	 */
 	public static boolean containsVCard( Collection<VCard> collection, VCard vcard ) {
-		
+
 		if( collection == null )
 			return vcard == null;
 		else if( vcard == null )
 			return false;
-			
+
 		for( VCard current : collection )
 			if( areVCardEqual(current, vcard) )
 				return true;
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Compares 2 VCards and returns true if both are identical in means of String.equal() or if both are null
 	 * 
@@ -356,7 +361,7 @@ public class Tools
 	 * @return
 	 */
 	public static boolean areVCardEqual( VCard vcard1, VCard vcard2 ) {
-		
+
 		if( vcard1 == vcard2 || (vcard1 == null && vcard2 == null) )
 			return true;
 		else if( vcard1 == null || vcard2 == null )
@@ -366,7 +371,7 @@ public class Tools
 				(vcard1.getEmail() == null ? vcard2.getEmail() == null : vcard1.getEmail().equals( vcard2.getEmail() )) &&
 				(vcard1.getOrganization() == null ? vcard2.getOrganization() == null : vcard1.getOrganization().equals( vcard2.getOrganization() ));
 	}
-	
+
 	/**
 	 * Copies an InputStream into an OutputStream. Stops at max lengt.
 	 * 
@@ -377,24 +382,79 @@ public class Tools
 	 * @throws IOException
 	 */
 	public static long copyStream( InputStream input, OutputStream output, long maxLength ) throws IOException {
-		
+
 		byte[] buffer = new byte[Fields.DEFAULT_BUFFER_SIZE];
 		long copied = 0;
 		while( input.available() > 0 ) {
 			int red = input.read(buffer);
 			output.write(buffer, 0, red);
-			
+
 			copied = copied + red;
 			// abort, if maxLength is reached
 			if( maxLength > 0 && copied > maxLength )
 				break;
 		}
-		
+
 		input.close();
 		output.flush();
 		output.close();
-		
+
 		return copied;
+	}
+	
+	/**
+	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL
+	 * 
+	 * @param request
+	 * @param response
+	 * @return A name suggestion or null
+	 */
+	public static String suggestFileNameFromHttpResponse( HttpRequest request, HttpResponse response ) {
+		return suggestFileNameFromHttpResponse(request.getRequestLine().getUri(), response);
+	}
+	
+	/**
+	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL
+	 * 
+	 * @param request
+	 * @param response
+	 * @return A name suggestion or null
+	 */
+	public static String suggestFileNameFromHttpResponse( String remoteUrl, HttpResponse response ) {
+
+		// try to evaluate name from url
+		String urlName = FilenameUtils.getName( remoteUrl );
+
+		// try to extract file name from http header
+		String headerName = suggestFileNameFromHttpResponse(response);
+
+		return headerName != null && headerName.isEmpty() == false ? headerName : urlName;
+	}
+	
+	/**
+	 * Suggests a filename for the queried file, base on the Content-Disposition Header field.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return A name suggestion or null
+	 */
+	public static String suggestFileNameFromHttpResponse( HttpResponse response ) {
+
+		// try to extract name from HttpHeader
+		Header dispositionHeader = response.getFirstHeader("Content-Disposition");
+		if( dispositionHeader != null && dispositionHeader.getValue() != null && dispositionHeader.getValue().isEmpty() == false ) {
+			// disposition header is present -> extract name
+			HeaderElement[] fileNameHeaderElements = dispositionHeader.getElements();
+			if( fileNameHeaderElements.length > 0 ) {
+				NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
+				String suggestedName = fileNamePair != null ? fileNamePair.getName() : null;
+				LOGGER.debug("Extracted filename ", suggestedName, " from Http header");
+				
+				return suggestedName;
+			}
+		}
+
+		return null;
 	}
 
 }

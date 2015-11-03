@@ -447,7 +447,7 @@ public class Tools
 			HeaderElement[] fileNameHeaderElements = dispositionHeader.getElements();
 			if( fileNameHeaderElements.length > 0 ) {
 				NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
-				String suggestedName = fileNamePair != null ? fileNamePair.getName() : null;
+				String suggestedName = fileNamePair != null ? fileNamePair.getValue() : null;
 				LOGGER.debug("Extracted filename ", suggestedName, " from Http header");
 				
 				return suggestedName;

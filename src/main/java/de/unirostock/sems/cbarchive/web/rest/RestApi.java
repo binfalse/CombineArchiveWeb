@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -49,7 +48,6 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -667,17 +665,9 @@ public class RestApi extends RestHelper {
 			uploadedFileName = uploadedFileName.replaceAll("[^A-Za-z0-9]", "_");
 			
 			// write uploaded file to temp
-			// copy the stream to a temp file
-			temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, uploadedFileName );
-			// write file to disk
-			OutputStream output = new FileOutputStream( temp.toFile() );
-			InputStream input = file.getEntityAs(InputStream.class);
-			long uploadedFileSize = IOUtils.copy( input, output);
-			
-			output.flush();
-			output.close();
-			input.close();
-			
+			temp = Tools.writeStreamToTempFile( uploadedFileName, file.getEntityAs(InputStream.class) );
+			long uploadedFileSize = temp.toFile().length();
+					
 			// max size for upload
 			if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(uploadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
 				LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
@@ -1126,16 +1116,9 @@ public class RestApi extends RestHelper {
 					uploadedFileName = uploadedFileName.replaceAll("[^A-Za-z0-9]", "_");
 					
 					// copy the stream to a temp file
-					java.nio.file.Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, uploadedFileName );
-					// write file to disk
-					OutputStream output = new FileOutputStream( temp.toFile() );
-					InputStream input = file.getEntityAs(InputStream.class);
-					long uploadedFileSize = IOUtils.copy( input, output);
-					
-					output.flush();
-					output.close();
-					input.close();
-					
+					java.nio.file.Path temp = Tools.writeStreamToTempFile( uploadedFileName, file.getEntityAs(InputStream.class) ); 
+					long uploadedFileSize = temp.toFile().length();
+
 					// max size for upload
 					if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(uploadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
 						LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());

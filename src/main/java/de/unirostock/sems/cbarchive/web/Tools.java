@@ -20,11 +20,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -38,6 +41,7 @@ import javax.servlet.http.Part;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpRequest;
@@ -373,7 +377,8 @@ public class Tools
 	}
 
 	/**
-	 * Copies an InputStream into an OutputStream. Stops at max lengt.
+	 * Copies an InputStream into an OutputStream and closes all streams afterwards.
+	 * Stops at max lengt.
 	 * 
 	 * @param input
 	 * @param output
@@ -403,6 +408,30 @@ public class Tools
 	}
 	
 	/**
+	 * writes a input stream entirely into a newly created temp file.
+	 * Closes all streams afterwards
+	 * 
+	 * @param tempFileName
+	 * @param input
+	 * @return Path to temp file
+	 * @throws IOException
+	 */
+	public static Path writeStreamToTempFile(String tempFileName, InputStream input) throws IOException {
+
+		// copy the stream to a temp file
+		Path temp = Files.createTempFile( Fields.TEMP_FILE_PREFIX, tempFileName );
+		// write file to disk
+		OutputStream output = new FileOutputStream( temp.toFile() );
+		IOUtils.copy( input, output);
+
+		output.flush();
+		output.close();
+		input.close();
+		
+		return temp;
+	}
+
+	/**
 	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL
 	 * 
 	 * @param request
@@ -412,7 +441,7 @@ public class Tools
 	public static String suggestFileNameFromHttpResponse( HttpRequest request, HttpResponse response ) {
 		return suggestFileNameFromHttpResponse(request.getRequestLine().getUri(), response);
 	}
-	
+
 	/**
 	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL
 	 * 
@@ -430,7 +459,7 @@ public class Tools
 
 		return headerName != null && headerName.isEmpty() == false ? headerName : urlName;
 	}
-	
+
 	/**
 	 * Suggests a filename for the queried file, base on the Content-Disposition Header field.
 	 * 
@@ -449,7 +478,7 @@ public class Tools
 				NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
 				String suggestedName = fileNamePair != null ? fileNamePair.getValue() : null;
 				LOGGER.debug("Extracted filename ", suggestedName, " from Http header");
-				
+
 				return suggestedName;
 			}
 		}

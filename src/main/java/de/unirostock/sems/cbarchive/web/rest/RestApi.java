@@ -785,13 +785,7 @@ public class RestApi extends RestHelper {
 		try {
 			Archive archive = user.getArchive(archiveId);
 			archive.close();
-			ArchiveEntryDataholder entry = null;
-			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
-				if( iterEntry.getId().equals(entryId) ) {
-					entry = iterEntry;
-					break;
-				}
-			}
+			ArchiveEntryDataholder entry = archive.getEntryById(entryId);
 			
 			// check if entry exists
 			if( entry != null )
@@ -1203,23 +1197,15 @@ public class RestApi extends RestHelper {
 		try {
 			Archive archive = user.getArchive(archiveId);
 			CombineArchive combineArchive = archive.getArchive();
-			ArchiveEntry archiveEntry = null;
+			ArchiveEntryDataholder entry = archive.getEntryById(entryId);
 			
-			// searching for the old entry by the id
-			for( ArchiveEntryDataholder entry : archive.getEntries().values() ) {
-				if( entry.getId().equals(entryId) ) {
-					archiveEntry = entry.getArchiveEntry();
-					break;
-				}
-			}
-			
-			if( archiveEntry == null ) {
+			if( entry == null ) {
 				return buildErrorResponse(404, user, "Cannot find archive entry"); 
 			}
 			
 			// removes the entry and pack/closes the archive
 			try {
-				boolean result = combineArchive.removeEntry(archiveEntry);
+				boolean result = combineArchive.removeEntry( entry.getArchiveEntry() );
 				combineArchive.pack();
 				
 				// trigger quota update
@@ -1266,13 +1252,7 @@ public class RestApi extends RestHelper {
 		try {
 			Archive archive = user.getArchive(archiveId);
 			archive.close();
-			ArchiveEntryDataholder entry = null;
-			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
-				if( iterEntry.getId().equals(entryId) ) {
-					entry = iterEntry;
-					break;
-				}
-			}
+			ArchiveEntryDataholder entry = archive.getEntryById(entryId);
 			
 			// check if entry exists
 			if( entry != null )
@@ -1302,28 +1282,14 @@ public class RestApi extends RestHelper {
 		try {
 			Archive archive = user.getArchive(archiveId);
 			archive.close();
-			
-			// iterate over all archive entries
-			ArchiveEntryDataholder entry = null;
-			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
-				if( iterEntry.getId().equals(entryId) ) {
-					entry = iterEntry;
-					break;
-				}
-			}
+			ArchiveEntryDataholder entry = archive.getEntryById(entryId);
 			
 			// check if entry exists
 			if( entry == null )
 				return buildErrorResponse(404, user, "No such entry found");
 			
 			// iterate over all meta entries
-			MetaObjectDataholder metaObject = null;
-			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
-				if( iterMetaObject.getId().equals(metaId) ) {
-					metaObject = iterMetaObject;
-					break;
-				}
-			}
+			MetaObjectDataholder metaObject = entry.getMetaById(metaId);
 			
 			// check if meta entry exists
 			if( metaObject != null )
@@ -1353,15 +1319,7 @@ public class RestApi extends RestHelper {
 		
 		try {
 			Archive archive = user.getArchive(archiveId);
-			
-			// iterate over all archive entries
-			ArchiveEntryDataholder entry = null;
-			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
-				if( iterEntry.getId().equals(entryId) ) {
-					entry = iterEntry;
-					break;
-				}
-			}
+			ArchiveEntryDataholder entry = archive.getEntryById(entryId);
 			
 			// check if entry exists
 			if( entry == null ) {
@@ -1369,15 +1327,8 @@ public class RestApi extends RestHelper {
 				return buildErrorResponse(404, user, "No such entry found");
 			}
 			
-			// iterate over all meta entries
-			MetaObjectDataholder oldMetaObject = null;
-			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
-				if( iterMetaObject.getId().equals(metaId) ) {
-					oldMetaObject = iterMetaObject;
-					break;
-				}
-			}
-			
+			// get meta
+			MetaObjectDataholder oldMetaObject = entry.getMetaById(metaId);
 			metaId = metaObject.getId();
 			
 			// check if meta entry exists
@@ -1428,15 +1379,7 @@ public class RestApi extends RestHelper {
 				
 		try {
 			Archive archive = user.getArchive(archiveId);
-			
-			// iterate over all archive entries
-			ArchiveEntryDataholder entry = null;
-			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
-				if( iterEntry.getId().equals(entryId) ) {
-					entry = iterEntry;
-					break;
-				}
-			}
+			ArchiveEntryDataholder entry = archive.getEntryById(entryId);
 			
 			// check if entry exists
 			if( entry == null ) {
@@ -1481,15 +1424,7 @@ public class RestApi extends RestHelper {
 		try {
 			Archive archive = user.getArchive(archiveId);
 			CombineArchive combineArchive = archive.getArchive();
-			
-			// iterate over all archive entries
-			ArchiveEntryDataholder entry = null;
-			for( ArchiveEntryDataholder iterEntry : archive.getEntries().values() ) {
-				if( iterEntry.getId().equals(entryId) ) {
-					entry = iterEntry;
-					break;
-				}
-			}
+			ArchiveEntryDataholder entry = archive.getEntryById(entryId);
 			
 			// check if entry exists
 			if( entry == null ) {
@@ -1498,13 +1433,7 @@ public class RestApi extends RestHelper {
 			}
 			
 			// iterate over all meta entries
-			MetaObjectDataholder metaObject = null;
-			for( MetaObjectDataholder iterMetaObject : entry.getMeta() ) {
-				if( iterMetaObject.getId().equals(metaId) ) {
-					metaObject = iterMetaObject;
-					break;
-				}
-			}
+			MetaObjectDataholder metaObject = entry.getMetaById(metaId);
 			
 			// check if meta entry exists
 			if( metaObject == null ) {

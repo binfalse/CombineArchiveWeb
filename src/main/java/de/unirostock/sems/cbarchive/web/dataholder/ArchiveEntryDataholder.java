@@ -123,7 +123,23 @@ public class ArchiveEntryDataholder {
 	public ArchiveEntry getArchiveEntry() {
 		return archiveEntry;
 	}
-
+	
+	@JsonIgnore
+	public MetaObjectDataholder getMetaById( String metaId ) {
+		
+		MetaObjectDataholder metaObject = null;
+		for( MetaObjectDataholder iterMetaObject : meta ) {
+			
+			if( iterMetaObject.getId().equals(metaId) ) {
+				metaObject = iterMetaObject;
+				break;
+			}
+			
+		}
+		
+		return metaObject;
+	}
+	
 	public void addMetaEntry( MetaObjectDataholder metaObject ) {
 
 		// add the metaObject to the combineArchiveEntry...

@@ -142,6 +142,9 @@ public class DownloadServlet extends HttpServlet {
 		// set MIME-Type to something downloadable
 		response.setContentType("application/octet-stream");
 		
+		// set Content-Length
+		response.setContentLength( (int) archiveFile.length() );
+		
 		// set the filename of the downloaded file
 		response.addHeader("Content-Disposition", 
 				MessageFormat.format("inline; filename=\"{0}.{1}\"", archiveName, COMBINEARCHIVE_FILE_EXT) ); 

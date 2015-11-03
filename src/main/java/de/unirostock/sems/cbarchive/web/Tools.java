@@ -509,6 +509,12 @@ public class Tools
 		return null;
 	}
 	
+	/**
+	 * removes all non alpha-numeric symbols from a file name
+	 * 
+	 * @param fileName
+	 * @return
+	 */
 	public static String cleanUpFileName( String fileName ) {
 		return fileName.replaceAll("[^A-Za-z0-9\\.]", "_");
 	}

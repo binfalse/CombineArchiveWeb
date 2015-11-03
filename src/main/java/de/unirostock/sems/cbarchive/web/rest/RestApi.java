@@ -657,7 +657,7 @@ public class RestApi extends RestHelper {
 			
 			// figuring out a good temp file name (seems like URIs don't like Brackets) 
 			String uploadedFileName = file.getFormDataContentDisposition().getFileName();
-			uploadedFileName = uploadedFileName.replaceAll("[^A-Za-z0-9]", "_");
+			uploadedFileName = Tools.cleanUpFileName(uploadedFileName);
 			
 			// write uploaded file to temp
 			temp = Tools.writeStreamToTempFile( uploadedFileName, file.getEntityAs(InputStream.class) );
@@ -891,7 +891,7 @@ public class RestApi extends RestHelper {
 				LOGGER.debug("Suggested name for fetched file is ", fileName);
 				
 				// clean up name
-				fileName = fileName.replaceAll("[^A-Za-z0-9\\.]", "_");
+				fileName = Tools.cleanUpFileName(fileName);
 				LOGGER.debug("Suggested and cleaned name for fetched file is ", fileName);
 				
 				// check content length
@@ -1081,7 +1081,7 @@ public class RestApi extends RestHelper {
 					
 					// figuring out a good temp file name (seems like URIs don't like Brackets) 
 					String uploadedFileName = file.getFormDataContentDisposition().getFileName();
-					uploadedFileName = uploadedFileName.replaceAll("[^A-Za-z0-9]", "_");
+					uploadedFileName = Tools.cleanUpFileName(uploadedFileName);
 					
 					// copy the stream to a temp file
 					java.nio.file.Path temp = Tools.writeStreamToTempFile( uploadedFileName, file.getEntityAs(InputStream.class) ); 

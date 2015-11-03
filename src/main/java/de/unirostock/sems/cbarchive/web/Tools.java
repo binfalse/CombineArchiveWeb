@@ -508,5 +508,9 @@ public class Tools
 
 		return null;
 	}
+	
+	public static String cleanUpFileName( String fileName ) {
+		return fileName.replaceAll("[^A-Za-z0-9\\.]", "_");
+	}
 
 }

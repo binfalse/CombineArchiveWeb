@@ -22,9 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -135,6 +134,11 @@ public class HttpImporter extends Importer {
 			}
 			
 			// for name suggestions
+			// take name from url
+			suggestedName = FilenameUtils.getName( remoteUrl );
+			LOGGER.debug("Extracted filename ", suggestedName, " from remoteUrl ", remoteUrl);
+			
+			// try to extract name from HttpHeader
 			Header dispositionHeader = getResponse.getFirstHeader("Content-Disposition");
 			if( dispositionHeader != null && dispositionHeader.getValue() != null && dispositionHeader.getValue().isEmpty() == false ) {
 				// disposition header is present -> extract name
@@ -142,17 +146,8 @@ public class HttpImporter extends Importer {
 				if( fileNameHeaderElements.length > 0 ) {
 					NameValuePair fileNamePair = fileNameHeaderElements[0].getParameterByName("filename");
 					suggestedName = fileNamePair != null ? fileNamePair.getName() : suggestedName;
+					LOGGER.debug("Extracted filename ", suggestedName, " from Http header");
 				}
-			}
-			else {
-				// when not -> take the last part of the url
-				Matcher matcher = Pattern.compile("\\/(([a-zA-Z0-9-_\\+]+).(\\w+))$", Pattern.CASE_INSENSITIVE).matcher(remoteUrl);
-				if( matcher.find() ) {
-					suggestedName = matcher.group(1);
-					for( int i = 0; i < matcher.groupCount(); i++)
-						LOGGER.debug(i, ": ", matcher.group(i));
-				}
-				
 			}
 			
 			// download it

@@ -185,6 +185,8 @@ public class Fields {
 			}
 		}
 		
+		LOGGER.info("Starting webCAT ", CURRENT_VERSION, CURRENT_VERSION_IS_RELEASE ? "" : " non release build");
+		
 		// Storage
 		String storage = context.getInitParameter("STORAGE");
 		if( storage != null ) {

@@ -1852,7 +1852,7 @@ var CreateView = Backbone.View.extend({
 			archiveModel.set("template", "git");
 			
 			var link = this.$el.find("input[name='newArchiveCellMlLink']").val();
-			if( !link.match(/https?:\/\/models.cellml.org\//) && !link.match(/^git\ clone\ https?:\/\/models\.cellml\.org\//) && !link.match(/https?:\/\/models.physiomeproject.org\//) && !link.match(/^git\ clone\ https?:\/\/models\.physiomeproject\.org\//) ) {
+			if( !link.match(/https?:\/\/models\.cellml.org\//) && !link.match(/^git\ clone\ https?:\/\/models\.cellml\.org\//) && !link.match(/https?:\/\/(models|staging)\.physiomeproject\.org\//) && !link.match(/^git\ clone\ https?:\/\/(models|staging)\.physiomeproject\.org\//) ) {
 				messageView.error ("expected a link to a cellml or physiome repository");
 				return false;
 			}

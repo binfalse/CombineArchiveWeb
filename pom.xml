@@ -1,260 +1,333 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.unirostock.sems</groupId>
-	<artifactId>CombineArchiveWeb</artifactId>
-	<packaging>war</packaging>
-	<version>0.4.13</version>
-	<name>CombineArchiveWeb</name>
-	<description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
-	<url>http://sems.uni-rostock.de/projects/combinearchive/</url>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.unirostock.sems</groupId>
+    <artifactId>CombineArchiveWeb</artifactId>
+    <packaging>war</packaging>
+    <version>0.5.0</version>
+    <name>CombineArchiveWeb</name>
+    <description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
+    <url>http://sems.uni-rostock.de/projects/combinearchive/</url>
 
-	<developers>
-		<developer>
-			<name>Martin Scharm</name>
-			<id>martin</id>
-			<email>martin@binfalse.de</email>
-			<roles>
-				<role>Java Developer</role>
-			</roles>
-		</developer>
-		<developer>
-			<name>Martin Peters</name>
-			<id>martinP</id>
-			<email>martin@freakybytes.net</email>
-			<roles>
-				<role>Java Developer</role>
-			</roles>
-		</developer>
-	</developers>
-	
-	<properties>
-		
-		<!-- gets overwritten when profile "release" is used -->
-		<build.release>false</build.release>
-		<build.version>${project.version}</build.version>
-		
-		<!-- the used java version -->
-		<java.version>1.7</java.version>
-	</properties>
-	
-	<dependencies>
-		<dependency>
-			<groupId>de.unirostock.sems</groupId>
-			<artifactId>CombineArchive</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>de.unirostock.sems</groupId>
-			<artifactId>CombineExt</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>de.binfalse</groupId>
-			<artifactId>BFLog</artifactId>
-			<version>1.3.3</version>
-		</dependency>
-		
-		<!-- Git VersionControl -->
-	    <dependency>
-	      <groupId>org.eclipse.jgit</groupId>
-	      <artifactId>org.eclipse.jgit</artifactId>
-	      <version>3.7.0.201502260915-r</version>
-	    </dependency>
-  
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<!-- Jersey for RESTful Api -->
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core" -->
-			<artifactId>jersey-container-servlet</artifactId>
-			<version>2.9.1</version>
-		</dependency>
-		<!-- multipart form data -->
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-multipart</artifactId>
-			<version>2.9.1</version>
-		</dependency>
-		<!-- Jackson for JSON Marshalling -->
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>2.9.1</version>
-		</dependency>
-		<!-- XML stuff -->
-		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>jdom2</artifactId>
-			<version>2.0.5</version>
-		</dependency>
-	
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>4.3</version>
-		</dependency>
+    <developers>
+        <developer>
+            <name>Martin Scharm</name>
+            <id>martin</id>
+            <email>martin@binfalse.de</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Martin Peters</name>
+            <id>martinP</id>
+            <email>martin@freakybytes.net</email>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+    </developers>
 
-	</dependencies>
+    <properties>
 
-	<repositories>
-		<repository>
-			<id>sems-maven-repository-releases</id>
-			<name>SEMS Maven Repo</name>
-			<url>http://mvn.sems.uni-rostock.de/releases/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
+        <!-- gets overwritten when profile "release" is used -->
+        <build.release>false</build.release>
+        <build.version>${project.version}</build.version>
 
-		<repository>
-			<id>sems-maven-repository-snapshots</id>
-			<name>SEMS Maven Repo</name>
-			<url>http://mvn.sems.uni-rostock.de/snapshots/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
+        <!-- the used java version -->
+        <java.version>1.7</java.version>
+    </properties>
 
-		<repository>
-			<id>java-public-repo</id>
-			<name>Java Maven public</name>
-			<url>https://maven.java.net/content/groups/public/</url>
-		</repository>
-	</repositories>
+    <dependencies>
+        <dependency>
+            <groupId>de.unirostock.sems</groupId>
+            <artifactId>CombineArchive</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.unirostock.sems</groupId>
+            <artifactId>CombineExt</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.binfalse</groupId>
+            <artifactId>BFLog</artifactId>
+            <version>1.3.3</version>
+        </dependency>
 
-	<distributionManagement>
-		<downloadUrl>http://mvn.sems.uni-rostock.de</downloadUrl>
-		<snapshotRepository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>sems-maven-repository</id>
-			<name>SEMS Maven Release Repository</name>
-			<url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
-			<layout>default</layout>
-		</snapshotRepository>
+        <!-- Git VersionControl -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>3.7.0.201502260915-r</version>
+        </dependency>
 
-		<repository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>sems-maven-repository</id>
-			<name>Enterprise Systems Maven Repository</name>
-			<url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>
-			<layout>default</layout>
-		</repository>
-	</distributionManagement>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- Jersey for RESTful Api -->
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core" -->
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+        <!-- multipart form data -->
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+        <!-- Jackson for JSON Marshalling -->
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+        <!-- XML stuff -->
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
+            <version>2.0.5</version>
+        </dependency>
 
-	<build>
-		<extensions>
-			<!-- enables ssh/scp support for maven deployment -->
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0-beta-7</version>
-			</extension>
-		</extensions>
-		<resources>
-			<resource>
-				<targetPath>${project.build.outputDirectory}/res</targetPath>
-				<directory>${basedir}/res</directory>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.3</version>
+        </dependency>
 
-	<profiles>
-		<!-- deployment profile -->
-		<profile>
-			<id>release</id>
-			<properties>
-				<build.release>true</build.release>
-			</properties>
-			<!-- build plugin configuration for the deploy -->
-			<!-- not necessary to always nclude the sources and javadocs -->
-			<build>
-				<plugins>
-					<!-- attach sources -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
+    </dependencies>
 
-						<configuration>
-							<attach>true</attach>
-						</configuration>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
+    <repositories>
+        <repository>
+            <id>sems-maven-repository-releases</id>
+            <name>SEMS Maven Repo</name>
+            <url>http://mvn.sems.uni-rostock.de/releases/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
 
-					<!-- attach javadoc -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9</version>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<failOnError>false</failOnError>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+        <repository>
+            <id>sems-maven-repository-snapshots</id>
+            <name>SEMS Maven Repo</name>
+            <url>http://mvn.sems.uni-rostock.de/snapshots/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
 
+        <repository>
+            <id>java-public-repo</id>
+            <name>Java Maven public</name>
+            <url>https://maven.java.net/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <downloadUrl>http://mvn.sems.uni-rostock.de</downloadUrl>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>sems-maven-repository</id>
+            <name>SEMS Maven Release Repository</name>
+            <url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
+            <layout>default</layout>
+        </snapshotRepository>
+
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>sems-maven-repository</id>
+            <name>Enterprise Systems Maven Repository</name>
+            <url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <extensions>
+            <!-- enables ssh/scp support for maven deployment -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-7</version>
+            </extension>
+        </extensions>
+        <resources>
+            <resource>
+                <targetPath>${project.build.outputDirectory}/res</targetPath>
+                <directory>${basedir}/res</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- deployment profile -->
+        <profile>
+            <id>release</id>
+            <properties>
+                <build.release>true</build.release>
+            </properties>
+            <!-- build plugin configuration for the deploy -->
+            <!-- not necessary to always nclude the sources and javadocs -->
+            <build>
+                <plugins>
+                    <!-- attach sources -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+
+                        <configuration>
+                            <attach>true</attach>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- attach javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>docker</id>
+            <activation>
+                <file>
+                    <exists>src/main/docker/Dockerfile</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/docker</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="docker">
+                                            <arg value="build"/>
+                                            <arg value="-t"/>
+                                            <arg value="binfalse/webcat:${project.version}"/>
+                                            <arg value="target"/>
+                                        </exec>
+                                        <exec executable="docker">
+                                            <arg value="push"/>
+                                            <arg value="binfalse/webcat:${project.version}"/>
+                                        </exec>
+                                        <exec executable="docker">
+                                            <arg value="tag"/>
+                                            <arg value="-f"/>
+                                            <arg value="binfalse/webcat:${project.version}"/>
+                                            <arg value="binfalse/webcat:latest"/>
+                                        </exec>
+                                        <exec executable="docker">
+                                            <arg value="push"/>
+                                            <arg value="binfalse/webcat:latest"/>
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 </project>

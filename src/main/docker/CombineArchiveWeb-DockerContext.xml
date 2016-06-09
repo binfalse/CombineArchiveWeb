@@ -1,0 +1,47 @@
+<!--
+	This is a sample context configuration for tomcat.
+	It can be inserted into the context.xml, but it highly recommended to store it in
+	
+	$CATALINA_BASE/conf/[enginename]/[hostname]/CombineArchiveWeb.xml
+	
+	For further explanation please refer to: http://sems.uni-rostock.de/trac/combinearchive-web/wiki/Config
+-->
+<Context>
+	
+	<!-- sets the log level. available levels: DEBUG, INFO, WARN, ERROR, NONE -->
+	<Parameter name="LOGLEVEL" value="ERROR" override="0" />
+	<!-- sets the persistent storage directory -->
+	<Parameter name="STORAGE" value="/srv/CombineArchiveWeb" override="false" />
+	<!-- URL to the SedML WebTools to enable the simulate Link, leave blank to disable -->
+	<Parameter name="SEDML_WEBTOOLS" value="http://bqfbergmann.dyndns.org/SED-ML_Web_Tools/Home/SimulateUrl?url=" override="false" />
+	<!-- URL to the CaRo converter -->
+	<Parameter name="CARO_URL" value="http://caro.sems.uni-rostock.de/caro/caro?remote=" override="false" />
+	<!-- URL to the RoCa converter -->
+	<Parameter name="ROCA_URL" value="http://caro.sems.uni-rostock.de/caro/roca?remote=" override="false" />
+	<!-- max age for stats data in seconds-->
+	<Parameter name="MAX_STATS_AGE" value="10" override="false" />
+	<!-- Feedback Button URL, set to empty value to disable button -->
+<!-- 	<Parameter name="FEEDBACK_URL" value="https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE" override="false" /> -->
+	<!-- set to true, if the you want to display a stats page on your webcat instance -->
+	<Parameter name="STATS_PUBLIC" value="true" override="false" />
+	<!-- Set a secret to access full stats by adding an url parameter, even if the stats are disabled. Leave blank to disable this feature -->
+	<Parameter name="STATS_SECRET" value="" override="false" />
+	
+	<!-- Quotas -->
+	
+	<!-- Maximum size in bytes of all workspaces together. 0 means unlimited -->
+	<Parameter name="QUOTA_TOTAL_SIZE" value="0" override="false" />
+	<!-- Maximum size in bytes of all archives in one workspaces together. 0 means unlimited -->
+	<Parameter name="QUOTA_WORKSPACE_SIZE" value="0" override="false" />
+	<!-- Maximum time in seconds a workspace can be left unused, before deletion. 0 means unlimited -->
+	<Parameter name="QUOTA_WORKSPACE_AGE" value="0" override="false" />
+	<!-- Maximum size of one archive in bytes. 0 means unlimited -->
+	<Parameter name="QUOTA_ARCHIVE_SIZE" value="0" override="false" />
+	<!-- Maximum number of archives in a workspace. 0 means unlimited -->
+	<Parameter name="QUOTA_ARCHIVE_LIMIT" value="0" override="false" />
+	<!-- Maximum number of files in an archive. 0 means unlimited -->
+	<Parameter name="QUOTA_FILE_LIMIT" value="0" override="false" />
+	<!-- Maximum file size for uploads. 0 means unlimited -->
+	<Parameter name="QUOTA_UPLOAD_SIZE" value="0" override="false" />
+
+</Context>

@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.unirostock.sems</groupId>
     <artifactId>CombineArchiveWeb</artifactId>
     <packaging>war</packaging>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
     <name>CombineArchiveWeb</name>
     <description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
     <url>http://sems.uni-rostock.de/projects/combinearchive/</url>
@@ -298,24 +297,24 @@
                                 <configuration>
                                     <target>
                                         <exec executable="docker">
-                                            <arg value="build"/>
-                                            <arg value="-t"/>
-                                            <arg value="binfalse/webcat:${project.version}"/>
-                                            <arg value="target"/>
+                                            <arg value="build" />
+                                            <arg value="-t" />
+                                            <arg value="binfalse/webcat:${project.version}" />
+                                            <arg value="target" />
                                         </exec>
                                         <exec executable="docker">
-                                            <arg value="push"/>
-                                            <arg value="binfalse/webcat:${project.version}"/>
+                                            <arg value="push" />
+                                            <arg value="binfalse/webcat:${project.version}" />
                                         </exec>
                                         <exec executable="docker">
-                                            <arg value="tag"/>
-                                            <arg value="-f"/>
-                                            <arg value="binfalse/webcat:${project.version}"/>
-                                            <arg value="binfalse/webcat:latest"/>
+                                            <arg value="tag" />
+                                            <arg value="-f" />
+                                            <arg value="binfalse/webcat:${project.version}" />
+                                            <arg value="binfalse/webcat:latest" />
                                         </exec>
                                         <exec executable="docker">
-                                            <arg value="push"/>
-                                            <arg value="binfalse/webcat:latest"/>
+                                            <arg value="push" />
+                                            <arg value="binfalse/webcat:latest" />
                                         </exec>
                                     </target>
                                 </configuration>

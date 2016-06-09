@@ -92,6 +92,16 @@ public class RestApi extends RestHelper {
 	@Path("/heartbeat")
 	@Produces( MediaType.TEXT_PLAIN )
 	public Response heartbeat( @CookieParam(Fields.COOKIE_PATH) String userPath, @CookieParam(Fields.COOKIE_USER) String userJson, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie ) {
+		
+		// check if there is the required cookie
+		if( userPath == null || userPath.isEmpty() )
+		{
+			String result = "not ok: missing required cookie";
+			return buildResponse(400, null)
+					.entity(result)
+					.build();
+		}
+		
 		// user stuff
 		UserManager user = null;
 		try {

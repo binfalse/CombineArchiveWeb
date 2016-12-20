@@ -11,9 +11,10 @@ RUN deps="maven openjdk-${JAVA_VERSION%%[-~bu]*}-jdk=$JAVA_DEBIAN_VERSION" \
 	&& apt-get install -y --no-install-recommends $deps \
 	&& mvn package \
 	&& cp target/*war /usr/local/tomcat/webapps/ROOT.war \
-	&& rm -rf /usr/local/tomcat/webapps/ROOT \
 	&& mvn clean \
-	&& apt-get purge -y --auto-remove maven \
+	&& rm -rf /usr/local/tomcat/webapps/ROOT \
+	&& rm -rf /root/.m2 /usr/share/doc \
+	&& apt-get purge -y --auto-remove $deps \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 

@@ -3,6 +3,7 @@ MAINTAINER martin scharm
 
 COPY src /srv/src
 COPY pom.xml /srv/pom.xml
+COPY src/main/docker/CombineArchiveWeb-DockerContext.xml /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml
 WORKDIR /srv/
 
 # install dependencies, compile the code, and get rid of dependencies...

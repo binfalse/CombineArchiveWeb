@@ -179,7 +179,7 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>1.0-beta-7</version>
+                <version>2.10</version>
             </extension>
         </extensions>
         <resources>
@@ -309,16 +309,6 @@
                                         <exec executable="docker">
                                             <arg value="push" />
                                             <arg value="binfalse/webcat:${project.version}" />
-                                        </exec>
-                                        <exec executable="docker">
-                                            <arg value="tag" />
-                                            <arg value="-f" />
-                                            <arg value="binfalse/webcat:${project.version}" />
-                                            <arg value="binfalse/webcat:latest" />
-                                        </exec>
-                                        <exec executable="docker">
-                                            <arg value="push" />
-                                            <arg value="binfalse/webcat:latest" />
                                         </exec>
                                     </target>
                                 </configuration>

@@ -262,6 +262,10 @@
                     <exists>src/main/docker/Dockerfile</exists>
                 </file>
             </activation>
+            <properties>
+                <build.release>true</build.release>
+            </properties>
+
             <build>
                 <plugins>
 

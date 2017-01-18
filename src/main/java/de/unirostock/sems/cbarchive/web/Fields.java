@@ -117,6 +117,10 @@ public class Fields {
 	/** determines, if current build is a release build. see CURRENT_VERSION */
 	public static boolean CURRENT_VERSION_IS_RELEASE = false;
 	
+	/** allows to share the entire workspace history, this does not effect the UI, but enables the /share/history endpoint,
+	 * which is used by the migration PHP script. Disabled by default. */
+	public static boolean ALLOW_SHARING_HISTORY = false;
+	
 	// ------------------------------------------------------------------------
 	// Quotas
 
@@ -244,6 +248,16 @@ public class Fields {
 		else if( feedbackUrl != null && feedbackUrl.isEmpty() == false )
 			// set another URL
 			Fields.FEEDBACK_URL = feedbackUrl;
+		
+		// History sharing
+		String allowSharingHistory = context.getInitParameter("ALLOW_SHARING_HISTORY");
+		if( allowSharingHistory != null && allowSharingHistory.isEmpty() == false ) {
+			allowSharingHistory = allowSharingHistory.toLowerCase();
+			if( allowSharingHistory.equals("true") || allowSharingHistory.equals("1") )
+				ALLOW_SHARING_HISTORY = true;
+			else
+				ALLOW_SHARING_HISTORY = false;
+		}
 		
 		// Quotas
 		

@@ -156,7 +156,106 @@ public class ShareApi extends RestHelper {
 				.entity(result).location(newLocation).build();
 
 	}
+	
+	@GET
+	@Path("/history/{history}")
+	@Produces( MediaType.TEXT_PLAIN )
+	public Response setWorkspaceHistory( @CookieParam(Fields.COOKIE_PATH) String oldUserPath, @PathParam("history") String historyListString, @CookieParam(Fields.COOKIE_WORKSPACE_HISTORY) String historyCookie, @Context HttpServletRequest requestContext) {
+		
+		if( Fields.ALLOW_SHARING_HISTORY == false ) {
+			// this endpoint is not activated
+			LOGGER.warn("Attempted access to the share history endpoint declined, because ALLOW_SHARING_HISTORY is not set to true");
+			return buildTextErrorResponse(400, null, "This endpoint is not enabled. Please set ALLOW_SHARING_HISTORY to true.");
+		}
+		
+		// clean up String
+		historyListString = historyListString.trim();
+		String[] historyList = historyListString.split(",");
+		
+		if( historyList.length == 0 ) {
+			// not a single entry was passed
+			return buildTextErrorResponse(500, null, "No history entry was passed.");
+		}
+		
+		// user stuff
+		// sets first workspace as active one
+		UserManager user = null;
+		try {
+			user = new UserManager( historyList[0] );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
 
+		WorkspaceHistory history = null;
+		try {
+			if( historyCookie != null && !historyCookie.isEmpty() ) {
+				history = WorkspaceHistory.fromCookieJson(historyCookie);
+			}
+
+			if( history == null )
+				history = new WorkspaceHistory();
+			
+			
+			for( String historyEntry : historyList ) {
+				// put workspace into history cookie
+				if( historyEntry == null || historyEntry.isEmpty() )
+					continue;
+				
+				// first checks, if the workspace actually exists, so we do not pollute the history with empty workspaces
+				if( WorkspaceManager.getInstance().hasWorkspace(historyEntry) ) {
+					Workspace workspace = WorkspaceManager.getInstance().getWorkspace(historyEntry);
+					if( history.containsWorkspace(workspace.getWorkspaceId()) == false ) {
+						history.getRecentWorkspaces().add( workspace );
+						LOGGER.debug("Added shared workspace ", workspace.getWorkspaceId(), " to history. Wasn't added yet.");
+					}
+				}
+			}
+			
+			// set first history entry as current
+			history.setCurrentWorkspace( user.getWorkspaceId() );
+			LOGGER.info("Set current workspace id to ", user.getWorkspaceId(), " from ", oldUserPath);
+
+			if( oldUserPath != null && !oldUserPath.isEmpty() && history.containsWorkspace( oldUserPath ) == false ) {
+				Workspace workspace = WorkspaceManager.getInstance().getWorkspace(oldUserPath);
+				if( workspace != null ) {
+					history.getRecentWorkspaces().add( workspace );
+					LOGGER.debug("Added old workspace to history ", oldUserPath);
+				}
+			}
+
+			historyCookie = history.toCookieJson();
+
+		} catch (IOException e) {
+			LOGGER.error(e, "Error parsing workspace history cookie ", historyCookie);
+			return buildErrorResponse(500, user, "Error parsing workspace history cookie ", historyCookie, e.getMessage());
+		}
+		
+		String result = "setted " + user.getWorkspaceId();
+		URI newLocation = null;
+		try {
+			if( requestContext != null ) {
+				String uri = requestContext.getRequestURL().toString();
+				//				String uri = requestContext.getRequestURI();
+				uri = uri.substring(0, uri.indexOf("rest/"));
+				LOGGER.info("redirect sharing link ", requestContext.getRequestURL(), " to ", uri);
+				newLocation = new URI( uri );
+				//				newLocation = new URI(requestContext.getScheme(), null, requestContext.getServerName(),
+				//						requestContext.getServerPort(), uri, requestContext.getQueryString(), null);
+			}
+			else
+				newLocation = new URI("../");
+
+		} catch (URISyntaxException e) {
+			LOGGER.error(e, "Cannot generate relative URL to main app");
+			return null;
+		}
+
+		return buildResponse(302, user)
+				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
+				.entity(result).location(newLocation).build();
+	}
+	
 	@GET
 	@Path("/import")
 	@Produces( MediaType.TEXT_PLAIN )
@@ -552,11 +651,15 @@ public class ShareApi extends RestHelper {
 						}
 					}
 				}
-				else
+				else {
+					output.close();
 					throw new ImporterException("Unknown protocol " + protocol + " while adding "  + remoteUri.toString());
+				}
 				
-				if( input == null )
+				if( input == null ) {
+					output.close();
 					throw new ImporterException("Cannot open stream to import file: " + remoteUri.toString());
+				}
 				
 				long downloadedFileSize = IOUtils.copy( input, output );
 

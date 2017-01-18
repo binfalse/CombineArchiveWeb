@@ -11,7 +11,7 @@ define("WEBCAT_LOCATION", "https://localhost/");
 // location to redirect to, with trailing slash and history endpoint path
 define("REDIRECT_LOCATION", WEBCAT_LOCATION . "/rest/history/");
 // Show information page first and not directly redirect via HTTP header
-define("SHOW_INFO_PAGE", false);
+define("SHOW_INFO_PAGE", true);
 
 // path of the current workspace
 define("COOKIE_PATH", "combinearchiveweba");
@@ -27,17 +27,20 @@ $success = false;
 if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
     // history cookie is set -> decode it
     $history = base64_decode($_COOKIE[COOKIE_HISTORY]);
-    $history = json_decode($history);
+    $history = json_decode($history, true);
 
     $result = array();
+    $names = array();
     foreach( $history as $history_entry ) {
         if( isset($history_entry['current']) and $history_entry['current'] == true ) {
             // this entry is the current workspace entry, so put it on the beginning of the result array
-            array_unshift( $result, $history_entry );
+            array_unshift( $result, $history_entry["workspaceId"] );
+            $names[$history_entry["workspaceId"]] = $history_entry["name"];
         }
         else {
             // normal, not current, entry.
-            array_push( $result, $history_entry );
+            array_push( $result, $history_entry["workspaceId"] );
+            $names[$history_entry["workspaceId"]] = $history_entry["name"];
         }
     }
 
@@ -61,10 +64,10 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
             .frame { width: 570px; height: 100%; margin: 0 auto; padding: 2em 5px; text-align: left; background-color: #EEE; border: 1px solid  #AAA; border-style: none solid none solid; }
             .content {  }
             h1 { width: 100%; font 1.5em bold; line-height: 1.05em; margin-bottom: 2em; }
-            p { margin-bottom: 3em; padding: 0 5px; text-align: justify; }
+            p, div.ws-list { margin-bottom: 3em; padding: 0 5px; text-align: justify; }
             p.button { text-align: center; }
             a.button { display: box; padding: 0.5em 1em; color: #FFF; background-color: #0D0; text-align: center; vertical-align: center; font: 1.3em bold; text-decoration: none; }
-            a.button:hover { background-color: #F00 !important; }
+            a.button:hover { background-color: #090 !important; }
         </style>
     </head>
 
@@ -82,17 +85,25 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
                     It does not seem, that you do not had any workspaces stored at this place. So you can just click at the button below to
                     access webCAT at the new domain.
                     <?php } ?>
+
                 </p>
+
                 <p class="button">
                     <a class="button" href="<?php echo($redirect_url); ?>"><?php echo($success ? "Migrate Workspaces" : "Go to new Instance"); ?></a>
                 </p>
+
                 <?php if($success) { ?>
-                <p class="ws-list">
+                <div class="ws-list">
                     Following workspaces were found:
                     <ul>
-                        <?php foreach( $result as $entry ) { ?><li><code><?php echo($entry); ?></code></li><?php } ?>
+                        <?php foreach( $result as $entry ) { ?>
+                        <li>
+                            <?php echo($names[$entry]); ?><br />
+                            <code><?php echo($entry); ?></code>
+                        </li>
+                        <?php } ?>
                     </ul>
-                </p>
+                </div>
                 <?php } ?>
             </div>
         </div>

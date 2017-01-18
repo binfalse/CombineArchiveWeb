@@ -72,19 +72,28 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
         <div class="frame">
             <div class="content">
                 <h1>This webCAT instance moved!</h1>
+                
                 <p class="explain">
-                    This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to a new domain. To ensure you can still access your pressures workspaces and archives
+                    This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to a new domain. 
+                    <?php if( $success ) { ?>
+                    To ensure you can still access your pressures workspaces and archives
                     you can migrate the history cookie, which contains all the workspace ids. To do so please click on the button down below.
+                    <?php } else { ?>
+                    It does not seem, that you do not had any workspaces stored at this place. So you can just click at the button below to
+                    access webCAT at the new domain.
+                    <?php } ?>
                 </p>
                 <p class="button">
-                    <a class="button" href="<?php echo($redirect_url); ?>">Migrate Workspaces</a>
+                    <a class="button" href="<?php echo($redirect_url); ?>"><?php echo($success ? "Migrate Workspaces" : "Go to new Instance"); ?></a>
                 </p>
+                <?php if($success) { ?>
                 <p class="ws-list">
                     Following workspaces were found:
                     <ul>
                         <?php foreach( $result as $entry ) { ?><li><code><?php echo($entry); ?></code></li><?php } ?>
                     </ul>
                 </p>
+                <?php } ?>
             </div>
         </div>
     </body>

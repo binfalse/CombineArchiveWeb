@@ -55,24 +55,36 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-            html, body { margin: 0; padding: 0; background-color: #EEE; color: black; font: 1em normal "Verdana","Arial","Georgia",sans-serif; text-align: center;}
-            .frame { width: 960px; margin: 0 auto; padding: 2em 5px; text-align: left; }
+            html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #CCC; color: black; font: 1em normal "Verdana","Arial","Georgia",sans-serif; text-align: center;}
+            a { text-decoration: underline; color: #A00; }
+            a:hover { text-decoration: none !important; }
+            .frame { width: 960px; height: 100%; margin: 0 auto; padding: 2em 5px; text-align: left; background-color: #EEE; border: 1px none solid  #AAA; }
+            .content {  }
             h1 { width: 100%; font 1.5em bold; line-height: 1.05em; margin-bottom: 2em; }
             p { margin-bottom: 1em; padding: 0 5px; }
-
-        
+            a.button { display: box; padding: 0.5em 1em; color: #FFF; background-color: #0D0; text-align: center; vertical-align: center; font: 1.3em bold; text-decoration: none; }
+            a.button:hover { background-color: #F00 !important; }
         </style>
     </head>
 
     <body>
         <div class="frame">
-            <h1>This webCAT instance moved!<h1>
-            <p class="explain">
-                This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to a new domain. To ensure you can still access your pressures workspaces and archives
-                you can migrate the history cookie, which contains all the workspace ids. To do so please click on the button down below.
-            </p>
-            <p class="button">
-            </p>
+            <div class="content">
+                <h1>This webCAT instance moved!<h1>
+                <p class="explain">
+                    This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to a new domain. To ensure you can still access your pressures workspaces and archives
+                    you can migrate the history cookie, which contains all the workspace ids. To do so please click on the button down below.
+                </p>
+                <p class="button">
+                    <a class="button" href="<?php echo($redirect_url); ?>">Migrate Workspaces</a>
+                </p>
+                <p class="ws-list">
+                    Following workspaces were found:
+                    <ul>
+                        <?php foreach( $result as $entry ) { ?><li><code><?php echo($entry); ?></code></li><?php } ?>
+                    </ul>
+                </p>
+            </div>
         </div>
     </body>
 </html>

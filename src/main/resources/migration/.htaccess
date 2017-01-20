@@ -1,0 +1,4 @@
+RewriteEngine on
+
+RewriteRule     "^$"       "/migrate.php" [END,QSA]
+RewriteRule     "^(.*)$"   "/migrate.php" [END,QSA]

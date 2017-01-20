@@ -210,8 +210,8 @@ public class ShareApi extends RestHelper {
 					if( history.containsWorkspace(workspace.getWorkspaceId()) == false ) {
 						history.getRecentWorkspaces().add( workspace );
 						LOGGER.debug("Added shared workspace ", workspace.getWorkspaceId(), " to history. Wasn't added yet.");
-						migration_count++;
 					}
+					migration_count++;
 				}
 			}
 			

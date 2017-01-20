@@ -26,6 +26,9 @@
 	<Parameter name="STATS_PUBLIC" value="true" override="false" />
 	<!-- Set a secret to access full stats by adding an url parameter, even if the stats are disabled. Leave blank to disable this feature -->
 	<Parameter name="STATS_SECRET" value="" override="false" />
+	<!-- allows to share the entire workspace history, this does not effect the UI, but enables the /share/history endpoint,
+		 which is used by the migration PHP script. Disabled by default. -->
+	<Parameter name="ALLOW_SHARING_HISTORY" value="false" override="false" />
 	
 	<!-- Quotas -->
 	

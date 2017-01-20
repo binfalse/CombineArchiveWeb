@@ -401,7 +401,7 @@ public class Tools
 
 	/**
 	 * Copies an InputStream into an OutputStream and closes all streams afterwards.
-	 * Stops at max lengt.
+	 * Stops at max length.
 	 * 
 	 * @param input
 	 * @param output
@@ -413,8 +413,8 @@ public class Tools
 
 		byte[] buffer = new byte[Fields.DEFAULT_BUFFER_SIZE];
 		long copied = 0;
-		while( input.available() > 0 ) {
-			int red = input.read(buffer);
+		int red = 0;
+		while( (red = input.read(buffer)) != -1 ) {
 			output.write(buffer, 0, red);
 
 			copied = copied + red;

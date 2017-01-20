@@ -7,11 +7,9 @@ Also it requires to have the context variable ALLOW_SHARING_HISTORY set to true,
 */
 
 // base location of new webCAT installation
-define("WEBCAT_LOCATION", "https://localhost/");
+define("WEBCAT_LOCATION", "https://cat.bio.informatik.uni-rostock.de/");
 // location to redirect to, with trailing slash and history endpoint path
-define("REDIRECT_LOCATION", WEBCAT_LOCATION . "/rest/history/");
-// Show information page first and not directly redirect via HTTP header
-define("SHOW_INFO_PAGE", true);
+define("REDIRECT_LOCATION", WEBCAT_LOCATION . "rest/history/");
 
 // path of the current workspace
 define("COOKIE_PATH", "combinearchiveweba");
@@ -22,8 +20,8 @@ define("COOKIE_USER", "combinearchivewebuser");
 
 // ----------------------------------------------------------------------------
 
-$success = false;
-$redirect_url = WEBCAT_LOCATION;
+$migrate_url = WEBCAT_LOCATION;
+$redirect_url = WEBCAT_LOCATION . substr($_SERVER['REQUEST_URI'], 1);
 
 if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
     // history cookie is set -> decode it
@@ -45,12 +43,12 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
         }
     }
 
-    $redirect_url = REDIRECT_LOCATION . implode(",", $result);
-    $success = true;
-    if( !SHOW_INFO_PAGE ) {
-        header("Location", $redirect_url);
-        exit();
-    }
+    $migrate_url = REDIRECT_LOCATION . implode(",", $result);
+}
+else {
+    // redirect directly to new page, using the proper endpoint, since no cookie was set.
+    header("Location", $redirect_url);
+    exit();
 }
 ?><!DOCTYPE html>
 <html lang="en-us">
@@ -62,50 +60,58 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
             html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #CCC; color: black; font: 1em normal "Verdana","Arial","Georgia",sans-serif; text-align: center;}
             a { text-decoration: underline; color: #A00; }
             a:hover { text-decoration: none !important; }
-            .frame { width: 570px; height: 100%; margin: 0 auto; padding: 2em 5px; text-align: left; background-color: #EEE; border: 1px solid  #AAA; border-style: none solid none solid; }
+            .frame { width: 570px; height: 100%; margin: 0 auto; padding: 0 5px; text-align: left; background-color: #EEE; border: 1px solid  #AAA; border-style: none solid none solid; }
             .content {  }
-            h1 { width: 100%; font 1.5em bold; line-height: 1.05em; margin-bottom: 2em; }
-            p, div.ws-list { margin-bottom: 3em; padding: 0 5px; text-align: justify; }
-            p.button { text-align: center; }
-            a.button { display: box; padding: 0.5em 1em; color: #FFF; background-color: #0D0; text-align: center; vertical-align: center; font: 1.3em bold; text-decoration: none; font-weight: bold; }
-            a.button:hover { background-color: #090 !important; }
+            div.header { padding-top: 2em !important; }
+            div.header > h1 { width: 100%; font 1.5em bold; line-height: 1.05em; margin: 0; }
+            p, div.text { margin-bottom: 3em; padding: 0 5px; text-align: justify; }
+            iframe { width: 100%; height: 3em; border: 1px solid #AAA }
+            div.button { margin-bottom: 3em; padding: 0 5px; text-align: center; }
+            a.button { display: box; padding: 0.5em 1em; color: #FFF; text-align: center; vertical-align: center; font: 1.3em bold; text-decoration: none; font-weight: bold; }
+            a.ok { background-color: #0D0; }
+            a.ok:hover { background-color: #090 !important; }
+            a.warn { background-color: #c68523 }
+            a.warn:hover { background-color: #915f15 !important; }
         </style>
     </head>
 
     <body>
         <div class="frame">
             <div class="content">
-                <h1>This webCAT instance moved!</h1>
-                
+                <div class="text header">
+                    <h1>This webCAT instance moved!</h1>
+                </div>
                 <p class="explain">
-                    This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to a new domain. 
-                    <?php if( $success ) { ?>
-                    To ensure you can still access your pressures workspaces and archives
-                    you can migrate the history cookie, which contains all the workspace IDs. To do so please click on the button down below.
-                    <?php } else { ?>
-                    It does not seem, that you do not had any workspaces stored at this place. So you can just click at the button below to
-                    access webCAT at the new domain.
-                    <?php } ?>
-
+                    This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to <a href="<?php echo(WEBCAT_LOCATION); ?>" target="_blank"><?php echo(parse_url(WEBCAT_LOCATION, PHP_URL_HOST)); ?></a>.
+                    To ensure you can still access your pressures workspaces and archives, we now try to migrate your workspace history.
                 </p>
 
-                <p class="button">
-                    <a class="button" href="<?php echo($redirect_url); ?>"><?php echo($success ? "Migrate Workspaces" : "Go to new Instance"); ?></a>
-                </p>
+                <div class="button">
+                    <a class="button ok" href="<?php echo($redirect_url); ?>">Go to new Instance</a>
+                </div>
 
-                <?php if($success) { ?>
-                <div class="ws-list">
+                <div class="text process">
+                    We now attempt to automatically migrate your history... <br />
+                    <iframe src="<?php echo($migrate_url); ?>"></iframe>
+                    <br />
+                    If frame above does not show a success message, please try to migrate your workspace history manually by clicking on the button below. This might be necessary, if your browser does not allow iframes.
+                </div>
+
+                <div class="button">
+                    <a class="button warn" href="<?php echo($migrate_url); ?>">Migrate Workspaces Manually</a>
+                </div>
+
+                <div class="text ws-list">
                     Following workspaces were found:
                     <ul>
                         <?php foreach( $result as $entry ) { ?>
                         <li>
-                            <?php echo($names[$entry]); ?><br />
+                            <b><?php echo($names[$entry]); ?></b><br />
                             <code><?php echo($entry); ?></code>
                         </li>
                         <?php } ?>
                     </ul>
                 </div>
-                <?php } ?>
             </div>
         </div>
     </body>

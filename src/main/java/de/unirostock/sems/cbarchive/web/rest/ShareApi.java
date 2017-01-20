@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -188,6 +189,7 @@ public class ShareApi extends RestHelper {
 		}
 
 		WorkspaceHistory history = null;
+		int migration_count = 0;
 		try {
 			if( historyCookie != null && !historyCookie.isEmpty() ) {
 				history = WorkspaceHistory.fromCookieJson(historyCookie);
@@ -208,6 +210,7 @@ public class ShareApi extends RestHelper {
 					if( history.containsWorkspace(workspace.getWorkspaceId()) == false ) {
 						history.getRecentWorkspaces().add( workspace );
 						LOGGER.debug("Added shared workspace ", workspace.getWorkspaceId(), " to history. Wasn't added yet.");
+						migration_count++;
 					}
 				}
 			}
@@ -231,29 +234,10 @@ public class ShareApi extends RestHelper {
 			return buildErrorResponse(500, user, "Error parsing workspace history cookie ", historyCookie, e.getMessage());
 		}
 		
-		String result = "setted " + user.getWorkspaceId();
-		URI newLocation = null;
-		try {
-			if( requestContext != null ) {
-				String uri = requestContext.getRequestURL().toString();
-				//				String uri = requestContext.getRequestURI();
-				uri = uri.substring(0, uri.indexOf("rest/"));
-				LOGGER.info("redirect sharing link ", requestContext.getRequestURL(), " to ", uri);
-				newLocation = new URI( uri );
-				//				newLocation = new URI(requestContext.getScheme(), null, requestContext.getServerName(),
-				//						requestContext.getServerPort(), uri, requestContext.getQueryString(), null);
-			}
-			else
-				newLocation = new URI("../");
-
-		} catch (URISyntaxException e) {
-			LOGGER.error(e, "Cannot generate relative URL to main app");
-			return null;
-		}
-
+		String result = MessageFormat.format("{0,choice,0#Failed,|0<Successfully} migrated {0,choice,0#no workspace|1#one workspace|1<{0,number,integer} workspaces}." , migration_count);
 		return buildResponse(302, user)
 				.cookie( new NewCookie(Fields.COOKIE_WORKSPACE_HISTORY, historyCookie, "/", null, null, Fields.COOKIE_AGE, false) )
-				.entity(result).location(newLocation).build();
+				.entity(result).build();
 	}
 	
 	@GET

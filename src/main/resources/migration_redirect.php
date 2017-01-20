@@ -23,6 +23,7 @@ define("COOKIE_USER", "combinearchivewebuser");
 // ----------------------------------------------------------------------------
 
 $success = false;
+$redirect_url = WEBCAT_LOCATION;
 
 if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
     // history cookie is set -> decode it
@@ -66,7 +67,7 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
             h1 { width: 100%; font 1.5em bold; line-height: 1.05em; margin-bottom: 2em; }
             p, div.ws-list { margin-bottom: 3em; padding: 0 5px; text-align: justify; }
             p.button { text-align: center; }
-            a.button { display: box; padding: 0.5em 1em; color: #FFF; background-color: #0D0; text-align: center; vertical-align: center; font: 1.3em bold; text-decoration: none; }
+            a.button { display: box; padding: 0.5em 1em; color: #FFF; background-color: #0D0; text-align: center; vertical-align: center; font: 1.3em bold; text-decoration: none; font-weight: bold; }
             a.button:hover { background-color: #090 !important; }
         </style>
     </head>
@@ -80,7 +81,7 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
                     This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to a new domain. 
                     <?php if( $success ) { ?>
                     To ensure you can still access your pressures workspaces and archives
-                    you can migrate the history cookie, which contains all the workspace ids. To do so please click on the button down below.
+                    you can migrate the history cookie, which contains all the workspace IDs. To do so please click on the button down below.
                     <?php } else { ?>
                     It does not seem, that you do not had any workspaces stored at this place. So you can just click at the button below to
                     access webCAT at the new domain.

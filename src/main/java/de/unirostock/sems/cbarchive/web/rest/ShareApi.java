@@ -179,10 +179,10 @@ public class ShareApi extends RestHelper {
 		}
 		
 		// user stuff
-		// sets first workspace as active one
+		// current active workspace does not get changed
 		UserManager user = null;
 		try {
-			user = new UserManager( historyList[0] );
+			user = new UserManager( oldUserPath );
 		} catch (IOException e) {
 			LOGGER.error(e, "Cannot create user");
 			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
@@ -215,10 +215,6 @@ public class ShareApi extends RestHelper {
 				}
 			}
 			
-			// set first history entry as current
-			history.setCurrentWorkspace( user.getWorkspaceId() );
-			LOGGER.info("Set current workspace id to ", user.getWorkspaceId(), " from ", oldUserPath);
-
 			if( oldUserPath != null && !oldUserPath.isEmpty() && history.containsWorkspace( oldUserPath ) == false ) {
 				Workspace workspace = WorkspaceManager.getInstance().getWorkspace(oldUserPath);
 				if( workspace != null ) {

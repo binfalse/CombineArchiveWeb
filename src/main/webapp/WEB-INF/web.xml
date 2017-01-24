@@ -34,7 +34,7 @@
 	
 	<context-param>
 		<param-name>FEEDBACK_URL</param-name>
-		<param-value>https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE</param-value>
+		<param-value>https://github.com/SemsProject/CombineArchiveWeb/issues/new?body=%0A%0A___%0AI%20came%20from%20the%20WebCAT%20interface%20through%20the%20feedback%20button</param-value>
 	</context-param>
 	
 	<context-param>

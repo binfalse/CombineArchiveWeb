@@ -92,7 +92,7 @@ public class Fields {
 	public static String SEDML_WEBTOOLS_URL = null;
 	
 	/** Link to a feedback form */
-	public static String FEEDBACK_URL = "https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE";
+	public static String FEEDBACK_URL = "https://github.com/SemsProject/CombineArchiveWeb/issues/new?body=%0A%0A___%0AI%20came%20from%20the%20WebCAT%20interface%20through%20the%20feedback%20button";
 	
 	/** Link to CaRo (CombineArchive to Research Object) Converter */
 	/* http://caro.web/caro?from= */

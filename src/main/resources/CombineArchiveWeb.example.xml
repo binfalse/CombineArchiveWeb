@@ -21,7 +21,7 @@
 	<!-- max age for stats data in seconds-->
 	<Parameter name="MAX_STATS_AGE" value="10" override="false" />
 	<!-- Feedback Button URL, set to empty value to disable button -->
-<!-- 	<Parameter name="FEEDBACK_URL" value="https://sems.uni-rostock.de/trac/combinearchive-web/newticket?from=WEBCAT-INTERFACE" override="false" /> -->
+<!-- 	<Parameter name="FEEDBACK_URL" value="https://github.com/SemsProject/CombineArchiveWeb/issues/new?body=%0A%0A___%0AI%20came%20from%20the%20WebCAT%20interface%20through%20the%20feedback%20button" override="false" /> -->
 	<!-- set to true, if the you want to display a stats page on your webcat instance -->
 	<Parameter name="STATS_PUBLIC" value="true" override="false" />
 	<!-- Set a secret to access full stats by adding an url parameter, even if the stats are disabled. Leave blank to disable this feature -->

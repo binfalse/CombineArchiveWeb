@@ -167,21 +167,21 @@
 
     <distributionManagement>
         <downloadUrl>https://raw.github.com/SemsProject/maven-repository/raw/</downloadUrl>
-        <snapshotRepository>
+        <repository>
             <uniqueVersion>true</uniqueVersion>
             <id>sems-maven-repository</id>
             <name>SEMS Maven Release Repository</name>
             <url>git:releases://git@github.com:SemsProject/maven-repository.git</url>
             <layout>default</layout>
-        </snapshotRepository>
+        </repository>
 
-        <repository>
+        <snapshotRepository>
             <uniqueVersion>true</uniqueVersion>
             <id>sems-maven-repository</id>
             <name>SEMS Maven Snapshot Repository</name>
             <url>git:snapshots://git@github.com:SemsProject/maven-repository.git</url>
             <layout>default</layout>
-        </repository>
+        </snapshotRepository>
     </distributionManagement>
 
     <build>

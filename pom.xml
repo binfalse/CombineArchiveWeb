@@ -133,7 +133,7 @@
         <repository>
             <id>sems-maven-repository-releases</id>
             <name>SEMS Maven Repo</name>
-            <url>http://mvn.sems.uni-rostock.de/releases/</url>
+            <url>https://raw.github.com/SemsProject/maven-repository/raw/releases</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>
@@ -143,7 +143,7 @@
         <repository>
             <id>sems-maven-repository-snapshots</id>
             <name>SEMS Maven Repo</name>
-            <url>http://mvn.sems.uni-rostock.de/snapshots/</url>
+            <url>https://raw.github.com/SemsProject/maven-repository/raw/snapshots</url>
             <layout>default</layout>
             <releases>
                 <enabled>false</enabled>
@@ -157,33 +157,41 @@
         </repository>
     </repositories>
 
+	<pluginRepositories>
+		<!-- wagon-ssh -->
+		<pluginRepository>
+			<id>synergian-repo</id>
+			<url>https://raw.github.com/synergian/wagon-git/releases</url>
+		</pluginRepository>
+	</pluginRepositories>
+
     <distributionManagement>
-        <downloadUrl>http://mvn.sems.uni-rostock.de</downloadUrl>
+        <downloadUrl>https://raw.github.com/SemsProject/maven-repository/raw/</downloadUrl>
         <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
+            <uniqueVersion>true</uniqueVersion>
             <id>sems-maven-repository</id>
             <name>SEMS Maven Release Repository</name>
-            <url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
+            <url>git:releases://git@github.com:SemsProject/maven-repository.git</url>
             <layout>default</layout>
         </snapshotRepository>
 
         <repository>
-            <uniqueVersion>false</uniqueVersion>
+            <uniqueVersion>true</uniqueVersion>
             <id>sems-maven-repository</id>
-            <name>Enterprise Systems Maven Repository</name>
-            <url>scp://sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>
+            <name>SEMS Maven Snapshot Repository</name>
+            <url>git:snapshots://git@github.com:SemsProject/maven-repository.git</url>
             <layout>default</layout>
         </repository>
     </distributionManagement>
 
     <build>
         <extensions>
-            <!-- enables ssh/scp support for maven deployment -->
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.10</version>
-            </extension>
+            <!-- enable deployment via git -->
+			<extension>
+				<groupId>ar.com.synergian</groupId>
+				<artifactId>wagon-git</artifactId>
+				<version>0.3.0</version>
+			</extension>
         </extensions>
         <resources>
             <resource>

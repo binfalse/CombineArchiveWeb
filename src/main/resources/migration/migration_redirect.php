@@ -10,6 +10,8 @@ Also it requires to have the context variable ALLOW_SHARING_HISTORY set to true,
 define("WEBCAT_LOCATION", "https://cat.bio.informatik.uni-rostock.de/");
 // location to redirect to, with trailing slash and history endpoint path
 define("REDIRECT_LOCATION", WEBCAT_LOCATION . "rest/history/");
+// contact url
+define("CONTACT_URL", "https://sems.uni-rostock.de/projects/combinearchive/");
 
 // path of the current workspace
 define("COOKIE_PATH", "combinearchiveweba");
@@ -64,6 +66,7 @@ else {
             .content {  }
             div.header { padding-top: 2em !important; }
             div.header > h1 { width: 100%; font 1.5em bold; line-height: 1.05em; margin: 0; }
+            div.header > img { float: right; margin-bottom: 1em; height: 4em;}
             p, div.text { margin-bottom: 3em; padding: 0 5px; text-align: justify; }
             iframe { width: 100%; height: 3em; border: 1px solid #AAA }
             div.button { margin-bottom: 3em; padding: 0 5px; text-align: center; }
@@ -79,6 +82,8 @@ else {
         <div class="frame">
             <div class="content">
                 <div class="text header">
+                    <?php if( file_exists("sems-logo.png") ) { ?><img src="sems-logo.png" /><?php } ?>
+                    <div style="clear: both;"></div>
                     <h1>This webCAT instance moved!</h1>
                 </div>
                 <p class="explain">
@@ -112,6 +117,12 @@ else {
                         <?php } ?>
                     </ul>
                 </div>
+                
+                <?php if(CONTACT_URL) { ?>
+                <div class="text contact">
+                    In case of any problems or if you have any questions, please feel free to <a href="<?php echo(CONTACT_URL); ?>" target="_blank">contact us</a>.
+                </div>
+                <?php } ?>
             </div>
         </div>
     </body>

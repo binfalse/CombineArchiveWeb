@@ -82,8 +82,8 @@ else {
                     <h1>This webCAT instance moved!</h1>
                 </div>
                 <p class="explain">
-                    This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to <a href="<?php echo(WEBCAT_LOCATION); ?>" target="_blank"><?php echo(parse_url(WEBCAT_LOCATION, PHP_URL_HOST)); ?></a>.
-                    To ensure you can still access your pressures workspaces and archives, we now try to migrate your workspace history.
+                    WebCAT is now available from <a href="<?php echo(WEBCAT_LOCATION); ?>" target="_blank"><?php echo(parse_url(WEBCAT_LOCATION, PHP_URL_HOST)); ?></a>.
+                    To ensure that you can still access your precious workspaces and archives, we now try to migrate your workspace history.
                 </p>
 
                 <div class="button">
@@ -94,7 +94,7 @@ else {
                     We now attempt to automatically migrate your history... <br />
                     <iframe src="<?php echo($migrate_url); ?>"></iframe>
                     <br />
-                    If frame above does not show a success message, please try to migrate your workspace history manually by clicking on the button below. This might be necessary, if your browser does not allow iframes.
+                    If the frame above does <b>not</b> show a success message, please try to migrate your workspace history manually by clicking on the button below. This might be necessary, if your browser does not allow iframes.
                 </div>
 
                 <div class="button">
@@ -102,7 +102,7 @@ else {
                 </div>
 
                 <div class="text ws-list">
-                    Following workspaces were found:
+                    Following workspaces were found and are ready to be migrated:
                     <ul>
                         <?php foreach( $result as $entry ) { ?>
                         <li>

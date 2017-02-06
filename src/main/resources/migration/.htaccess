@@ -1,4 +1,5 @@
 RewriteEngine on
 
-RewriteRule     "^$"       "/migrate_redirect.php" [END,QSA]
-RewriteRule     "^(.*)$"   "/migrate_redirect.php" [END,QSA]
+RewriteRule     "^$"                    "/migrate_redirect.php" [END,QSA]
+RewriteRule     "^([^/]*)\.(png)$"      "/$1.$2" [END,QSA]
+RewriteRule     "^(.*)$"                "/migrate_redirect.php" [END,QSA]

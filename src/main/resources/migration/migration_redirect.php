@@ -49,7 +49,7 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
 }
 else {
     // redirect directly to new page, using the proper endpoint, since no cookie was set.
-    header("Location", $redirect_url);
+    header("Location: $redirect_url");
     exit();
 }
 ?><!DOCTYPE html>

@@ -56,9 +56,11 @@ import de.unirostock.sems.cbarchive.meta.MetaDataObject;
 import de.unirostock.sems.cbarchive.meta.OmexMetaDataObject;
 import de.unirostock.sems.cbarchive.meta.omex.OmexDescription;
 import de.unirostock.sems.cbarchive.meta.omex.VCard;
+import de.unirostock.sems.cbarchive.web.dataholder.Archive;
 import de.unirostock.sems.cbarchive.web.dataholder.UserData;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebCriticalException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
+import de.unirostock.sems.cbarchive.web.exception.QuotaException;
 
 
 // TODO: Auto-generated Javadoc
@@ -222,6 +224,48 @@ public class Tools
 			return false;
 		else
 			return true;
+	}
+	
+	/**
+	 * Checks for all quotas required to add/update an file within a CombineArchive. If a quota is exceeded it fails by throwing an QuotaException.
+	 *  
+	 * @param fileSize of the uploaded file
+	 * @param archive
+	 * @param user
+	 * @throws QuotaException
+	 */
+	public static void checkQuotasOrFail( long fileSize, Archive archive, UserManager user ) throws QuotaException {
+		
+		// max size for upload
+		if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && fileSize > 0 && Tools.checkQuota(fileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
+			LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
+			throw new QuotaException("QUOTA_UPLOAD_SIZE reached in workspace " + user.getWorkspaceId(), "The fetched file is to big.");
+		}
+		
+		// max files in one archive
+		if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_FILE_LIMIT) == false ) {
+			LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+			throw new QuotaException("QUOTA_FILE_LIMIT reached in workspace " + user.getWorkspaceId(), "The max amount of files in one archive is reached.");
+		}
+		
+		// max archive size
+		if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && fileSize > 0 && Tools.checkQuota(user.getWorkspace().getArchiveSize( archive.getId() ) + fileSize, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
+			LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
+			throw new QuotaException("QUOTA_ARCHIVE_SIZE reached in workspace " + user.getWorkspaceId(), "The maximum size of one archive is reached.");
+		}
+		
+		// max workspace size
+		if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && fileSize > 0 && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + fileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
+			LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
+			throw new QuotaException("QUOTA_WORKSPACE_SIZE reached in workspace " + user.getWorkspaceId(), "The maximum size of one workspace is reached.");
+		}
+		
+		// max total size
+		if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && fileSize > 0 && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + fileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
+			LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
+			throw new QuotaException("QUOTA_TOTAL_SIZE reached in workspace " + user.getWorkspaceId(), "The maximum size is reached.");
+		}
+		
 	}
 
 	/**

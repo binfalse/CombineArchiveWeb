@@ -82,6 +82,7 @@ import de.unirostock.sems.cbarchive.web.dataholder.WorkspaceHistory;
 import de.unirostock.sems.cbarchive.web.exception.ArchiveEntryUploadException;
 import de.unirostock.sems.cbarchive.web.exception.CombineArchiveWebException;
 import de.unirostock.sems.cbarchive.web.exception.ImporterException;
+import de.unirostock.sems.cbarchive.web.exception.QuotaException;
 import de.unirostock.sems.cbarchive.web.importer.Importer;
 import de.unirostock.sems.cbarchive.web.provider.ObjectMapperProvider;
 
@@ -907,39 +908,13 @@ public class RestApi extends RestHelper {
 					contentLength = response.getEntity().getContentLength();
 				}
 				
-				// max size for upload
-				if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(contentLength, Fields.QUOTA_UPLOAD_SIZE) == false ) {
-					LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
-					getRequest.abort();
-					result.add( new ArchiveEntryUploadException("The fetched file is to big.", request.getPath() + fileName) );
-					continue;
+				// check for all quotas
+				try {
+					Tools.checkQuotasOrFail(contentLength, archive, user);
 				}
-				// max files in one archive
-				if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_FILE_LIMIT) == false ) {
-					LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+				catch (QuotaException e) {
 					getRequest.abort();
-					result.add( new ArchiveEntryUploadException("The max amount of files in one archive is reached.", request.getPath() + fileName) );
-					continue;
-				}
-				// max archive size
-				if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + contentLength, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
-					LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
-					getRequest.abort();
-					result.add( new ArchiveEntryUploadException("The maximum size of one archive is reached.", request.getPath() + fileName) );
-					continue;
-				}
-				// max workspace size
-				if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + contentLength, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
-					LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
-					getRequest.abort();
-					result.add( new ArchiveEntryUploadException("The maximum size of one workspace is reached.", request.getPath() + fileName) );
-					continue;
-				}
-				// max total size
-				if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && contentLength > 0 && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + contentLength, Fields.QUOTA_TOTAL_SIZE) == false ) {
-					LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
-					getRequest.abort();
-					result.add( new ArchiveEntryUploadException("The maximum size is reached.", request.getPath() + fileName) );
+					result.add( new ArchiveEntryUploadException(e.getUserMessage(), request.getPath() + fileName) );
 					continue;
 				}
 				
@@ -1090,45 +1065,15 @@ public class RestApi extends RestHelper {
 					// copy the stream to a temp file
 					java.nio.file.Path temp = Tools.writeStreamToTempFile( uploadedFileName, file.getEntityAs(InputStream.class) ); 
 					long uploadedFileSize = temp.toFile().length();
-
-					// max size for upload
-					if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(uploadedFileSize, Fields.QUOTA_UPLOAD_SIZE) == false ) {
-						LOGGER.warn("QUOTA_UPLOAD_SIZE reached in workspace ", user.getWorkspaceId());
-						// remove temp file
-						temp.toFile().delete();
-						result.add( new ArchiveEntryUploadException("The uploaded file is to big.", path + fileName) );
-						continue;
+					
+					// check for all quotas
+					try {
+						Tools.checkQuotasOrFail(uploadedFileSize, archive, user);
 					}
-					// max files in one archive
-					if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota(archive.countArchiveEntries() + 1, Fields.QUOTA_FILE_LIMIT) == false ) {
-						LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+					catch (QuotaException e) {
 						// remove temp file
 						temp.toFile().delete();
-						result.add( new ArchiveEntryUploadException("The max amount of files in one archive is reached.", path + fileName) );
-						continue;
-					}
-					// max archive size
-					if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(user.getWorkspace().getArchiveSize(archiveId) + uploadedFileSize, Fields.QUOTA_ARCHIVE_SIZE) == false ) {
-						LOGGER.warn("QUOTA_ARCHIVE_SIZE reached in workspace ", user.getWorkspaceId());
-						// remove temp file
-						temp.toFile().delete();
-						result.add( new ArchiveEntryUploadException("The maximum size of one archive is reached.", path + fileName) );
-						continue;
-					}
-					// max workspace size
-					if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) + uploadedFileSize, Fields.QUOTA_WORKSPACE_SIZE) == false ) {
-						LOGGER.warn("QUOTA_WORKSPACE_SIZE reached in workspace ", user.getWorkspaceId());
-						// remove temp file
-						temp.toFile().delete();
-						result.add( new ArchiveEntryUploadException("The maximum size of one workspace is reached.", path + fileName) );
-						continue;
-					}
-					// max total size
-					if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Tools.checkQuota(QuotaManager.getInstance().getTotalSize() + uploadedFileSize, Fields.QUOTA_TOTAL_SIZE) == false ) {
-						LOGGER.warn("QUOTA_TOTAL_SIZE reached in workspace ", user.getWorkspaceId());
-						// remove temp file
-						temp.toFile().delete();
-						result.add( new ArchiveEntryUploadException("The maximum size is reached.", path + fileName) );
+						result.add( new ArchiveEntryUploadException(e.getUserMessage(), path + fileName) );
 						continue;
 					}
 					

@@ -53,9 +53,9 @@ public abstract class RestHelper extends Application {
 	/**
 	 * Generates ResponseBuilder an sets cookies, if possible
 	 * 
-	 * @param status
-	 * @param user
-	 * @return ResponseBuilder
+	 * @param status the desired status
+	 * @param user the user
+	 * @return the ResponseBuilder
 	 */
 	protected ResponseBuilder buildResponse( int status, UserManager user ) {
 
@@ -83,10 +83,10 @@ public abstract class RestHelper extends Application {
 	/**
 	 * Generates an error response
 	 * 
-	 * @param status
-	 * @param user
-	 * @param errors
-	 * @return Response
+	 * @param status the desired status
+	 * @param user the user
+	 * @param errors the errors occurred
+	 * @return the error response
 	 */
 	protected Response buildErrorResponse( int status, UserManager user, String... errors ) {
 
@@ -109,10 +109,10 @@ public abstract class RestHelper extends Application {
 	/**
 	 * Generates an error response
 	 * 
-	 * @param status
-	 * @param user
-	 * @param errors
-	 * @return Response
+	 * @param status the desired status
+	 * @param user the user
+	 * @param errors the errors occurred
+	 * @return the error response
 	 */
 	protected Response buildTextErrorResponse( int status, UserManager user, String... errors ) {
 

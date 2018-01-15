@@ -76,11 +76,11 @@ public class Tools
 	/**
 	 * Tries to obtain user instance (workspace), if fails it crates a new one
 	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws CombineArchiveWebException
-	 * @throws CombineArchiveWebCriticalException
+	 * @param request the request
+	 * @param response the response
+	 * @return the user manager
+	 * @throws CombineArchiveWebException signals default problems
+	 * @throws CombineArchiveWebCriticalException signals critical problems
 	 */
 	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
 		return doLogin(request, response, true);
@@ -90,12 +90,12 @@ public class Tools
 	 * Tries to obtain user instance (workspace) <br>
 	 * if createNew is true, it also tries to create a new user instance.
 	 * 
-	 * @param request
-	 * @param response
-	 * @param createNew
-	 * @return
-	 * @throws CombineArchiveWebException
-	 * @throws CombineArchiveWebCriticalException
+	 * @param request the request
+	 * @param response the response
+	 * @param createNew try to create new user instance?
+	 * @return the user manager
+	 * @throws CombineArchiveWebException signals default problems
+	 * @throws CombineArchiveWebCriticalException signals critical problems
 	 */
 	public static UserManager doLogin( HttpServletRequest request, HttpServletResponse response, boolean createNew ) throws CombineArchiveWebException, CombineArchiveWebCriticalException {
 		// find Cookies
@@ -123,7 +123,7 @@ public class Tools
 	 *
 	 * @param cookies the cookies
 	 * @return the user
-	 * @throws IOException 
+	 * @throws IOException the IO exception
 	 */
 	public static UserManager getUser (CookieManager cookies) throws IOException
 	{
@@ -149,6 +149,12 @@ public class Tools
 		return user;
 	}
 
+	/**
+	 * Store user cookies.
+	 *
+	 * @param cookies the cookies
+	 * @param user the user
+	 */
 	public static void storeUserCookies(CookieManager cookies, UserManager user) {
 
 		cookies.setCookie( new Cookie(Fields.COOKIE_PATH, user.getWorkspaceId()) );
@@ -192,6 +198,12 @@ public class Tools
 		return "UploadedFile-" + DATE_FORMATTER.format (new Date ());
 	}
 
+	/**
+	 * Generate hash id.
+	 *
+	 * @param input the input
+	 * @return the hash id
+	 */
 	public static String generateHashId( String input ) {
 		try {
 			byte[] hash = MessageDigest.getInstance(Fields.HASH_ALGO).digest( input.getBytes() );
@@ -204,10 +216,10 @@ public class Tools
 
 	/**
 	 * Returns false, if a quota is exceeded. Otherwise true
-	 * 
-	 * @param currentValue
-	 * @param quota
-	 * @return
+	 *
+	 * @param currentValue the current size
+	 * @param quota the quota size
+	 * @return true, if quota is not exceeded
 	 */
 	public static boolean checkQuota( long currentValue, long quota ) {
 
@@ -225,11 +237,11 @@ public class Tools
 	}
 
 	/**
-	 * Generates a redirect URI to an archive
-	 * 
-	 * @param requestContext
-	 * @param archiveId
-	 * @return
+	 * Generates a redirect URI to an archive.
+	 *
+	 * @param requestContext the request context
+	 * @param archiveId the archive id
+	 * @return the uri
 	 */
 	public static URI generateArchiveRedirectUri( HttpServletRequest requestContext, String archiveId ) {
 		URI newLocation = null;
@@ -252,11 +264,11 @@ public class Tools
 	}
 
 	/**
-	 * Generates Share URI to a workspace
-	 * 
-	 * @param requestContext
-	 * @param workspaceId
-	 * @return
+	 * Generates Share URI to a workspace.
+	 *
+	 * @param requestContext the request context
+	 * @param workspaceId the workspace id
+	 * @return the uri
 	 */
 	public static URI generateWorkspaceRedirectUri( HttpServletRequest requestContext, String workspaceId ) {
 		URI newLocation = null;
@@ -281,7 +293,7 @@ public class Tools
 	/**
 	 * checks whether a filename is blacklisted or not
 	 * 
-	 * @param filename
+	 * @param filename the file name
 	 * @return true if filename is blacklisted
 	 */
 	public static boolean isFilenameBlacklisted( String filename ) {
@@ -297,11 +309,11 @@ public class Tools
 
 	/**
 	 * Adds current date as modification and adds the creator, if not done yet, to every Omex description
-	 * Also creates new Omex description, if create is set to true and only if necessary
-	 * 
-	 * @param entity
-	 * @param creator
-	 * @param create
+	 * Also creates new Omex description, if create is set to true and only if necessary.
+	 *
+	 * @param entity the entity
+	 * @param creator the creator
+	 * @param create should omex description be created?
 	 */
 	public static void addOmexMetaData(MetaDataHolder entity, VCard creator, boolean create) {
 		addOmexMetaData(entity, creator, null, create);
@@ -311,11 +323,11 @@ public class Tools
 	 * Adds current date as modification and an additional description, as well as the creator,
 	 * if not done yet, to every Omex description. Also creates new Omex description,
 	 * if create is set to true and only if necessary
-	 * 
-	 * @param entity
-	 * @param creator
-	 * @param additionalDescription
-	 * @param create
+	 *
+	 * @param entity the entity
+	 * @param creator the creator
+	 * @param additionalDescription the additional description
+	 * @param create should omex description be created?
 	 */
 	public static void addOmexMetaData(MetaDataHolder entity, VCard creator, String additionalDescription, boolean create) {
 
@@ -360,11 +372,11 @@ public class Tools
 	}
 
 	/**
-	 * Checks if the given VCard exists already in the Collection
-	 * 
-	 * @param collection
-	 * @param vcard
-	 * @return
+	 * Checks if the given VCard exists already in the Collection.
+	 *
+	 * @param collection the vcard collection
+	 * @param vcard the vcard in question
+	 * @return true, if collection contains vcard
 	 */
 	public static boolean containsVCard( Collection<VCard> collection, VCard vcard ) {
 
@@ -382,10 +394,10 @@ public class Tools
 
 	/**
 	 * Compares 2 VCards and returns true if both are identical in means of String.equal() or if both are null
-	 * 
-	 * @param vcard1
-	 * @param vcard2
-	 * @return
+	 *
+	 * @param vcard1 the vcard1
+	 * @param vcard2 the vcard2
+	 * @return true, if vcards are equal
 	 */
 	public static boolean areVCardEqual( VCard vcard1, VCard vcard2 ) {
 
@@ -402,12 +414,12 @@ public class Tools
 	/**
 	 * Copies an InputStream into an OutputStream and closes all streams afterwards.
 	 * Stops at max length.
-	 * 
-	 * @param input
-	 * @param output
-	 * @param maxLength
-	 * @return
-	 * @throws IOException
+	 *
+	 * @param input the input
+	 * @param output the output
+	 * @param maxLength the max length
+	 * @return the size of the stream copied
+	 * @throws IOException the IO exception
 	 */
 	public static long copyStream( InputStream input, OutputStream output, long maxLength ) throws IOException {
 
@@ -433,11 +445,11 @@ public class Tools
 	/**
 	 * writes a input stream entirely into a newly created temp file.
 	 * Closes all streams afterwards
-	 * 
-	 * @param tempFileName
-	 * @param input
+	 *
+	 * @param tempFileName the temp file name
+	 * @param input the input
 	 * @return Path to temp file
-	 * @throws IOException
+	 * @throws IOException the IO exception
 	 */
 	public static Path writeStreamToTempFile(String tempFileName, InputStream input) throws IOException {
 
@@ -455,10 +467,10 @@ public class Tools
 	}
 
 	/**
-	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL
-	 * 
-	 * @param request
-	 * @param response
+	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL.
+	 *
+	 * @param request the request
+	 * @param response the response
 	 * @return A name suggestion or null
 	 */
 	public static String suggestFileNameFromHttpResponse( HttpRequest request, HttpResponse response ) {
@@ -466,10 +478,10 @@ public class Tools
 	}
 
 	/**
-	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL
-	 * 
-	 * @param request
-	 * @param response
+	 * Suggests a filename for the queried file, base on the Content-Disposition Header field or the URL.
+	 *
+	 * @param remoteUrl the remote url
+	 * @param response the response
 	 * @return A name suggestion or null
 	 */
 	public static String suggestFileNameFromHttpResponse( String remoteUrl, HttpResponse response ) {
@@ -485,9 +497,8 @@ public class Tools
 
 	/**
 	 * Suggests a filename for the queried file, base on the Content-Disposition Header field.
-	 * 
-	 * @param request
-	 * @param response
+	 *
+	 * @param response the response
 	 * @return A name suggestion or null
 	 */
 	public static String suggestFileNameFromHttpResponse( HttpResponse response ) {
@@ -510,10 +521,10 @@ public class Tools
 	}
 	
 	/**
-	 * removes all non alpha-numeric symbols from a file name
-	 * 
-	 * @param fileName
-	 * @return
+	 * removes all non alpha-numeric symbols from a file name.
+	 *
+	 * @param fileName the file name
+	 * @return the cleaned string
 	 */
 	public static String cleanUpFileName( String fileName ) {
 		return fileName.replaceAll("[^A-Za-z0-9\\.]", "_");

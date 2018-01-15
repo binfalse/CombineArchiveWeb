@@ -93,18 +93,18 @@ abstract public class MetaObjectDataholder {
 	}
 	
 	/**
-	 * Updates the existing dataholder and the underlaying MetaDataObject with new information from another dataholder
-	 * 
-	 * @param newMetaObject
-	 * @throws CombineArchiveWebException 
+	 * Updates the existing dataholder and the underlaying MetaDataObject with new information from another dataholder.
+	 *
+	 * @param newMetaObject the new meta object
+	 * @throws CombineArchiveWebException the combine archive web exception
 	 */
 	@JsonIgnore
 	public abstract void update( MetaObjectDataholder newMetaObject ) throws CombineArchiveWebException;
 	
 	/**
-	 * Generates a CombineArchive MetaObject, which can be easily added to an ArchvieEntry
-	 *  
-	 * @return
+	 * Generates a CombineArchive MetaObject, which can be easily added to an ArchvieEntry.
+	 *
+	 * @return the combine archive meta object
 	 */
 	@JsonIgnore
 	public abstract MetaDataObject getCombineArchiveMetaObject();

@@ -36,7 +36,7 @@ public class QuotaManager {
 	
 	/**
 	 * Returns the Singleton instance
-	 * @return
+	 * @return the QuotaManager
 	 */
 	public static QuotaManager getInstance() {
 		if( instance == null )
@@ -66,7 +66,7 @@ public class QuotaManager {
 	/**
 	 * Retuns the total size in bytes from all workspaces or 0L if it fails.
 	 * 
-	 * @return
+	 * @return the total size
 	 */
 	public long getTotalSize() {
 		return totalSize;
@@ -88,7 +88,8 @@ public class QuotaManager {
 	
 	/**
 	 * Returns the size in bytes of all archives together in the workspace or {@code 0L} if it fails. 
-	 * @return
+	 * @param workspace  the workspace
+	 * @return the size in bytes of all archives in the workspace
 	 */
 	public long getWorkspaceSize( Workspace workspace ) {
 		
@@ -100,8 +101,8 @@ public class QuotaManager {
 	
 	/**
 	 * Updates the size of the workspace or removes the result from the cache, if the workspace is not available anymore
-	 * @param workspaceId
-	 * @return
+	 * @param workspaceId id of the workspace
+	 * @return the new size of the workspace
 	 */
 	public long updateWorkspace( String workspaceId ) {
 		Workspace workspace = workspaceManager.getWorkspace(workspaceId);
@@ -115,6 +116,11 @@ public class QuotaManager {
 			return updateWorkspace( workspace );
 	}
 	
+	/**
+	 * Gets the statistics on the page.
+	 *
+	 * @return the stats
+	 */
 	public StatisticData getStats() {
 		
 		// if cache is ok
@@ -125,6 +131,12 @@ public class QuotaManager {
 		return stats;
 	}
 	
+	/**
+	 * Gets the user stats.
+	 *
+	 * @param user the user
+	 * @return the user stats
+	 */
 	public StatisticData getUserStats(UserManager user) {
 		StatisticData stats = getStats().clone();
 		
@@ -158,8 +170,8 @@ public class QuotaManager {
 	
 	/**
 	 * Updates the size of the workspace
-	 * @param workspace
-	 * @return
+	 * @param workspace the workspace
+	 * @return updated size of the workspace
 	 */
 	public long updateWorkspace( Workspace workspace ) {
 		

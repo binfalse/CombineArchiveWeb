@@ -107,10 +107,10 @@ public class UserManager {
 	}
 
 	/**
-	 * Lists all available archives for the user, with content <br />
-	 * Similar to getArchives(true);
-	 * 
-	 * @return
+	 * Lists all available archives for the user, with content.
+	 * Similar to getArchives(true);.
+	 *
+	 * @return the archives
 	 */
 	public List<Archive> getArchives() {
 		return getArchives(true);
@@ -118,10 +118,10 @@ public class UserManager {
 
 	/**
 	 * Lists all available archives for the user
-	 * if {@code deepScan} is set to true, the content of the archives will be analysed 
-	 * 
-	 * @param deepScan
-	 * @return
+	 * if {@code deepScan} is set to true, the content of the archives will be analysed.
+	 *
+	 * @param deepScan should we deep-scan?
+	 * @return the archives
 	 */
 	public List<Archive> getArchives( boolean deepScan ) {
 		List<Archive> result = new LinkedList<Archive>();

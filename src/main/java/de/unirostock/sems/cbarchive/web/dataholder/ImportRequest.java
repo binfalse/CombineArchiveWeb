@@ -104,9 +104,9 @@ public class ImportRequest implements Serializable {
 	public ImportRequest() { }
 	
 	/**
-	 * Checks whether this import request is valid or not
-	 * 
-	 * @return
+	 * Checks whether this import request is valid or not.
+	 *
+	 * @return true, if is valid
 	 */
 	@JsonIgnore
 	public boolean isValid() {
@@ -126,9 +126,9 @@ public class ImportRequest implements Serializable {
 	
 	/**
 	 * Checks if an import of an already packed archive is requested
-	 * (remoteUrl and type is set)
-	 * 
-	 * @return
+	 * (remoteUrl and type is set).
+	 *
+	 * @return true, if is archive import
 	 */
 	@JsonIgnore
 	public boolean isArchiveImport() {

@@ -133,8 +133,9 @@ public class Workspace {
 	
 	/**
 	 * Returns the size in bytes of one archive in this workspace or {@code 0L} if it fails.
-	 * @param archiveId
-	 * @return
+	 *
+	 * @param archiveId the archive id
+	 * @return the archive size
 	 */
 	@JsonIgnore
 	public long getArchiveSize( String archiveId ) {

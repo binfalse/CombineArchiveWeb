@@ -42,11 +42,12 @@ public abstract class Importer implements Closeable {
 	public static final String IMPORT_GIT = "git";
 	
 	/**
-	 * Gets an importer corresponding to the type of archive
-	 * 
-	 * @param archive
-	 * @param user
-	 * @return
+	 * Gets an importer corresponding to the type of archive.
+	 *
+	 * @param archive the archive
+	 * @param user the user
+	 * @return the importer
+	 * @throws ImporterException the importer exception
 	 */
 	public static Importer getImporter( Archive archive, UserManager user ) throws ImporterException {
 		
@@ -65,13 +66,13 @@ public abstract class Importer implements Closeable {
 	}
 	
 	/**
-	 * Gets an importer corresponding to the given type
-	 * 
-	 * @param type
-	 * @param remoteUrl
-	 * @param user
-	 * @return
-	 * @throws ImporterException
+	 * Gets an importer corresponding to the given type.
+	 *
+	 * @param type the type
+	 * @param remoteUrl the remote url
+	 * @param user the user
+	 * @return the importer
+	 * @throws ImporterException the importer exception
 	 */
 	public static Importer getImporter( String type, String remoteUrl, UserManager user ) throws ImporterException {
 		
@@ -92,10 +93,10 @@ public abstract class Importer implements Closeable {
 	}
 	
 	/**
-	 * Checks if the given archive contains import information
-	 * 
-	 * @param archive
-	 * @return
+	 * Checks if the given archive contains import information.
+	 *
+	 * @param archive the archive
+	 * @return true, if archive is importable
 	 */
 	public static boolean isImportable( Archive archive ) {
 		
@@ -140,9 +141,10 @@ public abstract class Importer implements Closeable {
 	}
 	
 	/**
-	 * creates a temporary directory, should be cleaned in close
-	 * @return
-	 * @throws ImporterException
+	 * creates a temporary directory, should be cleaned in close.
+	 *
+	 * @return the temporary dir
+	 * @throws ImporterException the importer exception
 	 */
 	protected File createTempDir() throws ImporterException {
 		File tempDir = null;
@@ -170,8 +172,9 @@ public abstract class Importer implements Closeable {
 	protected class ImportVCard extends VCard {
 		
 		/**
-		 * Generates a VCard from a JGit PersonIdent
-		 * @param person
+		 * Generates a VCard from a JGit PersonIdent.
+		 *
+		 * @param person the person
 		 */
 		public ImportVCard( PersonIdent person ) {
 			super(	GitNameTransformer.getFamilyName( person.getName() ),
@@ -185,8 +188,8 @@ public abstract class Importer implements Closeable {
 		 * 
 		 * Given-Name Family-Name &lt;mail@example.org&gt; <br>
 		 * Given-Name Family-Name
-		 * 
-		 * @param MailUserString
+		 *
+		 * @param MailUserString the Mail user string
 		 */
 		public ImportVCard( String MailUserString ) {
 			super(	DefaultNameTransformer.getFamilyName( MailUserString ),
@@ -195,6 +198,9 @@ public abstract class Importer implements Closeable {
 					"" );
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
 		public int hashCode() {
 			
 			if( getEmail() == null && getFamilyName() == null && getGivenName() == null && getOrganization() == null )
@@ -209,6 +215,9 @@ public abstract class Importer implements Closeable {
 			return hash;
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
 		public boolean equals(Object obj) {
 			
 			if( (obj instanceof ImportVCard || obj instanceof VCard) && obj.hashCode() == hashCode() )
@@ -219,7 +228,17 @@ public abstract class Importer implements Closeable {
 		}
 	}
 	
+	/**
+	 * The Class GitNameTransformer.
+	 */
 	protected static class GitNameTransformer {
+		
+		/**
+		 * Gets the given name.
+		 *
+		 * @param name the name
+		 * @return the given name
+		 */
 		protected static String getGivenName( String name ) {
 			if( name == null || name.isEmpty() )
 				return "";
@@ -231,6 +250,12 @@ public abstract class Importer implements Closeable {
 				return splitted[0];
 		}
 		
+		/**
+		 * Gets the family name.
+		 *
+		 * @param name the name
+		 * @return the family name
+		 */
 		protected static String getFamilyName( String name ) {
 			if( name == null || name.isEmpty() )
 				return "";
@@ -249,11 +274,20 @@ public abstract class Importer implements Closeable {
 		}
 	}
 	
+	/**
+	 * The Class DefaultNameTransformer.
+	 */
 	protected static class DefaultNameTransformer {
 		
 		private static Pattern namePattern = Pattern.compile("((\\w+\\s+)+)(\\w+)");
 		private static Pattern mailPattern = Pattern.compile("<?(\\w+@\\w+\\.\\w+)>?");
 		
+		/**
+		 * Gets the given name.
+		 *
+		 * @param name the name
+		 * @return the given name
+		 */
 		protected static String getGivenName( String name ) {
 			Matcher matcher = namePattern.matcher(name);
 			if( matcher.find() ) {
@@ -264,6 +298,12 @@ public abstract class Importer implements Closeable {
 				return "";
 		}
 		
+		/**
+		 * Gets the family name.
+		 *
+		 * @param name the name
+		 * @return the family name
+		 */
 		protected static String getFamilyName( String name ) {
 			Matcher matcher = namePattern.matcher(name);
 			if( matcher.find() ) {
@@ -276,6 +316,12 @@ public abstract class Importer implements Closeable {
 				return "";
 		}
 		
+		/**
+		 * Gets the email.
+		 *
+		 * @param name the name
+		 * @return the email
+		 */
 		protected static String getEmail( String name ) {
 			Matcher matcher = mailPattern.matcher(name);
 			if( matcher.find() ) {

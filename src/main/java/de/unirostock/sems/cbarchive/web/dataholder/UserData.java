@@ -96,10 +96,10 @@ public class UserData {
 	}
 	
 	/**
-	 * Checks if the current user is contained in the given list
-	 * 
-	 * @param list
-	 * @return
+	 * Checks if the current user is contained in the given list.
+	 *
+	 * @param list the list
+	 * @return true, if this vcard exists in list
 	 */
 	@JsonIgnore
 	public boolean isContained( List<VCard> list ) {

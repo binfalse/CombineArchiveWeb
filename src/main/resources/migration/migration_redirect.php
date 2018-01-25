@@ -10,6 +10,8 @@ Also it requires to have the context variable ALLOW_SHARING_HISTORY set to true,
 define("WEBCAT_LOCATION", "https://cat.bio.informatik.uni-rostock.de/");
 // location to redirect to, with trailing slash and history endpoint path
 define("REDIRECT_LOCATION", WEBCAT_LOCATION . "rest/history/");
+// contact url
+define("CONTACT_URL", "https://sems.uni-rostock.de/projects/combinearchive/");
 
 // path of the current workspace
 define("COOKIE_PATH", "combinearchiveweba");
@@ -47,7 +49,7 @@ if( isset($_COOKIE[COOKIE_HISTORY]) and $_COOKIE[COOKIE_HISTORY] != "" ) {
 }
 else {
     // redirect directly to new page, using the proper endpoint, since no cookie was set.
-    header("Location", $redirect_url);
+    header("Location: $redirect_url");
     exit();
 }
 ?><!DOCTYPE html>
@@ -64,6 +66,7 @@ else {
             .content {  }
             div.header { padding-top: 2em !important; }
             div.header > h1 { width: 100%; font 1.5em bold; line-height: 1.05em; margin: 0; }
+            div.header > img { float: right; margin-bottom: 1em; height: 4em;}
             p, div.text { margin-bottom: 3em; padding: 0 5px; text-align: justify; }
             iframe { width: 100%; height: 3em; border: 1px solid #AAA }
             div.button { margin-bottom: 3em; padding: 0 5px; text-align: center; }
@@ -79,11 +82,13 @@ else {
         <div class="frame">
             <div class="content">
                 <div class="text header">
+                    <?php if( file_exists("sems-logo.png") ) { ?><img src="sems-logo.png" /><?php } ?>
+                    <div style="clear: both;"></div>
                     <h1>This webCAT instance moved!</h1>
                 </div>
                 <p class="explain">
-                    This <a href="http://sems.uni-rostock.de/cat" target="_blank">webCAT</a> instance move to <a href="<?php echo(WEBCAT_LOCATION); ?>" target="_blank"><?php echo(parse_url(WEBCAT_LOCATION, PHP_URL_HOST)); ?></a>.
-                    To ensure you can still access your pressures workspaces and archives, we now try to migrate your workspace history.
+                    WebCAT is now available from <a href="<?php echo(WEBCAT_LOCATION); ?>" target="_blank"><?php echo(parse_url(WEBCAT_LOCATION, PHP_URL_HOST)); ?></a>.
+                    To ensure that you can still access your precious workspaces and archives, we now try to migrate your workspace history.
                 </p>
 
                 <div class="button">
@@ -94,7 +99,7 @@ else {
                     We now attempt to automatically migrate your history... <br />
                     <iframe src="<?php echo($migrate_url); ?>"></iframe>
                     <br />
-                    If frame above does not show a success message, please try to migrate your workspace history manually by clicking on the button below. This might be necessary, if your browser does not allow iframes.
+                    If the frame above does <b>not</b> show a success message, please try to migrate your workspace history manually by clicking on the button below. This might be necessary, if your browser does not allow iframes.
                 </div>
 
                 <div class="button">
@@ -102,7 +107,7 @@ else {
                 </div>
 
                 <div class="text ws-list">
-                    Following workspaces were found:
+                    Following workspaces were found and are ready to be migrated:
                     <ul>
                         <?php foreach( $result as $entry ) { ?>
                         <li>
@@ -112,6 +117,12 @@ else {
                         <?php } ?>
                     </ul>
                 </div>
+                
+                <?php if(CONTACT_URL) { ?>
+                <div class="text contact">
+                    In case of any problems or if you have any questions, please feel free to <a href="<?php echo(CONTACT_URL); ?>" target="_blank">contact us</a>.
+                </div>
+                <?php } ?>
             </div>
         </div>
     </body>

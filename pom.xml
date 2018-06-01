@@ -3,7 +3,7 @@
     <groupId>de.uni-rostock.sbi</groupId>
     <artifactId>CombineArchiveWeb</artifactId>
     <packaging>war</packaging>
-    <version>0.5.13</version>
+    <version>0.5.14</version>
     <name>CombineArchiveWeb</name>
     <description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
 		<url>http://sems.uni-rostock.de/projects/combinearchive/</url>

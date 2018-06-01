@@ -89,6 +89,13 @@ public class Index extends HttpServlet {
 			return;
 		}
 
+    // load settings
+    ServletContext context = this.getServletContext();
+    request.setAttribute ("maintainer", context.getInitParameter ("MAINTAINER"));
+    request.setAttribute ("maintainerurl", context.getInitParameter ("MAINTAINER_URL"));
+    request.setAttribute ("imprint", context.getInitParameter ("IMPRINT_URL"));
+		
+
 		request.setAttribute ("user", user);
 		request.setAttribute ("ContextPath", request.getContextPath ());
 		request.getRequestDispatcher ("/WEB-INF/Index.jsp").forward (request, response);

@@ -339,7 +339,7 @@
 				These cookies are only used by your browser to tell the platform which archives you own.
 			</p>
 			<p>
-				This instance of the CombineArchiveWeb is maintained by<a href="${maintainerurl}">${maintainer}</a> &mdash; see <a href="${imprint}">imprint</a>. 
+				This instance of the CombineArchiveWeb is maintained by <a href="${maintainerurl}">${maintainer}</a> &mdash; see <a href="${imprint}">imprint</a>. 
 			</p>
 			
 		</div>

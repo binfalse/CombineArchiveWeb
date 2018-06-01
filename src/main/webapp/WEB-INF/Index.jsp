@@ -328,6 +328,20 @@
 				along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>.
     		</p>
 			
+			<h2>Privacy and data protection</h2>
+			<p>
+				The CombineArchiveWeb doesn't track you by default.
+				The maintainer of this application may still decide to e.g. keep log files or integrate other kinds of tracking.
+				This portal just collects a number of COMBINE archives, stored in several directories.
+				However, we do not know which archive belongs to which user!
+				This information is exclusively stored in your browser, as a cookie.
+				Thus, the CombineArchiveWeb uses cookies, but not to track you.
+				These cookies are only used by your browser to tell the platform which archives you own.
+			</p>
+			<p>
+				This instance of the CombineArchiveWeb is maintained by<a href="${maintainerurl}">${maintainer}</a> &mdash; see <a href="${imprint}">imprint</a>. 
+			</p>
+			
 		</div>
 		<!-- **** -->
 		<div id="template-archive">

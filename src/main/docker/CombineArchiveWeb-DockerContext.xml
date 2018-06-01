@@ -46,5 +46,13 @@
 	<Parameter name="QUOTA_FILE_LIMIT" value="0" override="false" />
 	<!-- Maximum file size for uploads. 0 means unlimited -->
 	<Parameter name="QUOTA_UPLOAD_SIZE" value="0" override="false" />
+	
+	<!-- maintainer -->
+        <!-- who maintains this instance? -->
+        <Parameter name="MAINTAINER" value="unkown" override="false" />
+        <!-- web page of the maintainer -->
+        <Parameter name="MAINTAINER_URL" value="#" override="false" />
+        <!-- imprint of the maintainer -->
+        <Parameter name="IMPRINT_URL" value="#" override="false" />
 
 </Context>

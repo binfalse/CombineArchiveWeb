@@ -331,12 +331,12 @@
 			<h2>Privacy and data protection</h2>
 			<p>
 				The CombineArchiveWeb doesn't track you by default.
-				The maintainer of this application may still decide to e.g. keep log files or integrate other kinds of tracking.
+				The maintainer of this application may still decide to e.g. keep log files or integrate other kinds of tracking.<br>
 				This portal just collects a number of COMBINE archives, stored in several directories.
-				However, we do not know which archive belongs to which user!
+				However, we do not know which archive belongs to which visitor..
 				This information is exclusively stored in your browser, as a cookie.
-				Thus, the CombineArchiveWeb uses cookies, but not to track you.
-				These cookies are only used by your browser to tell the platform which archives you own.
+				Thus, the CombineArchiveWeb uses cookies.
+				Not to track you, but to tell the platform which archives you're allowed to see.
 			</p>
 			<p>
 				This instance of the CombineArchiveWeb is maintained by <a href="${maintainerurl}">${maintainer}</a> &mdash; see <a href="${imprint}">imprint</a>. 

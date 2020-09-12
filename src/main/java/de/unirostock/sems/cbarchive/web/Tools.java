@@ -242,9 +242,9 @@ public class Tools
 	 * Checks for all quotas required to add/update an file within a CombineArchive. If a quota is exceeded it fails by throwing an QuotaException.
 	 *  
 	 * @param fileSize of the uploaded file
-	 * @param archive
-	 * @param user
-	 * @throws QuotaException
+	 * @param archive the archive
+	 * @param user the user
+	 * @throws QuotaException an error if the quotas on the server are exhausted
 	 */
 	public static void checkQuotasOrFail( long fileSize, Archive archive, UserManager user ) throws QuotaException {
 		

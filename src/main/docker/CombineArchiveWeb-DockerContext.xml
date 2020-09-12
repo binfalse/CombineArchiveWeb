@@ -13,7 +13,7 @@
 	<!-- sets the persistent storage directory -->
 	<Parameter name="STORAGE" value="/srv/CombineArchiveWeb" override="false" />
 	<!-- URL to the SedML WebTools to enable the simulate Link, leave blank to disable -->
-	<Parameter name="SEDML_WEBTOOLS" value="http://sysbioapps.dyndns.org/SED-ML_Web_Tools/Home/SimulateUrl?url=" override="false" />
+	<Parameter name="SEDML_WEBTOOLS" value="http://sysbioapps.spdns.org/SED-ML_Web_Tools/Home/SimulateUrl?url=" override="false" />
 	<!-- URL to the CaRo converter -->
 	<Parameter name="CARO_URL" value="http://caro.sems.uni-rostock.de/caro/caro?remote=" override="false" />
 	<!-- URL to the RoCa converter -->

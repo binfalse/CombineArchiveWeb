@@ -3,32 +3,32 @@
     <groupId>de.uni-rostock.sbi</groupId>
     <artifactId>CombineArchiveWeb</artifactId>
     <packaging>war</packaging>
-    <version>0.5.17</version>
+    <version>0.5.18</version>
     <name>CombineArchiveWeb</name>
     <description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
-		<url>http://sems.uni-rostock.de/projects/combinearchive/</url>
-		<organization>
-			<name>SEMS project @ University of Rostock</name>
-			<url>http://sems.uni-rostock.de</url>
-		</organization>
-		<licenses>
-			<license>
-				<name>GNU General Public License (GPL)</name>
-				<url>http://www.gnu.org/licenses/gpl.txt</url>
-			</license>
-		</licenses>
-		<scm>
-			<url>https://github.com/binfalse/CombineArchiveWeb</url>
-			<connection>https://github.com/binfalse/CombineArchiveWeb.git</connection>
-			<developerConnection>scm:git:ssh://github.com:binfalse/CombineArchiveWeb.git</developerConnection>
-		</scm>
+    <url>http://sems.uni-rostock.de/projects/combinearchive/</url>
+    <organization>
+        <name>SEMS project @ University of Rostock</name>
+        <url>http://sems.uni-rostock.de</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL)</name>
+            <url>http://www.gnu.org/licenses/gpl.txt</url>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/binfalse/CombineArchiveWeb</url>
+        <connection>https://github.com/binfalse/CombineArchiveWeb.git</connection>
+        <developerConnection>scm:git:ssh://github.com:binfalse/CombineArchiveWeb.git</developerConnection>
+    </scm>
 
     <developers>
         <developer>
             <name>Martin Scharm</name>
             <id>martin</id>
-						<email>martin@binfalse.de</email>
-						<organization>SEMS project @ University of Rostock</organization>
+            <email>martin@binfalse.de</email>
+            <organization>SEMS project @ University of Rostock</organization>
             <roles>
                 <role>Java Developer</role>
             </roles>
@@ -49,10 +49,10 @@
         <build.release>false</build.release>
         <build.version>${project.version}</build.version>
 
-        <!-- the used java version -->
+            <!-- the used java version -->
         <java.version>1.7</java.version>
-        
-        <!-- options for jdoc generation -->
+
+            <!-- options for jdoc generation -->
         <jdoc.opts>-Xdoclint:none</jdoc.opts>
     </properties>
 
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>de.uni-rostock.sbi</groupId>
             <artifactId>CombineArchive</artifactId>
-            <version>1.3.6</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>de.uni-rostock.sbi</groupId>
@@ -94,7 +94,7 @@
         <!-- Jersey for RESTful Api -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
-            <!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core" -->
+                <!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core" -->
             <artifactId>jersey-container-servlet</artifactId>
             <version>2.9.1</version>
         </dependency>
@@ -148,17 +148,17 @@
             <version>2.3.0</version>
         </dependency>
 
-			</dependencies>
-			<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+    </dependencies>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <resources>
@@ -181,89 +181,89 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.1</version>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.3</version>
-				<configuration>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<useReleaseProfile>false</useReleaseProfile>
-					<releaseProfiles>release</releaseProfiles>
-					<goals>deploy</goals>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<source>8</source>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <source>8</source>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

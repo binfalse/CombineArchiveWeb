@@ -543,15 +543,19 @@ div.archive-explorerexpand-text div.archive-explorerexpand-text-meta {
 	hyphens: auto;
 }
 
+div.omex-row {
+	display: block;
+	clear: both;
+}
 div.attribute-name {
 	float: left;
 	font-weight: bold;
-	width: 115px;
+	width: 125px;
 	margin-bottom: 5px;
 }
 div.attribute-detail {
 	float: left;
-	width: calc(100% - 120px);
+	width: calc(100% - 130px);
 	margin-bottom: 5px;
 }
 div.attribute-detail:after {

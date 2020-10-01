@@ -480,7 +480,7 @@
 		<div id="template-omex-meta-entry">
 			<h4>OMEX entry</h4>
 			<div class="attribute-name">created:</div>
-			<div class="attribute-detail">{{# print( new XDate(created).toLocaleString() ); }}</div>
+			<div class="attribute-detail">{{# print( new XDate().toLocaleString() ); }}</div>
 			
 			<div class="attribute-name">modified:</div>
 			<div class="attribute-detail">
@@ -496,7 +496,9 @@
 				<textarea class="on-edit" name="omexDescription">{{# print(description); }}</textarea>
 				&nbsp;
 			</div>
-			<div class="attribute-name-br">creators:</div>
+			<div class="omex-row">
+				<div class="attribute-name-br">creators:</div>
+			</div>
 			<div class="attribute-detail-br">
 				{{# _.each(creators, function(vcard) { }}
 					<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
@@ -509,14 +511,22 @@
 						<span class="on-not-edit" data-field="email">{{# print(escape(vcard.email)); }}</span>
 						
 						<div class="on-edit">
-							<div class="attribute-name">given name:</div>
-							<div class="attribute-detail"><input type="text" class="on-edit" data-field="givenName" /></div>
-							<div class="attribute-name">family name:</div>
-							<div class="attribute-detail"><input type="text" class="on-edit" data-field="familyName" /></div>
-							<div class="attribute-name">E-Mail:</div>
-							<div class="attribute-detail"><input type="text" class="on-edit" data-field="email" /></div>
-							<div class="attribute-name">organization:</div>
-							<div class="attribute-detail"><input type="text" class="on-edit" data-field="organization" /></div>
+							<div class="omex-row">
+								<div class="attribute-name">given name:</div>
+								<div class="attribute-detail"><input type="text" class="on-edit" data-field="givenName" /></div>
+							</div>
+							<div class="omex-row">
+								<div class="attribute-name">family name:</div>
+								<div class="attribute-detail"><input type="text" class="on-edit" data-field="familyName" /></div>
+							</div>
+							<div class="omex-row">
+								<div class="attribute-name">E-Mail:</div>
+								<div class="attribute-detail"><input type="text" class="on-edit" data-field="email" /></div>
+							</div>
+							<div class="omex-row">
+								<div class="attribute-name">organization:</div>
+								<div class="attribute-detail"><input type="text" class="on-edit" data-field="organization" /></div>
+							</div>
 						</div>
 						
 						<div class="edit-link">
@@ -536,21 +546,29 @@
 		<!-- **** -->
 		<div id="template-omex-meta-entry-creator">
 			<div class="archive-meta-omex-creator-box" style="padding-left: 10px; margin: 10px 0;">
-				<div class="attribute-name">given name:</div>
-				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="givenName" placeholder="{{# print(escape(vcard.givenName)); }}" />
+				<div class="omex-row">
+					<div class="attribute-name">given name:</div>
+					<div class="attribute-detail">
+						<input type="text" class="on-edit" data-field="givenName" placeholder="{{# print(escape(vcard.givenName)); }}" />
+					</div>
 				</div>
-				<div class="attribute-name">family name:</div>
-				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="familyName" placeholder="{{# print(escape(vcard.familyName)); }}" />
+				<div class="omex-row">
+					<div class="attribute-name">family name:</div>
+					<div class="attribute-detail">
+						<input type="text" class="on-edit" data-field="familyName" placeholder="{{# print(escape(vcard.familyName)); }}" />
+					</div>
 				</div>
-				<div class="attribute-name">E-Mail:</div>
-				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="email" placeholder="{{# print(escape(vcard.email)); }}" />
+				<div class="omex-row">
+					<div class="attribute-name">E-Mail:</div>
+					<div class="attribute-detail">
+						<input type="text" class="on-edit" data-field="email" placeholder="{{# print(escape(vcard.email)); }}" />
+					</div>
 				</div>
-				<div class="attribute-name">organization:</div>
-				<div class="attribute-detail">
-					<input type="text" class="on-edit" data-field="organization" placeholder="{{# print(escape(vcard.organization)); }}" />
+				<div class="omex-row">
+					<div class="attribute-name">organization:</div>
+					<div class="attribute-detail">
+						<input type="text" class="on-edit" data-field="organization" placeholder="{{# print(escape(vcard.organization)); }}" />
+					</div>
 				</div>
 				
 				<div class="edit-link">

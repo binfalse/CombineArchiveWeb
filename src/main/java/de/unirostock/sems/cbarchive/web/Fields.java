@@ -94,14 +94,6 @@ public class Fields {
 	/** Link to a feedback form */
 	public static String FEEDBACK_URL = "https://github.com/SemsProject/CombineArchiveWeb/issues/new?body=%0A%0A___%0AI%20came%20from%20the%20WebCAT%20interface%20through%20the%20feedback%20button";
 	
-	/** Link to CaRo (CombineArchive to Research Object) Converter */
-	/* http://caro.web/caro?from= */
-	public static String CARO_URL = null;
-	
-	/** Link to RoCa (Research Object to CombineArchive) Converter */
-	/* http://caro.web/roca?from= */
-	public static String ROCA_URL = null;
-	
 	/** max time for caching statistic data */
 	public static long STATS_MAX_AGE = 180;
 	
@@ -206,20 +198,6 @@ public class Fields {
 			Fields.SEDML_WEBTOOLS_URL = sedMlWebTools;
 		else
 			Fields.SEDML_WEBTOOLS_URL = null;
-		
-		// CaRo Url
-		String caroUrl = context.getInitParameter("CARO_URL");
-		if( caroUrl != null && caroUrl.isEmpty() == false )
-			Fields.CARO_URL = caroUrl;
-		else
-			Fields.CARO_URL = null;
-		
-		// CaRo Url
-		String rocaUrl = context.getInitParameter("ROCA_URL");
-		if( rocaUrl != null && rocaUrl.isEmpty() == false )
-			Fields.ROCA_URL = rocaUrl;
-		else
-			Fields.ROCA_URL = null;
 		
 		// max stats age
 		STATS_MAX_AGE = parseLong( context.getInitParameter("MAX_STATS_AGE"), STATS_MAX_AGE );

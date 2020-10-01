@@ -23,7 +23,6 @@
 	<script type="text/javascript">
 		var RestRoot = 'rest/v1/';
 		var SedMlWebToolsUrl = '<%= Fields.SEDML_WEBTOOLS_URL %>';
-		var CaroUrl = '<%= Fields.CARO_URL %>';
 	</script>
 	<script type="text/javascript" src="res/js/3rd/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript" src="res/js/3rd/xdate.js"></script>
@@ -359,9 +358,6 @@
 					<div class="edit-link">
 						<% if( Fields.SEDML_WEBTOOLS_URL != null && Fields.SEDML_WEBTOOLS_URL.isEmpty() == false ) { %>
 						<a class="archive-info-simulate on-not-edit" href="{{# print(SedMlWebToolsUrl); print(baseUrl); }}download/archive/{{# print(workspace.workspaceId); }}/{{# print(archive.id); }}.omex" target="_blank">[Simulate]</a>
-						<% } %>
-						<% if( Fields.CARO_URL != null && Fields.CARO_URL.isEmpty() == false ) { %>
-						<a class="archive-info-convert on-not-edit" href="{{# print(CaroUrl); print(baseUrl); }}download/archive/{{# print(workspace.workspaceId); }}/{{# print(archive.id); }}.omex" target="_blank">[Export RO]</a>
 						<% } %>
 						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
 						<a class="archive-info-edit on-not-edit" href="#">[Rename]</a>

@@ -91,6 +91,9 @@ public class Fields {
 	/** Link to the sedML WebTools for starting a simulation */
 	public static String SEDML_WEBTOOLS_URL = null;
 	
+	/** Link to the sedML WebTools API for enriching an archive */
+	public static String SEDML_WEBTOOLS_API_URL = null;
+	
 	/** Link to a feedback form */
 	public static String FEEDBACK_URL = "https://github.com/SemsProject/CombineArchiveWeb/issues/new?body=%0A%0A___%0AI%20came%20from%20the%20WebCAT%20interface%20through%20the%20feedback%20button";
 	
@@ -198,6 +201,13 @@ public class Fields {
 			Fields.SEDML_WEBTOOLS_URL = sedMlWebTools;
 		else
 			Fields.SEDML_WEBTOOLS_URL = null;
+		
+		// sedML WebTools
+		String sedMlWebToolsApi = context.getInitParameter("SEDML_WEBTOOLS_API");
+		if( sedMlWebToolsApi != null && sedMlWebToolsApi.isEmpty() == false )
+			Fields.SEDML_WEBTOOLS_API_URL = sedMlWebToolsApi;
+		else
+			Fields.SEDML_WEBTOOLS_API_URL = null;
 		
 		// max stats age
 		STATS_MAX_AGE = parseLong( context.getInitParameter("MAX_STATS_AGE"), STATS_MAX_AGE );

@@ -360,6 +360,9 @@
 						<a class="archive-info-simulate on-not-edit" href="{{# print(SedMlWebToolsUrl); print(baseUrl); }}download/archive/{{# print(workspace.workspaceId); }}/{{# print(archive.id); }}.omex" target="_blank">[Simulate]</a>
 						<% } %>
 						<a class="archive-info-download on-not-edit" href="download/archive/{{# print(archive.id); }}.omex">[Download]</a>
+						<% if( Fields.SEDML_WEBTOOLS_API_URL != null && Fields.SEDML_WEBTOOLS_API_URL.isEmpty() == false ) { %>
+						<a class="archive-info-enrich on-not-edit" href="#" title="simulate and add simulation results to the archive">[Enrich]</a>
+						<% } %>
 						<a class="archive-info-edit on-not-edit" href="#">[Rename]</a>
 						<a class="archive-info-delete on-not-edit" href="#">[Delete]</a>
 						<a class="archive-info-save on-edit" href="#">[Save]</a>

@@ -14,6 +14,8 @@
 	<Parameter name="STORAGE" value="/srv/CombineArchiveWeb" override="false" />
 	<!-- URL to the SedML WebTools to enable the simulate Link, leave blank to disable -->
 	<Parameter name="SEDML_WEBTOOLS" value="http://sysbioapps.spdns.org/SED-ML_Web_Tools/Home/SimulateUrl?url=" override="false" />
+	<!-- URL to the SedML WebTools API to enable the enrich functionalities, leave blank to disable -->
+	<Parameter name="SEDML_WEBTOOLS_API" value="http://sysbioapps.spdns.org/SED-ML_Web_Tools/Home/SimulatePostArchive" override="false" />
 	<!-- max age for stats data in seconds-->
 	<Parameter name="MAX_STATS_AGE" value="10" override="false" />
 	<!-- Feedback Button URL, set to empty value to disable button -->

@@ -947,6 +947,7 @@ var ArchiveView = Backbone.View.extend({
 		"keydown input[name='archiveName']": "saveArchive",
 		"click .archive-info-cancel": "cancelEdit",
 		"click .archive-info-delete": "deleteArchive",
+		"click .archive-info-enrich": "enrichArchive",
 		
 		"dragover .dropbox": "dropboxOver",
 		"drop .dropbox": "dropboxDrop",
@@ -1015,6 +1016,47 @@ var ArchiveView = Backbone.View.extend({
 	},
 	cancelEdit: function(event) {
 		this.$el.find(".archive-info").removeClass("edit");
+		return false;
+	},
+	enrichArchive: function(event) {
+		const api = RestRoot + "archives/"+this.model["id"]+"/enrich";
+		$(".archive-info-enrich").text ("[...Enriching...]");
+		var self = this;
+		$.ajax({
+			"url": api,
+			"type": "PUT",
+			"processData": false,
+			"contentType": 'application/json; charset=UTF-8',
+			"success": function(data) {
+				$(".archive-info-enrich").text ("[Enrich]");
+				self.fetchCollection(true);
+				
+				messageView.success( "Enriching done", "Check your new files!" );
+				
+				// scanning for any non-critical erros.
+				if( data !== undefined ) {
+					_.each(data, function(element, index, list) {
+						if( element.error == true )
+							messageView.warning( element.filePath, element.message );
+					});
+				}
+				else 
+					messageView.error( "Unknown Error", "No response from the server!" );
+			},
+			"error": function(data) {
+				$(".archive-info-enrich").text ("[Enrich]");
+				
+				console.log(data);
+				console.log("error uploading file.");
+				if( data !== undefined && data.responseJSON !== undefined && data.responseJSON.status == "error" ) {
+					var text = data.responseJSON.errors;
+					messageView.error( "Cannot upload file", text );
+				}
+				else
+					messageView.error( "Unknown Error", "Cannot upload file." );
+			}
+		});
+		
 		return false;
 	},
 	deleteArchive: function(event) {

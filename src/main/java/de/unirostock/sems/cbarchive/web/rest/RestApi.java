@@ -48,8 +48,12 @@ import javax.ws.rs.core.Response;
 import javax.xml.transform.TransformerException;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -1419,6 +1423,182 @@ public class RestApi extends RestHelper {
 		} catch (CombineArchiveWebException | IOException e) {
 			LOGGER.error(e, MessageFormat.format("Cannot read archive {0} entries in WorkingDir {1}", archiveId, user.getWorkingDir()) );
 			return buildErrorResponse( 500, user, "Cannot read archive " + archiveId + " entries in WorkingDir " + user.getWorkingDir().toString(), e.getMessage() );
+		}
+	}
+
+	@PUT
+	@Path( "/archives/{archive_id}/enrich" )
+	@Produces( MediaType.APPLICATION_JSON )
+	@Consumes( MediaType.APPLICATION_JSON )
+	public Response enrichArchive ( @PathParam("archive_id") String archiveId, @PathParam("entry_id") String entryId, @CookieParam(Fields.COOKIE_PATH) String userPath ) {
+		// user stuff
+		UserManager user = null;
+		try {
+			user = new UserManager( userPath );
+		} catch (IOException e) {
+			LOGGER.error(e, "Cannot create user");
+			return buildErrorResponse(500, null, "user not creatable!", e.getMessage() );
+		}
+		
+		if (Fields.SEDML_WEBTOOLS_API_URL == null || Fields.SEDML_WEBTOOLS_API_URL.isEmpty ()) {
+			LOGGER.info("link to SEDML webtools invalid");
+			return buildErrorResponse(503, null, "not supported at this instance");
+		}
+		
+		File archiveFile = null;
+		Archive archive = null;
+		LinkedList<Object> result = new LinkedList<Object>();
+		try {
+			archiveFile = user.getArchiveFile(archiveId);
+			archive = user.getArchive(archiveId);
+			// check maximum files in archive -> is the limit already reached, without uploading anything new?
+			if( Fields.QUOTA_FILE_LIMIT != Fields.QUOTA_UNLIMITED && Tools.checkQuota( archive.countArchiveEntries(), Fields.QUOTA_FILE_LIMIT) == false ) {
+				LOGGER.warn("QUOTA_FILE_LIMIT reached in workspace ", user.getWorkspaceId());
+				return buildErrorResponse(507, user, "The max amount of files in one archive is reached.");
+			}
+			
+			HttpEntity entity = MultipartEntityBuilder.create()
+                    .addPart("file", new FileBody(archiveFile))
+                    .build();
+		    HttpPost request = new HttpPost(Fields.SEDML_WEBTOOLS_API_URL);
+		    request.setEntity(entity);
+		    
+		    CloseableHttpClient client = HttpClientBuilder.create().build();
+		    CloseableHttpResponse response = client.execute(request);
+		    
+
+			// check if file exists
+			if( response.getStatusLine().getStatusCode() != 200 ) {
+				LOGGER.warn( response.getStatusLine().getStatusCode(), " ", response.getStatusLine().getReasonPhrase(), " while enriching ", archiveId, " at ", Fields.SEDML_WEBTOOLS_API_URL);
+				return buildErrorResponse(502, null, "SEDML webtools failed to execute simulation at " + Fields.SEDML_WEBTOOLS_API_URL);
+			}
+			
+			HttpEntity results = response.getEntity();
+			if( results == null ) {
+				LOGGER.error("No content returned while donwloading simulation resutls from SEDML webtools at ", Fields.SEDML_WEBTOOLS_API_URL);
+				return buildErrorResponse(502, null, "No content returned while donwloading simulation resutls from SEDML webtools at " + Fields.SEDML_WEBTOOLS_API_URL);
+			}
+			
+			Header contentLengthHeader = response.getFirstHeader("Content-Length");
+			long contentLength = 0;
+			if( contentLengthHeader != null && contentLengthHeader.getValue() != null && contentLengthHeader.getValue().isEmpty() == false ) {
+				contentLength = Long.valueOf( contentLengthHeader.getValue() );
+			} else {
+				contentLength = response.getEntity().getContentLength();
+			}
+			
+			// check for all quotas
+			try {
+				Tools.checkQuotasOrFail(contentLength, archive, user);
+			}
+			catch (QuotaException e) {
+				request.abort();
+				response.close();
+				LOGGER.error(e, "quota error");
+				return buildErrorResponse(507, null, "quota error: " + e.getMessage ());
+			}
+			
+
+			// determine most limiting quota
+			String limitError = null;
+			long limit = Long.MAX_VALUE;
+			if( Fields.QUOTA_UPLOAD_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_UPLOAD_SIZE < limit ) {
+				limit = Fields.QUOTA_UPLOAD_SIZE;
+				limitError = "The fetched file is to big.";
+			}
+			if( Fields.QUOTA_ARCHIVE_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_ARCHIVE_SIZE - user.getWorkspace().getArchiveSize(archiveId) < limit ) {
+				limit = Fields.QUOTA_ARCHIVE_SIZE - user.getWorkspace().getArchiveSize(archiveId);
+				limitError = "The maximum size of one archive is reached.";
+			}
+			if( Fields.QUOTA_WORKSPACE_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_WORKSPACE_SIZE - QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace()) < limit ) {
+				limit = Fields.QUOTA_WORKSPACE_SIZE - QuotaManager.getInstance().getWorkspaceSize(user.getWorkspace());
+				limitError = "The maximum size of one workspace is reached.";
+			}
+			if( Fields.QUOTA_TOTAL_SIZE != Fields.QUOTA_UNLIMITED && Fields.QUOTA_TOTAL_SIZE - QuotaManager.getInstance().getTotalSize() < limit ) {
+				limit = Fields.QUOTA_TOTAL_SIZE - QuotaManager.getInstance().getTotalSize();
+				limitError = "The maximum size is reached.";
+			}
+			
+			
+
+			// download the file
+			java.nio.file.Path tempFile = Files.createTempFile(Fields.TEMP_FILE_PREFIX, "simulation-result");
+			FileOutputStream fileOutput = new FileOutputStream(tempFile.toFile());
+			long copied = Tools.copyStream( response.getEntity().getContent() , fileOutput, limit == Long.MAX_VALUE ? 0 : limit );
+			
+			// poor man's heuristic: quota was exceeded afterwards
+			if( copied >= limit ) {
+				request.abort();
+				response.close();
+				tempFile.toFile().delete();
+				
+				LOGGER.error("Exceeded quota while download: ", limitError, "in workspace ", user.getWorkspaceId());
+				return buildErrorResponse(507, null, "Exceeded quota: " + limitError);
+			}
+			
+			// override flag
+			ReplaceStrategy strategy = ReplaceStrategy.OVERRIDE; 
+			File tempResult = File.createTempFile(Fields.TEMP_FILE_PREFIX, "simulation-result");
+			
+			CombineArchive simulationResults = new CombineArchive(tempFile.toFile());
+			// add simulation results
+			for (ArchiveEntry entry : simulationResults.getEntries ()) {
+				// skip the archive itself
+				if (entry.getFormat().toString().contains("/omex"))
+					continue;
+				// skip the model
+				if (entry.getFormat().toString().contains("/sbml"))
+					continue;
+				// skip the sedml script
+				if (entry.getFormat().toString().contains("/sed-ml"))
+					continue;
+				
+				entry.extractFile(tempResult);
+				
+				String filename = "/results/sedml-webtools/" + entry.getFileName();
+				ArchiveEntry newEntry = archive.addArchiveEntry(filename, tempResult.toPath(), strategy);
+				newEntry.setFormat(entry.getFormat());
+				
+				// add default meta information
+				Tools.addOmexMetaData(newEntry,
+						user.getData() != null && user.getData().hasInformation() ? user.getData().getVCard() : null,
+						"Simulation results from SEDML webtools at " + Fields.SEDML_WEBTOOLS_API_URL,
+						true);
+				
+				LOGGER.info(MessageFormat.format("Successfully added simulation results file {0} to archive {1}", filename, archiveId));
+				
+				// clean up
+				tempFile.toFile().delete();
+				// add to result list
+				result.add( new ArchiveEntryDataholder(entry) );
+			}
+			
+			tempResult.delete();
+			tempFile.toFile().delete();
+
+			synchronized (archive) {
+				// pack and close the archive
+				archive.packAndClose();
+				archive = null;
+			}
+
+			// trigger quota update
+			QuotaManager.getInstance().updateWorkspace( user.getWorkspace() );
+
+			// return all successfully uploaded files
+			return buildResponse(200, user).entity(result).build();
+			
+		} catch (CombineArchiveWebException | CombineArchiveException | ParseException | JDOMException | IOException | TransformerException e) {
+			LOGGER.error(e, MessageFormat.format("Cannot enrich archive {0} in WorkingDir {1}", archiveId, user.getWorkingDir()) );
+			return buildErrorResponse( 500, user, MessageFormat.format("Cannot enrich archive {0} in WorkingDir {1}", archiveId, user.getWorkingDir()), e.getMessage() );
+		} finally {
+			try {
+				if( archive != null )
+					archive.close();
+			}
+			catch (IOException e) {
+				LOGGER.error(e, "Final closing of archive caused exception");
+			}
 		}
 	}
 	

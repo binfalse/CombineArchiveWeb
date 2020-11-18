@@ -2,7 +2,7 @@
 
 The [CombineArchive](http://co.mbine.org/standards/omex) is a zip like format to bundle latest research files and annotate them with meta data. The [CombineArchive WebInterface (WebCAT)](https://github.com/SemsProject/CombineArchiveWeb) is a web based user interface to create, modify, and share CombineArchives. No need for registration. No database. Just start using the web interface!
 
-A public instance is running at [https://cat.bio.informatik.uni-rostock.de/](cat.bio.informatik.uni-rostock.de).
+A public instance is running at [cat.bio.informatik.uni-rostock.de](https://cat.bio.informatik.uni-rostock.de/).
 
 ## Build and Run
 

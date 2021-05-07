@@ -3,7 +3,7 @@
     <groupId>de.uni-rostock.sbi</groupId>
     <artifactId>CombineArchiveWeb</artifactId>
     <packaging>war</packaging>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
     <name>CombineArchiveWeb</name>
     <description>WebInterface to read/create/write/manipulate/... COMBINE archives</description>
     <url>http://sems.uni-rostock.de/projects/combinearchive/</url>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>[2.7,)</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
